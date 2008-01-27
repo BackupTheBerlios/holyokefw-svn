@@ -309,7 +309,8 @@ public void writeCSV(StringTableModel model, File f) throws IOException, java.te
 {
 	FileWriter out = null;
 	try {
-		writeCSV(model, new FileWriter(f));
+		out = new FileWriter(f);
+		writeCSV(model, out);
 	} finally {
 		try { out.close(); } catch(Exception e) {}
 	}
@@ -344,13 +345,9 @@ throws IOException
 	fout = correctFile(templateName, "xls", fout);
 	
 	InputStream reportIn = openTemplateFile(templateDir, templateName);
-System.out.println("writeXls: reportIn = " + reportIn);
 	PoiXlsWriter poiw = new PoiXlsWriter(reportIn, app.getTimeZone());
-System.out.println("AA1");
 	poiw.replaceHolders(models);
-System.out.println("AA2");
 	poiw.writeSheet(fout);
-System.out.println("AA3");
 	return fout;
 }
 public File writeXls(TableModel model,

@@ -51,24 +51,24 @@ protected boolean cacheWizFwd = false;
 public boolean getCacheWiz() { return cacheWiz; }
 public boolean getCacheWizFwd() { return cacheWizFwd; }
 	
-public HtmlWiz(Frame owner, String title, citibob.swing.typed.SwingerMap swingers, boolean modal)
+public HtmlWiz(Frame owner, citibob.swing.typed.SwingerMap swingers)
 {
-	super(owner, title, swingers, true);
+	super(owner, "", swingers, true);
 	init();
 }
 /**
  * Creates a new instance of HtmlWiz 
  */
-public HtmlWiz(Frame owner, String title, boolean modal)
+public HtmlWiz(Frame owner)
 {
-	super(owner, title, true);
+	super(owner, "", true);
 	init();
 }
 /** Creates a new HtmlWiz, loading an HTML file as a resource. */
-public HtmlWiz(Frame owner, String title, boolean modal, String htmlResource)
+public HtmlWiz(Frame owner, String htmlResource)
 throws org.xml.sax.SAXException, java.io.IOException
 {
-	this(owner, title, modal);
+	this(owner);
 	loadHtmlResource(htmlResource);
 }
 private void init()

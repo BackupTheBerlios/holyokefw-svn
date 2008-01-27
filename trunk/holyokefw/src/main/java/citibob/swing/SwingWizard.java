@@ -62,11 +62,16 @@ new State("", "", "") {
 }
 */
 
+public SwingWizard(String wizardName, App app, Component component)
+{
+	this(wizardName, app, (javax.swing.JFrame)WidgetTree.getRoot(component));
+}
+
 /** @param frame Parent frame for the modal dialogs created by the Wizard. */
-public SwingWizard(String wizardName, App app, java.awt.Frame frame, String startState)
+public SwingWizard(String wizardName, App app, java.awt.Frame frame)
 //	String wizardName, java.awt.Frame frame, String startState)
 {
-	super(wizardName, app, startState);
+	super(wizardName, app);
 //	this.wizardName = wizardName;
 	this.frame = frame;
 //	this.startState = startState;

@@ -71,7 +71,7 @@ protected String getResourceName(String rname)
 protected abstract void runWiz(Wiz wiz) throws Exception;
 protected boolean reallyCancel() throws Exception { return true; }
 
-public Wizard(String wizardName, App app, String startState)
+public Wizard(String wizardName, App app)
 {
 	this.wizardName = wizardName;
 	this.startState = startState;
@@ -95,6 +95,12 @@ public void setStartState(String startState)
 protected void addState(WizState st)
 {
 	states.put(st.getName(), st);
+	if (states.size() == 1) addStartState(st);
+}
+protected void addStartState(WizState st)
+{
+	states.put(st.getName(), st);
+	setStartState(st.getName());
 }
 public void setWizardName(String name)
 	{ this.wizardName = name; }

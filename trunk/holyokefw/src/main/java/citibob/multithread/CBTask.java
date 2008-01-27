@@ -47,9 +47,11 @@ public CBTask(String name, CBRunnable runnable)
 {
 	this(name, (String[])null, runnable);
 }	
-public CBTask(String name, String permission, CBRunnable runnable)
+
+/** @param permissions Comma-separated list of permissions */
+public CBTask(String name, String permissions, CBRunnable runnable)
 {
-	this(name, new String[]{ permission}, runnable);
+	this(name, permissions.split(","), runnable);
 }
 
 public String[] getPermissions() { return permissions; }
