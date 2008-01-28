@@ -48,16 +48,12 @@ String license;
 
 String[] suffixes = new String[] {".c", ".cpp", ".java", ".mvc"};
 
-public Licensor(String licenseResourceName) throws IOException
-{
-	readLicense(getClass(), licenseResourceName);	
-}
 public Licensor() throws IOException
 {
-	readLicense(getClass(), "license.txt");
+	license = "/*\n" + readLicenseFile(getClass(), "license-short.txt") + "\n*/";
 }
 
-void readLicense(Class klass, String licenseResourceName)
+static String readLicenseFile(Class klass, String licenseResourceName)
 throws java.io.IOException
 {
 	String resourceName = klass.getPackage().getName().replace('.', '/') + "/" + licenseResourceName;
@@ -70,8 +66,8 @@ throws java.io.IOException
 	while ((len = in.read(buf)) > 0) out.write(buf,0,len);
 	in.close();
 	out.close();
-	license = out.getBuffer().toString();
-	System.out.println(license);
+	String license = out.getBuffer().toString();
+	return license;
 }
 
 public void relicenseDir(File dir) throws IOException
