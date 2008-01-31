@@ -1,6 +1,7 @@
 package citibob.gui;
 
 
+import citibob.text.AbstractSFormat;
 import java.lang.reflect.Method;
 import java.util.prefs.Preferences;
 import javax.swing.DefaultListModel;
@@ -22,6 +23,8 @@ import javax.swing.event.ListSelectionListener;
  */
 public class AppLauncher extends javax.swing.JFrame {
 
+Preferences prefs;
+
 	/** Creates new form AppLauncher */
 	public AppLauncher(Class[] classes) {
 		initComponents();
@@ -36,24 +39,53 @@ public class AppLauncher extends javax.swing.JFrame {
 			if (event.getValueIsAdjusting()) return;
 			setVisible(false);
 			Class klass = (Class)lclasses.getModel().getElementAt(event.getFirstIndex());
-			try {
-				System.out.println(klass);
-				System.err.println(klass);
-				Method[] meths = klass.getMethods();
-				for (int i=0; i<meths.length; ++i)
-				if ("main".equals(meths[i].getName())) {
-					meths[i].invoke((Object)null, new String[]{null});
-				}
-			} catch(Exception e) {
-				//e.printStackTrace(System.out);
-				e.printStackTrace(System.err);
-			}
-			System.exit(-1);
+			launchClass(klass);
 		}});
-		
-		Preferences prefs = Preferences.userNodeForPackage(getClass()).node("AppLauncher");
+
+		prefs = Preferences.userNodeForPackage(getClass()).node("AppLauncher");
 		new citibob.swing.prefs.SwingPrefs().setPrefs(this, "", prefs);
+		
+		// Populate our default class from last time...
+		lDefaultClass.setJType(Class.class, new ClassSFormat());
+		try {
+			lDefaultClass.setValue(Class.forName(prefs.get("defaultClass", "")));
+		} catch(Exception e) {}
+		
+		bLaunchDefault.requestFocus();
 	}
+
+	void launchClass(Class klass)
+	{
+		prefs.put("defaultClass", klass.getName());
+		try {
+			System.out.println(klass);
+			System.err.println(klass);
+			Method[] meths = klass.getMethods();
+			for (int i=0; ; ++i) {
+				if (i == meths.length) throw new Exception(
+					"No main() method found in " + klass);
+				if ("main".equals(meths[i].getName())) {
+					setVisible(false);
+					meths[i].invoke((Object)null, new String[]{null});
+					break;
+				}
+			}
+		} catch(Exception e) {
+			//e.printStackTrace(System.out);
+			e.printStackTrace(System.err);
+		}
+		System.out.println("====== Done running " + klass);
+		System.exit(-1);
+	}
+
+	static class ClassSFormat extends AbstractSFormat
+	{
+		public String valueToString(Object value) throws java.text.ParseException
+		{
+			return ((Class)value).getSimpleName();
+		}
+	}
+	
 	/** This method is called from within the constructor to
 	 initialize the form.
 	 WARNING: Do NOT modify this code. The content of this method is
@@ -61,9 +93,47 @@ public class AppLauncher extends javax.swing.JFrame {
 	 */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
+        jPanel1 = new javax.swing.JPanel();
+        bLaunchDefault = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        lDefaultClass = new citibob.swing.typed.JTypedLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         lclasses = new javax.swing.JList();
+
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        bLaunchDefault.setText("Launch");
+        bLaunchDefault.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bLaunchDefaultActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(bLaunchDefault, gridBagConstraints);
+
+        jLabel1.setText("Default Class: ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(jLabel1, gridBagConstraints);
+
+        lDefaultClass.setText("jTypedLabel1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        jPanel1.add(lDefaultClass, gridBagConstraints);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
 
         lclasses.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -72,23 +142,21 @@ public class AppLauncher extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(lclasses);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE))
-        );
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+	private void bLaunchDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bLaunchDefaultActionPerformed
+		launchClass((Class)lDefaultClass.getValue());
+		// TODO add your handling code here:
+}//GEN-LAST:event_bLaunchDefaultActionPerformed
 	
 	
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bLaunchDefault;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private citibob.swing.typed.JTypedLabel lDefaultClass;
     private javax.swing.JList lclasses;
     // End of variables declaration//GEN-END:variables
 	
