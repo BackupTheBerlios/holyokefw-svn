@@ -28,8 +28,8 @@ public interface Schema
 	int getColCount();
 
 	/** Retrieve info on a column by number. */
-	Column getCol(int colNo);
-	Column getCol(String name);
+	SqlCol getCol(int colNo);
+	SqlCol getCol(String name);
 	
 //	ColIterator colIterator();
 

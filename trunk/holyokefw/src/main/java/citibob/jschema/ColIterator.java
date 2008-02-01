@@ -20,5 +20,5 @@ package citibob.jschema;
 public interface ColIterator
 {
 	boolean hasNext();
-	Column next();
+	SqlCol next();
 }

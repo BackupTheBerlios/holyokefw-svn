@@ -22,7 +22,7 @@ import java.util.*;
 public class ConstSchema implements Schema
 {
 
-protected Column[] cols;
+protected SqlCol[] cols;
 protected String table;
 
 //public List getPrototypes()
@@ -40,9 +40,9 @@ public String getDefaultTable()
 public int getColCount()
 	{ return cols.length; }
 
-public Column getCol(int colNo)
+public SqlCol getCol(int colNo)
 	{ return cols[colNo]; }
-public Column getCol(String col)
+public SqlCol getCol(String col)
 	{ return getCol(findCol(col)); }
 //public ColIterator colIterator()
 //	{ return new MyColIterator(); }
@@ -56,9 +56,9 @@ public int findCol(String name)
 }
 
 /** Used to subclass schemas and append columns to them. */
-protected void appendCols(Column[] add)
+protected void appendCols(SqlCol[] add)
 {
-	Column[] newcols = new Column[cols.length + add.length];
+	SqlCol[] newcols = new SqlCol[cols.length + add.length];
 	for (int i = 0; i < cols.length; ++i) newcols[i] = cols[i];
 	for (int i = 0; i < add.length; ++i) newcols[i + cols.length] = add[i];
 	cols = newcols;

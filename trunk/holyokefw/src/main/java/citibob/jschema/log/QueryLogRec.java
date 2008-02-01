@@ -84,7 +84,7 @@ public QueryLogRec(ConsSqlQuery query, Schema schema, int[] schemaMap, SchemaBuf
 		if (sbi < 0) continue;
 
 		// Retrieve info on column + data from Query and SchemaBuf (if present)
-		Column qcol = schema.getCol(sbi);
+		SqlCol qcol = schema.getCol(sbi);
 		NVPair nv = inserted.get(qcol.getName());
 		
 		// Determine old value

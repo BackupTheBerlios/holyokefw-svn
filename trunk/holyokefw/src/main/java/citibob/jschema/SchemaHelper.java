@@ -30,7 +30,7 @@ public class SchemaHelper
 public static void getSelectCols(Schema schema, ConsSqlQuery q, String table, String colPrefix)
 {
 	for (int col = 0; col < schema.getColCount(); ++col) {
-		Column c = schema.getCol(col);
+		SqlCol c = schema.getCol(col);
 		q.addColumn(table + "." + c.getName() +
 			(colPrefix == null ? "" : " as " + colPrefix + "_" + c.getName()));
 	}
@@ -44,7 +44,7 @@ public static void getSelectCols(Schema schema, ConsSqlQuery q, String table, St
 public static void getWhereKey(Schema schema, ConsSqlQuery q, String table, Object[] whereKey)
 {
 	for (int col = 0; col < schema.getColCount(); ++col) {
-		Column c = schema.getCol(col);
+		SqlCol c = schema.getCol(col);
 		if (c.isKey()) {
 			q.addWhereClause(table + "." + c.getName() + " = " +
 				 c.getType().toSql(whereKey[col]));

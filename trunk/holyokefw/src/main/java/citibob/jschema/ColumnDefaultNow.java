@@ -35,7 +35,7 @@ import citibob.types.JDateType;
  *
  * @author citibob
  */
-public class ColumnDefaultNow extends citibob.jschema.Column
+public class ColumnDefaultNow extends citibob.jschema.SqlCol
 {
 
 // ===================================================================

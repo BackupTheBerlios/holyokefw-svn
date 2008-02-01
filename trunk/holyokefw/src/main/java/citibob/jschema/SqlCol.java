@@ -23,7 +23,7 @@ import citibob.types.JDateType;
 //import citibob.sql.SqlType;
 
 /** Represents one column in a Schema. */
-public class Column
+public class SqlCol
 {
 
 SqlType jType;
@@ -31,11 +31,11 @@ String name;
 String label;		// Suggested label for display
 boolean key;
 
-public Column(SqlType type, String name, boolean key)
+public SqlCol(SqlType type, String name, boolean key)
 	{ this(type, name, name, key); }
-public Column(SqlType type, String name)
+public SqlCol(SqlType type, String name)
 	{ this(type, name, name, false); }
-public Column(SqlType type, String name, String label, boolean key)
+public SqlCol(SqlType type, String name, String label, boolean key)
 {
 	this.jType = type;
 	this.name = name;

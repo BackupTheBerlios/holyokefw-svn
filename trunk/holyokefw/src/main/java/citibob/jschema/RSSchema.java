@@ -42,10 +42,10 @@ throws SQLException
 {
 	ResultSetMetaData md = rs.getMetaData();
 	table = null;
-	cols = new Column[md.getColumnCount()];
+	cols = new SqlCol[md.getColumnCount()];
 	for (int i=0; i<md.getColumnCount(); ++i) {
 		int i1 = i+1;
-		cols[i] = new Column(tset.getSqlType(md, i1),
+		cols[i] = new SqlCol(tset.getSqlType(md, i1),
 			md.getColumnName(i1), md.getColumnLabel(i1), false);
 	}
 	
@@ -60,7 +60,7 @@ throws SQLException
 	if (keyFields != null)
 	for (int i=0; i<keyFields.length; ++i) {
 //System.out.println("Find col key field: " + keyFields[i]);
-		Column col = cols[findCol(keyFields[i])];
+		SqlCol col = cols[findCol(keyFields[i])];
 		col.key = true;
 	}
 	
@@ -71,10 +71,10 @@ throws SQLException
 public void setJTypes(Schema schema)
 {
 	for (int i=0; i<schema.getColCount(); ++i) {
-		Column scol = schema.getCol(i);
+		SqlCol scol = schema.getCol(i);
 		int j = findCol(scol.getName());
 		if (j < 0) continue;
-		Column tcol = this.getCol(j);
+		SqlCol tcol = this.getCol(j);
 		tcol.jType = scol.getType();
 		tcol.key = scol.isKey();
 		tcol.label = scol.getLabel();

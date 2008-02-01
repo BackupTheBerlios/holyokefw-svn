@@ -103,7 +103,7 @@ public void setKey(Object[] key)
 	StringBuffer sb = new StringBuffer("1=1");
 	int j = 0;
 	for (int i=0; i<schema.getColCount(); ++i) {
-		Column c = schema.getCol(i);
+		SqlCol c = schema.getCol(i);
 		if (!c.isKey()) continue;
 		sb.append(" and " + selectTable + "." + c.getName() +
 			"=" + c.getType().toSql(key[j]));
@@ -187,7 +187,7 @@ protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SchemaInfo q
 	
 	if (updateBufOnUpdate) {
 		for (int i=0; i<schema.getColCount(); ++i) {
-			Column col = schema.getCol(i);
+			SqlCol col = schema.getCol(i);
 			if ((col.jType instanceof SqlSequence) && inserted.get(col.name)==null) {
 				// Update this in the SchemaBuf if it wasn't inserted...
 				final SqlSequence seq = (SqlSequence)col.jType;
