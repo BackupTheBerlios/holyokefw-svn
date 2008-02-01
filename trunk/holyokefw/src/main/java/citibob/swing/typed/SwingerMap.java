@@ -39,7 +39,7 @@ import citibob.swing.table.*;
  * of system.  Used to automatically construct GUIs appropriate for a schema.
  * @author citibob
  */
-public abstract class SwingerMap
+public abstract class SwingerMap extends SFormatMap
 {
 	public Swinger newSwinger(JType t)
 		{ return newSwinger(t, null); }
@@ -51,6 +51,37 @@ public abstract class SwingerMap
 	public Swinger newSwinger(Class klass) { return newSwinger(new JavaJType(klass)); }
 	public TypedWidget newWidget(JType t) { return newSwinger(t).newWidget(); }
 	public TypedWidget newWidget(Class klass) { return newSwinger(klass).newWidget(); }
-	public abstract Swinger[] newSwingers(JTypeTableModel model);
-	public abstract Swinger[] newSwingers(JTypeTableModel model, String[] scol, Swinger[] sfmt);
+
+/** Create Swinger for an entire set of columns */
+public Swinger[] newSwingers(JTypeTableModel model)
+{
+	int n = model.getColumnCount();
+	Swinger[] sfmt = new Swinger[n];
+	for (int i=0; i<n; ++i) sfmt[i] = newSwinger(model.getJType(0, i), model.getColumnName(i));
+	return sfmt;
+}
+
+/** Create Swinger for an entire set of columns
+@param scol names of columns for exceptions.
+@param sfmt The exceptions for those columns. */
+public Swinger[] newSwingers(JTypeTableModel model,
+String[] scol, Swinger[] swingers)
+{
+	int n = model.getColumnCount();
+	Swinger[] sfmt2 = new Swinger[n];
+	
+	// Set up specialized formatters
+	if (scol != null)
+	for (int i=0; i<scol.length; ++i) {
+		int col = model.findColumn(scol[i]);
+		sfmt2[col] = swingers[i];
+	}
+	
+	// Fill in defaults
+	for (int i=0; i<n; ++i) if (sfmt2[i] == null) {
+		sfmt2[i] = newSwinger(model.getJType(0, i), model.getColumnName(i));
+	}
+
+	return sfmt2;
+}
 }

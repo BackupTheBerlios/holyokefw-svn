@@ -129,7 +129,7 @@ public int addRowNoFire(ResultSet rs, int rowIndex, int[] colmap) throws SQLExce
 		int scol = colmap[rscol];
 		if (scol < 0) continue;
 		SqlCol col = schema.getCol(scol);
-		row.data[scol] = col.getType().get(rs, col.getName()); //xyzqqq
+		row.data[scol] = col.getSqlType().get(rs, col.getName()); //xyzqqq
 		row.origData[scol] = row.data[scol];
 	}
 	rows.add(rowIndex, row);
@@ -201,7 +201,7 @@ public void getUpdateCols(int row, ConsSqlQuery q, boolean updateUnchanged, Sche
 		Object curData = r.data[col];
 		boolean unchanged = (curData == null ? origData == null : curData.equals(origData));
 		if (updateUnchanged || !unchanged) {
-			q.addColumn(qc.getName(), qc.getType().toSql(curData));
+			q.addColumn(qc.getName(), qc.getSqlType().toSql(curData));
 		}
 	}
 }
@@ -219,7 +219,7 @@ public void getInsertCols(int row, ConsSqlQuery q, boolean insertUnchanged, Sche
 		boolean unchanged = (curData == null ? origData == null : curData.equals(origData));
 System.out.println("   getInsertCols(" + row + ", " + col + "): " + !unchanged + ", " + origData + " -> " + curData);
 		if (insertUnchanged || !unchanged) {
-			q.addColumn(qc.getName(), qc.getType().toSql(curData));
+			q.addColumn(qc.getName(), qc.getSqlType().toSql(curData));
 		}
 	}
 
@@ -239,7 +239,7 @@ public void getWhereKey(int row, ConsSqlQuery q, SchemaInfo qs)
 
 		if (qc.isKey()) {
 			q.addWhereClause(qs.table + "." + qc.getName() + " = " +
-				 qc.getType().toSql(r.data[col]));
+				 qc.getSqlType().toSql(r.data[col]));
 		}
 	}
 }

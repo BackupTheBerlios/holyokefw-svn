@@ -179,7 +179,7 @@ public static void addColumns(ConsSqlQuery sql, HashMap v, Schema schema)
 		Object val = v.get(col.getName());
 		if (val == null) val = col.getDefault();
 		if (val == null) continue;
-		sql.addColumn(col.getName(), col.getType().toSql(val));
+		sql.addColumn(col.getName(), col.toSql(val));
 	}
 }
 

@@ -91,7 +91,7 @@ public QueryLogRec(ConsSqlQuery query, Schema schema, int[] schemaMap, SchemaBuf
 		String oldsqlval = "null";
 		if (sb != null) {
 			Object oldval = sb.getOrigValueAt(row,sbi);
-			if (oldval != null) oldsqlval = qcol.getType().toSql(oldval);			
+			if (oldval != null) oldsqlval = qcol.toSql(oldval);			
 		}
 		
 		// Determine the value we ended up setting
@@ -108,7 +108,7 @@ public QueryLogRec(ConsSqlQuery query, Schema schema, int[] schemaMap, SchemaBuf
 			Object setval = sb.getValueAt(row,sbi);
 			if (setval != null) {
 				// Convert setval to a Sql string
-				sqlval = qcol.getType().toSql(setval);
+				sqlval = qcol.toSql(setval);
 				haveval = true;
 			}
 		}

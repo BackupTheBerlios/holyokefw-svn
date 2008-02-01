@@ -47,7 +47,7 @@ public static void getWhereKey(Schema schema, ConsSqlQuery q, String table, Obje
 		SqlCol c = schema.getCol(col);
 		if (c.isKey()) {
 			q.addWhereClause(table + "." + c.getName() + " = " +
-				 c.getType().toSql(whereKey[col]));
+				 c.toSql(whereKey[col]));
 		}
 	}
 }

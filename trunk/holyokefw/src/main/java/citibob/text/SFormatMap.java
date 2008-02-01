@@ -31,12 +31,51 @@ import java.text.*;
  * This is a lot like SwingerMap, but much simpler.
  * @author citibob
  */
-public interface SFormatMap
+public abstract class SFormatMap
 {
+	
+protected static interface Maker
+{
+//	/** Gets a new SFormat for a cell of a certain type, depending on whether or not it is editable. */
+//	SFormat newSFormat(JType sqlType, boolean editable);
+	/** Gets a new SFormat for an editable cell. */
+	SFormat newSFormat(JType sqlType);
+}
 
-public SFormat newSFormat(JType t, String colName);
-public SFormat[] newSFormats(JTypeTableModel model);
-public SFormat[] newSFormats(JTypeTableModel model, String[] scol, SFormat[] sfmt);
 
+public abstract SFormat getSFormat(JType t, String colName);
+
+/** Create SFormat for an entire set of columns */
+public SFormat[] getSFormats(JTypeTableModel model)
+{
+	int n = model.getColumnCount();
+	SFormat[] sfmt = new SFormat[n];
+	for (int i=0; i<n; ++i) sfmt[i] = getSFormat(model.getJType(0, i), model.getColumnName(i));
+	return sfmt;
+}
+
+/** Create SFormat for an entire set of columns
+@param scol names of columns for exceptions.
+@param sfmt The exceptions for those columns. */
+public SFormat[] getSFormats(JTypeTableModel model,
+String[] scol, SFormat[] SFormats)
+{
+	int n = model.getColumnCount();
+	SFormat[] sfmt2 = new SFormat[n];
+	
+	// Set up specialized formatters
+	if (scol != null)
+	for (int i=0; i<scol.length; ++i) {
+		int col = model.findColumn(scol[i]);
+		sfmt2[col] = SFormats[i];
+	}
+	
+	// Fill in defaults
+	for (int i=0; i<n; ++i) if (sfmt2[i] == null) {
+		sfmt2[i] = getSFormat(model.getJType(0, i), model.getColumnName(i));
+	}
+
+	return sfmt2;
+}
 
 }

@@ -17,41 +17,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.jschema;
 
-import citibob.sql.SqlType;
+import citibob.types.JType;
+import citibob.types.JDateType;
+//import citibob.sql.JType;
 
 /** Represents one column in a Schema. */
-public class SqlCol extends Column
+public class Column
 {
 
-protected boolean key;
+protected JType jType;
+protected String name;
+protected String label;		// "Suggested label" --- built-in mapping in some cases.
 
-public SqlCol(SqlType type, String name, boolean key)
-	{ this(type, name, name, key); }
-public SqlCol(SqlType type, String name)
-	{ this(type, name, name, false); }
-public SqlCol(SqlType type, String name, String label, boolean key)
+public Column(JType type, String name)
+	{ this(type, name, name); }
+public Column(JType type, String name, String label)
 {
-	super(type, name, label);
-	this.key = key;
+	this.jType = type;
+	this.name = name;
+	this.label = label;
 }
 // --------------------------------------------------------------------
 /** Type of this column */
-public SqlType getSqlType()
-	{ return (SqlType)jType; }
+public JType getType()
+	{ return jType; }
 
-/** Is this a key column? */
-public boolean isKey()
-	{ return key; }
+/** Name of column in Sql */
+public String getName()
+	{ return name; }
 
-/** Default value for column when inserting new row in buffers. 
- This method will be overridden. */
-public Object getDefault()
-	{ return null; }
+public String getLabel()
+	{ return label; }
+
 
 // ====================================================================
 // Convenience Functions
 /** Convenience function */
-public String toSql(Object o) { return ((SqlType)jType).toSql(o); }
+public java.util.TimeZone getTimeZone() { return ((JDateType)getType()).getTimeZone(); }
+/** Convenience function */
+public JDateType getJDateType() { return ((JDateType)getType()); }
+/** Convenience function */
+public java.util.Date newDate() { return getJDateType().truncate(new java.util.Date()); }
 
 
 }

@@ -105,6 +105,12 @@ Maker maker;
 			citibob.swing.calendar.JCalendarDateOnly.class);
 	}});
 
+	// Short class names
+	this.addMaker(Class.class, new DefaultSwingerMap.Maker() {
+	public Swinger newSwinger(JType jType) {
+		return new TypedTextSwinger(new JavaJType(Class.class), new ClassSFormat());
+	}});
+	
 	// =========== JTypes
 	this.addMaker(JEnum.class, new DefaultSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {

@@ -106,7 +106,7 @@ public void setKey(Object[] key)
 		SqlCol c = schema.getCol(i);
 		if (!c.isKey()) continue;
 		sb.append(" and " + selectTable + "." + c.getName() +
-			"=" + c.getType().toSql(key[j]));
+			"=" + c.toSql(key[j]));
 		++j;
 	}
 	setWhereClause(sb.toString());

@@ -1,7 +1,7 @@
 package citibob.gui;
 
 
-import citibob.text.AbstractSFormat;
+import citibob.text.ClassSFormat;
 import java.lang.reflect.Method;
 import java.util.prefs.Preferences;
 import javax.swing.DefaultListModel;
@@ -78,13 +78,6 @@ Preferences prefs;
 		System.exit(-1);
 	}
 
-	static class ClassSFormat extends AbstractSFormat
-	{
-		public String valueToString(Object value) throws java.text.ParseException
-		{
-			return ((Class)value).getSimpleName();
-		}
-	}
 	
 	/** This method is called from within the constructor to
 	 initialize the form.
