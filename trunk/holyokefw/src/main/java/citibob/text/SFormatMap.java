@@ -43,21 +43,21 @@ protected static interface Maker
 }
 
 
-public abstract SFormat getSFormat(JType t, String colName);
+public abstract SFormat newSFormat(JType t, String colName);
 
 /** Create SFormat for an entire set of columns */
-public SFormat[] getSFormats(JTypeTableModel model)
+public SFormat[] newSFormats(JTypeTableModel model)
 {
 	int n = model.getColumnCount();
 	SFormat[] sfmt = new SFormat[n];
-	for (int i=0; i<n; ++i) sfmt[i] = getSFormat(model.getJType(0, i), model.getColumnName(i));
+	for (int i=0; i<n; ++i) sfmt[i] = newSFormat(model.getJType(0, i), model.getColumnName(i));
 	return sfmt;
 }
 
 /** Create SFormat for an entire set of columns
 @param scol names of columns for exceptions.
 @param sfmt The exceptions for those columns. */
-public SFormat[] getSFormats(JTypeTableModel model,
+public SFormat[] newSFormats(JTypeTableModel model,
 String[] scol, SFormat[] SFormats)
 {
 	int n = model.getColumnCount();
@@ -72,7 +72,7 @@ String[] scol, SFormat[] SFormats)
 	
 	// Fill in defaults
 	for (int i=0; i<n; ++i) if (sfmt2[i] == null) {
-		sfmt2[i] = getSFormat(model.getJType(0, i), model.getColumnName(i));
+		sfmt2[i] = newSFormat(model.getJType(0, i), model.getColumnName(i));
 	}
 
 	return sfmt2;

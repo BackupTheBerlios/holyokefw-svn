@@ -59,7 +59,7 @@ private SFormat getSFormatObj(Object o, JType t)
 }
 
 /** Gets a new SFormat for a cell of a certain type, depending on whether or not it is editable. */
-public SFormat getSFormat(JType t, String colName)
+public SFormat newSFormat(JType t, String colName)
 //public SFormat newSFormat(JType t, boolean editable)
 {
 	// Try by name

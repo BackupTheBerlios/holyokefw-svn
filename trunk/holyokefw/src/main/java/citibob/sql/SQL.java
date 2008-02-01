@@ -175,7 +175,7 @@ public static void addColumns(ConsSqlQuery sql, HashMap v, Schema schema)
 {
 	int ncol = schema.getColCount();
 	for (int i=0; i<ncol; ++i) {
-		SqlCol col = schema.getCol(i);
+		SqlCol col = (SqlCol)schema.getCol(i);
 		Object val = v.get(col.getName());
 		if (val == null) val = col.getDefault();
 		if (val == null) continue;

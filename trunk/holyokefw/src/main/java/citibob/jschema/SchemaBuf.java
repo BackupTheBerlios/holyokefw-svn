@@ -53,7 +53,7 @@ private SqlRow2 newRow()
 	
 	// Put in default values
 	for (int i=0; i<n; ++i) {
-		row.data[i] = schema.getCol(i).getDefault();
+		row.data[i] = ((SqlCol)schema.getCol(i)).getDefault();
 	}
 	
 	return row;
@@ -128,7 +128,7 @@ public int addRowNoFire(ResultSet rs, int rowIndex, int[] colmap) throws SQLExce
 	for (int rscol = 0; rscol < colmap.length; ++rscol) {
 		int scol = colmap[rscol];
 		if (scol < 0) continue;
-		SqlCol col = schema.getCol(scol);
+		SqlCol col = (SqlCol)schema.getCol(scol);
 		row.data[scol] = col.getSqlType().get(rs, col.getName()); //xyzqqq
 		row.origData[scol] = row.data[scol];
 	}
@@ -195,7 +195,7 @@ public void getUpdateCols(int row, ConsSqlQuery q, boolean updateUnchanged, Sche
 	for (int qcol = 0; qcol < qs.schema.getColCount(); ++qcol) {
 		int col = qs.schemaMap[qcol];
 		if (col < 0) continue;		// Query wants to write a column not in our data set
-		SqlCol qc = qs.schema.getCol(qcol);
+		SqlCol qc = (SqlCol)qs.schema.getCol(qcol);
 
 		Object origData = r.origData[col];
 		Object curData = r.data[col];
@@ -212,7 +212,7 @@ public void getInsertCols(int row, ConsSqlQuery q, boolean insertUnchanged, Sche
 	for (int qcol = 0; qcol < qs.schema.getColCount(); ++qcol) {
 		int col = qs.schemaMap[qcol];
 		if (col < 0) continue;		// Query wants to write a column not in our data set
-		SqlCol qc = qs.schema.getCol(qcol);
+		SqlCol qc = (SqlCol)qs.schema.getCol(qcol);
 
 		Object origData = r.origData[col];
 		Object curData = r.data[col];
@@ -235,7 +235,7 @@ public void getWhereKey(int row, ConsSqlQuery q, SchemaInfo qs)
 	for (int qcol = 0; qcol < qs.schema.getColCount(); ++qcol) {
 		int col = qs.schemaMap[qcol];
 		if (col < 0) continue;		// Query wants to write a column not in our data set
-		SqlCol qc = qs.schema.getCol(qcol);
+		SqlCol qc = (SqlCol)qs.schema.getCol(qcol);
 
 		if (qc.isKey()) {
 			q.addWhereClause(qs.table + "." + qc.getName() + " = " +
@@ -260,7 +260,7 @@ public void getSelectCols(ConsSqlQuery q, String asName)
 	for (int qcol = 0; qcol < schema.getColCount(); ++qcol) {
 		int col = qcol;
 		if (col < 0) continue;		// Query wants to write a column not in our data set
-		SqlCol qc = schema.getCol(qcol);
+		SqlCol qc = (SqlCol)schema.getCol(qcol);
 
 		q.addColumn(asName + "." + qc.getName() + " as " + qc.getName());
 	}
@@ -457,7 +457,7 @@ public boolean isKey(int col)
 {
 	int ncol = getSchemaColumnCount();
 	if (col >= ncol) return false;
-	return schema.getCol(col).isKey();
+	return ((SqlCol)schema.getCol(col)).isKey();
 }
 /** Allow editing of all non-key fields. */
 public boolean isCellEditable(int row, int col)

@@ -35,6 +35,7 @@ import java.awt.Component;
 import citibob.sql.*;
 import java.util.prefs.*;
 import citibob.app.*;
+import citibob.jschema.SqlCol;
 import citibob.swing.prefs.*;
 
 /**
@@ -118,7 +119,7 @@ protected boolean reallyCancel() throws Exception
 
 protected String vsql(Object val, String col, citibob.jschema.Schema schema)
 {
-	return schema.getCol(col).getType().toSql(val);
+	return ((SqlCol)schema.getCol(col)).toSql(val);
 }
 protected String vsql(String col, citibob.jschema.Schema schema)
 {

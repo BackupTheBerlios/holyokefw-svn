@@ -56,8 +56,8 @@ public String getDefaultTable() { return schema.getDefaultTable(); }
 public int getColCount() { return cols.length; }
 
 /** Retrieve info on a column by number. */
-public SqlCol getCol(int colNo) { return schema.getCol(cols[colNo]); }
-public SqlCol getCol(String name)
+public Column getCol(int colNo) { return schema.getCol(cols[colNo]); }
+public Column getCol(String name)
 	{ return schema.getCol(name); }
 
 /** Retrieve a column's index by name. */
