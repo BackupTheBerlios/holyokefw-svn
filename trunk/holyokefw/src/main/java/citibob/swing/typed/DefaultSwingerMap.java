@@ -87,10 +87,10 @@ public Swinger newSwinger(JType t, String colName)
 	// or on its underlying Java Class (for JavaJType)
 	Class klass = t.getClass();
 	if (klass == JavaJType.class) klass = ((JavaJType) t).getObjClass();
-System.err.println("newSwinger: " + klass);
+//System.err.println("newSwinger: " + klass);
 
 	for (;;) {
-System.err.println("     trying: " + klass);
+//System.err.println("     trying: " + klass);
 		m = (Maker)makerMap.get(klass);
 		if (m != null) break;
 		klass = klass.getSuperclass();

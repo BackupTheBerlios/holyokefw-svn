@@ -50,11 +50,7 @@ throws SQLException
 	}
 	
 	// Set up data types (and key fields)
-	if (typeSchemas != null)
-	for (int i=0; i<typeSchemas.length; ++i) {
-		Schema schema = typeSchemas[i];
-		setJTypes(schema);
-	}
+	copyFrom(typeSchemas);
 
 	// Set up key fields
 	if (keyFields != null)
@@ -66,18 +62,4 @@ throws SQLException
 	
 }
 
-/** Looks for corresponding names, and sets all column types the same
- as same-named columns in schema. */
-public void setJTypes(Schema schema)
-{
-	for (int i=0; i<schema.getColCount(); ++i) {
-		SqlCol scol = (SqlCol)schema.getCol(i);
-		int j = findCol(scol.getName());
-		if (j < 0) continue;
-		SqlCol tcol = (SqlCol)this.getCol(j);
-		tcol.jType = scol.getType();
-		tcol.key = scol.isKey();
-		tcol.label = scol.getLabel();
-	}
-}
 }

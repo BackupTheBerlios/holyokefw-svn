@@ -78,4 +78,16 @@ String[] scol, SFormat[] SFormats)
 	return sfmt2;
 }
 
+/** Intelligent creation of an SFormat from a variety of different types of specificaitons. */
+public SFormat newSFormat(Object fmtSpec)
+{
+	if (fmtSpec == null) return null;
+	if (fmtSpec instanceof SFormat)
+		return (SFormat)fmtSpec;
+	if (fmtSpec instanceof JType)
+		return newSFormat((JType)fmtSpec, null);
+	if (fmtSpec instanceof Class)
+		return newSFormat(new JavaJType((Class)fmtSpec), null);
+	return newSFormat(new JavaJType(fmtSpec.getClass()), null);
+}
 }

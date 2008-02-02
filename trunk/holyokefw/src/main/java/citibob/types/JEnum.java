@@ -33,8 +33,8 @@ public class JEnum implements JType
 		this.kmodel = kmodel;
 	}
 	/** Shortcut, equal to new JEnum(new KeyedModel(objs)); */
-	public JEnum(Object[] objs) {
-		this(new KeyedModel(objs));
+	public JEnum(Object... objs) {
+		this(KeyedModel.intKeys(objs));
 	}
 	public KeyedModel getKeyedModel() { return kmodel; }
 	

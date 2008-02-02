@@ -71,8 +71,9 @@ Preferences prefs;
 				}
 			}
 		} catch(Exception e) {
+			Throwable cause = e.getCause();
 			//e.printStackTrace(System.out);
-			e.printStackTrace(System.err);
+			cause.printStackTrace(System.err);
 		}
 		System.out.println("====== Done running " + klass);
 		System.exit(-1);

@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.text;
 
 import citibob.types.KeyedModel;
+import java.util.*;
 import javax.swing.*;
 
 /**
@@ -39,11 +40,23 @@ implements citibob.text.SFormat
 {
 
 KeyedModel kmodel;
+//HashMap<String,Object> imap;		// Inverse map from what kmodel has
 String nullText;
+
+void setKmodel(KeyedModel kmodel)
+{
+	this.kmodel = kmodel;
+////	Set setx;// = kmodel.getItemMap().entrySet();
+//	for (Iterator ii = kmodel.getItemMap().entrySet().iterator(); ii.hasNext(); ) {
+//		Map.Entry e = (Map.Entry)ii.next();
+//		imap.put((String)e.getValue(), e.getKey());
+//		System.out.println("hoi");
+//	}
+}
 
 /** Creates a new instance of KeyedFormatter */
 public KeyedSFormat(KeyedModel kmodel, String nullText) {
-	this.kmodel = kmodel;
+	setKmodel(kmodel);
 	this.nullText = nullText;
 }
 public KeyedSFormat(KeyedModel kmodel) { this(kmodel, ""); }
@@ -53,7 +66,10 @@ public String getNullText() { return nullText; }
 /** Not to be used */
 public Object  stringToValue(String text)
 {
-	return null;
+	if (text == null) return null;
+	if (nullText.equals(text)) return null;
+	Object val = kmodel.getInv(text).key;
+	return val;
 }
 public String  valueToString(Object value)
 {

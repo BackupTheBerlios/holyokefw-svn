@@ -59,18 +59,23 @@ Maker maker;
 		return new JIntegerSwinger();
 	}};
 	this.addMaker(Integer.class, maker);
+	maker = new DefaultSwingerMap.Maker() {
+	public Swinger newSwinger(JType jType) {
+		return new JIntegerSwinger();
+	}};
 	this.addMaker(int.class, maker);
 	
 	// Double
 	maker = new DefaultSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
-//		DecimalFormat fmt = new DecimalFormat("#");
-//		fmt.setPositiveSuffix("m");
-//		fmt.setNegativeSuffix("m");
 		return new TypedTextSwinger(new JavaJType(Double.class), new DivDoubleSFormat());
-//		return new JDoubleSwinger(true, fmt);
 	}};
 	this.addMaker(Double.class, maker);
+	maker = new DefaultSwingerMap.Maker() {
+	public Swinger newSwinger(JType jType) {
+		return new TypedTextSwinger(new JavaJType(Double.class),
+			new NoNullSFormat(new DivDoubleSFormat(), new Double(0)));
+	}};
 	this.addMaker(double.class, maker);
 
 	// Boolean

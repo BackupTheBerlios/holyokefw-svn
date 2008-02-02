@@ -41,6 +41,7 @@ public class KeyedModel extends KeyedModelMVC
 {
 
 Map itemMap = new HashMap();	// HashMap instead of TreeMap doesn't require comparision method
+Map invMap = new HashMap();
 Vector keyList = new Vector();
 //String nullString = "<none>";
 int nextSerial = 0;
@@ -87,16 +88,21 @@ public KeyedModel.Item get(Object key)
 {
 	return (KeyedModel.Item)itemMap.get(key);
 }
-
+public KeyedModel.Item getInv(Object val)
+{
+	return (KeyedModel.Item)invMap.get(val);
+}
 protected void clear()
 {
 	itemMap.clear();
+	invMap.clear();
 	keyList.clear();
 }
 private void addItem(KeyedModel.Item oi)
 {
 	oi.serial = new Integer(nextSerial++);
 	itemMap.put(oi.key, oi);
+	invMap.put(oi.obj, oi);
 	keyList.add(oi.key);
 }
 
@@ -162,12 +168,15 @@ public void KeyedModel(SqlRunner str, String sql, String keyCol, String itemCol)
 {
 	addAllItems(str, sql, keyCol, itemCol);
 }
+//public KeyedModel(Object[] objs)
 /** Creates a KeyedModel in which key == value. */
-public KeyedModel(Object[] objs)
+public static KeyedModel sameKeys(Object[] objs)
 {
+	KeyedModel km = new KeyedModel();
 	for (int i=0; i<objs.length; ++i) {
-		addItem(objs[i], objs[i]);
+		km.addItem(objs[i], objs[i]);
 	}
+	return km;
 }
 /** items is the displayed values in the listbox. */
 public KeyedModel(Object[] keys, Object[] items)

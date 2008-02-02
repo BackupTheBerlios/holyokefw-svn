@@ -34,6 +34,13 @@ protected String table;
 //	return ls;
 //}
 
+public ConstSchema() {}
+public ConstSchema(Column[] cols, String table)
+{
+	this.cols = cols;
+	this.table = table;
+}
+
 public String getDefaultTable()
 	{ return table; }
 
@@ -54,6 +61,13 @@ public int findCol(String name)
 	}
 	return -1;
 }
+public int findColByLabel(String label)
+{
+	for (int i = 0; i < cols.length; ++i) {
+		if (cols[i].label.equals(label)) return i;
+	}
+	return -1;
+}
 
 /** Used to subclass schemas and append columns to them. */
 protected void appendCols(Column[] add)
@@ -65,6 +79,28 @@ protected void appendCols(Column[] add)
 }
 
 // ===================================================
+public void copyFrom(Schema[] typeSchemas)
+{
+	if (typeSchemas == null) return;
+	
+	for (int i=0; i<typeSchemas.length; ++i) {
+		Schema schema = typeSchemas[i];
+		copyFrom(schema);
+	}	
+}
+
+/** Looks for corresponding names, and sets all column types the same
+ as same-named columns in schema. */
+public void copyFrom(Schema schema)
+{
+	for (int i=0; i<schema.getColCount(); ++i) {
+		SqlCol scol = (SqlCol)schema.getCol(i);
+		int j = findCol(scol.getName());
+		if (j < 0) continue;
+		SqlCol tcol = (SqlCol)this.getCol(j);
+		tcol.copyFrom(scol);
+	}
+}
 
 //// ===============================================
 //private class MyColIterator implements ColIterator

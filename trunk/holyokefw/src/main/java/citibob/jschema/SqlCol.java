@@ -35,6 +35,14 @@ public SqlCol(SqlType type, String name, String label, boolean key)
 	this.key = key;
 }
 // --------------------------------------------------------------------
+/** Copies pertinent information from another column. */
+public void copyFrom(Column col)
+{
+	super.copyFrom(col);
+	SqlCol scol = (SqlCol)col;
+	key = scol.key;
+}
+
 /** Type of this column */
 public SqlType getSqlType()
 	{ return (SqlType)jType; }

@@ -29,6 +29,14 @@ protected JType jType;
 protected String name;
 protected String label;		// "Suggested label" --- built-in mapping in some cases.
 
+/** Copies pertinent information from another column. */
+public void copyFrom(Column scol)
+{
+	jType = scol.getType();
+	//key = scol.isKey();
+	label = scol.getLabel();
+}
+
 public Column(JType type, String name)
 	{ this(type, name, name); }
 public Column(JType type, String name, String label)
@@ -59,5 +67,13 @@ public JDateType getJDateType() { return ((JDateType)getType()); }
 /** Convenience function */
 public java.util.Date newDate() { return getJDateType().truncate(new java.util.Date()); }
 
+public static Column[] newColumns(String[] names)
+{
+	Column[] cols = new Column[names.length];
+	for (int i=0; i<names.length; ++i) {
+		cols[i] = new Column(null, names[i]);
+	}
+	return cols;
+}
 
 }
