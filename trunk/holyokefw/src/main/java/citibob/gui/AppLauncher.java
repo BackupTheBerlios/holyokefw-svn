@@ -2,6 +2,7 @@ package citibob.gui;
 
 
 import citibob.text.ClassSFormat;
+import java.awt.Dimension;
 import java.lang.reflect.Method;
 import java.util.prefs.Preferences;
 import javax.swing.DefaultListModel;
@@ -26,7 +27,7 @@ public class AppLauncher extends javax.swing.JFrame {
 Preferences prefs;
 
 	/** Creates new form AppLauncher */
-	public AppLauncher(Class[] classes) {
+	public AppLauncher(String projectName, Class[] classes) {
 		initComponents();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -42,7 +43,9 @@ Preferences prefs;
 			launchClass(klass);
 		}});
 
-		prefs = Preferences.userNodeForPackage(getClass()).node("AppLauncher");
+		prefs = Preferences.userRoot().node("AppLauncher").node(projectName);
+//			userNodeForPackage(getClass()).node("AppLauncher");
+		this.setSize(new Dimension(400, 600));
 		new citibob.swing.prefs.SwingPrefs().setPrefs(this, "", prefs);
 		
 		// Populate our default class from last time...
@@ -155,8 +158,8 @@ Preferences prefs;
     // End of variables declaration//GEN-END:variables
 	
 	
-public static void launch(Class[] classes) {
-	AppLauncher launcher = new AppLauncher(classes); //new Class[]{String.class, Integer.class});
+public static void launch(String projectName, Class[] classes) {
+	AppLauncher launcher = new AppLauncher(projectName, classes); //new Class[]{String.class, Integer.class});
 	launcher.setVisible(true);
 }
 }
