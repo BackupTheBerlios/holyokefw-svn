@@ -117,11 +117,11 @@ protected boolean reallyCancel() throws Exception
 	return true;
 }
 
-protected String vsql(Object val, String col, citibob.jschema.Schema schema)
+protected String vsql(Object val, String col, citibob.jschema.SqlSchema schema)
 {
 	return ((SqlCol)schema.getCol(col)).toSql(val);
 }
-protected String vsql(String col, citibob.jschema.Schema schema)
+protected String vsql(String col, citibob.jschema.SqlSchema schema)
 {
 	return vsql(v.get(col), col, schema);
 }

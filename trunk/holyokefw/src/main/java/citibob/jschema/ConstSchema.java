@@ -19,7 +19,7 @@ package citibob.jschema;
 
 import java.util.*;
 
-public class ConstSchema implements Schema
+public class ConstSchema implements SqlSchema
 {
 
 protected Column[] cols;
@@ -79,19 +79,19 @@ protected void appendCols(Column[] add)
 }
 
 // ===================================================
-public void copyFrom(Schema[] typeSchemas)
+public void copyFrom(SqlSchema[] typeSchemas)
 {
 	if (typeSchemas == null) return;
 	
 	for (int i=0; i<typeSchemas.length; ++i) {
-		Schema schema = typeSchemas[i];
+		SqlSchema schema = typeSchemas[i];
 		copyFrom(schema);
 	}	
 }
 
 /** Looks for corresponding names, and sets all column types the same
  as same-named columns in schema. */
-public void copyFrom(Schema schema)
+public void copyFrom(SqlSchema schema)
 {
 	for (int i=0; i<schema.getColCount(); ++i) {
 		SqlCol scol = (SqlCol)schema.getCol(i);

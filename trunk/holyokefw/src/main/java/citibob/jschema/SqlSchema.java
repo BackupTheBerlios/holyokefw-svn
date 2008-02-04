@@ -19,12 +19,12 @@ package citibob.jschema;
 
 import java.util.*;
 
-public interface Schema
+public interface SqlSchema
 {
 	/** The table with which this schema is MOST COMMONLY used. */
 	String getDefaultTable();
 
-	/** Number of cols in this Schema */
+	/** Number of cols in this SqlSchema */
 	int getColCount();
 
 	/** Retrieve info on a column by number. */

@@ -151,7 +151,7 @@ public static void setJType(TypedWidget tw, SchemaRowModel bufRow, String colNam
 {
 	// Set the type
 	if (map != null) {
-		Schema schema = bufRow.getSchema();
+		SqlSchema schema = bufRow.getSchema();
 		int col = schema.findCol(colName);
 		if (col < 0) return;		// This widget was not meant for us
 //		if (col < 0) System.out.println("TypedWidgetBinder: Cannot find column nanmed " + colName);
@@ -241,7 +241,7 @@ public void propertyChange(java.beans.PropertyChangeEvent evt)
 	inPropertyChange = false;
 }
 // ===============================================================
-/** Binds all components in a widget tree to a (Schema, RowModel), if they implement SchemaRowBinder. */
+/** Binds all components in a widget tree to a (SqlSchema, RowModel), if they implement SchemaRowBinder. */
 public static void bindRecursive(Component c, SchemaRowModel bufRow, SwingerMap map)
 {
 	// Take care of yourself

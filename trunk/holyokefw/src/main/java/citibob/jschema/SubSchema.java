@@ -30,15 +30,15 @@ package citibob.jschema;
  *
  * @author citibob
  */
-public class SubSchema implements Schema
+public class SubSchema implements SqlSchema
 {
 
 int[] cols;	// Map from our column #s to schema's column #s
 int[] icols;	// Map from schema's col # to our col #
-Schema schema;
+SqlSchema schema;
 
 /** Creates a new instance of SubSchema */
-public SubSchema(Schema schema, String[] scols)
+public SubSchema(SqlSchema schema, String[] scols)
 {
 	this.schema = schema;
 	cols = new int[scols.length];
@@ -52,7 +52,7 @@ public SubSchema(Schema schema, String[] scols)
 /** The table with which this schema is MOST COMMONLY used. */
 public String getDefaultTable() { return schema.getDefaultTable(); }
 
-/** Number of cols in this Schema */
+/** Number of cols in this SqlSchema */
 public int getColCount() { return cols.length; }
 
 /** Retrieve info on a column by number. */

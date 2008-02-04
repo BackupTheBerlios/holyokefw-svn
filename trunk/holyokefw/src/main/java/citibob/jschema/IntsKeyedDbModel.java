@@ -61,16 +61,16 @@ public IntsKeyedDbModel(SchemaBuf sbuf, String[] keyField, boolean doInsertKeys,
 	for (int i=0; i<idValue.length; ++i) keyCol[i] = sbuf.findColumn(keyField[i]);
 	this.doInsertKeys = doInsertKeys;	
 }
-public IntsKeyedDbModel(Schema schema, String[] keyField, boolean doInsertKeys)
+public IntsKeyedDbModel(SqlSchema schema, String[] keyField, boolean doInsertKeys)
 { this(schema, keyField, doInsertKeys, null); }
-public IntsKeyedDbModel(Schema schema, String[] keyField, boolean doInsertKeys, DbChangeModel dbChange)
+public IntsKeyedDbModel(SqlSchema schema, String[] keyField, boolean doInsertKeys, DbChangeModel dbChange)
 {
 	this(new SchemaBuf(schema), keyField, doInsertKeys, dbChange);
 }
 
-public IntsKeyedDbModel(Schema schema, String[] keyField, DbChangeModel dbChange)
+public IntsKeyedDbModel(SqlSchema schema, String[] keyField, DbChangeModel dbChange)
 	{ this(schema, keyField, true, dbChange); }
-public IntsKeyedDbModel(Schema schema, String[] keyField)
+public IntsKeyedDbModel(SqlSchema schema, String[] keyField)
 	{ this(schema, keyField, null); }
 // --------------------------------------------------------------
 

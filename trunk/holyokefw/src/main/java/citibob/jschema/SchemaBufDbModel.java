@@ -62,12 +62,12 @@ protected void init(SchemaBuf sbuf, String selectTable, SchemaInfo[] updateSchem
 }
 protected SchemaBufDbModel() {}
 
-/** Uses the default table for the Schema in buf. */
+/** Uses the default table for the SqlSchema in buf. */
 public SchemaBufDbModel(SchemaBuf sbuf, SchemaInfo[] updateSchemas, DbChangeModel dbChange)
 	{ init(sbuf, sbuf.getDefaultTable(), updateSchemas, dbChange); }
 public SchemaBufDbModel(SchemaBuf sbuf, DbChangeModel dbChange)
 	{ this(sbuf, sbuf.getDefaultTable(), dbChange); }
-public SchemaBufDbModel(Schema schema, DbChangeModel dbChange)
+public SchemaBufDbModel(SqlSchema schema, DbChangeModel dbChange)
 	{ this(new SchemaBuf(schema), dbChange); }
 public SchemaBufDbModel(SchemaBuf sbuf)
 	{ this(sbuf, sbuf.getDefaultTable(), null); }
@@ -78,7 +78,7 @@ public SchemaBufDbModel(SchemaBuf sbuf, String table, DbChangeModel dbChange)
 		new SchemaInfo[] {new SchemaInfo(sbuf.getSchema(), table)},
 		dbChange);
 }
-public SchemaBufDbModel(Schema schema, String table, DbChangeModel dbChange)
+public SchemaBufDbModel(SqlSchema schema, String table, DbChangeModel dbChange)
 {
 	if (table == null) table = schema.getDefaultTable();
 	init(new SchemaBuf(schema), table,
@@ -99,7 +99,7 @@ public void setKey(Object[] key)
 {
 	if (key == null || key.length == 0) return;
 	
-	Schema schema = sbuf.getSchema();
+	SqlSchema schema = sbuf.getSchema();
 	StringBuffer sb = new StringBuffer("1=1");
 	int j = 0;
 	for (int i=0; i<schema.getColCount(); ++i) {
@@ -180,7 +180,7 @@ protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SchemaInfo q
 	}});
 	
 	/** Figure out which sequence columns in qc.schema were not inserted, and find their keys */
-	Schema schema = qs.schema;
+	SqlSchema schema = qs.schema;
 	
 	TreeMap<String,ConsSqlQuery.NVPair> inserted = new TreeMap();
 	for (ConsSqlQuery.NVPair nv : q.getColumns()) inserted.put(nv.name, nv);
@@ -209,7 +209,7 @@ protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SchemaInfo q
 protected ConsSqlQuery doSimpleUpdate(int row, SqlRunner str, SchemaInfo qs)
 {
 	SchemaBuf sb = (SchemaBuf)sbuf;
-	Schema schema = qs.schema;
+	SqlSchema schema = qs.schema;
 	
 	if (sbuf.valueChanged(row, qs.schemaMap)) {
 		ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.UPDATE);
@@ -240,7 +240,7 @@ System.out.println("doSimpleUpdate: " + sql);
 protected ConsSqlQuery doSimpleDeleteNoRemoveRow(int row, SqlRunner str, SchemaInfo qs)
 {
 	SchemaBuf sb = (SchemaBuf)sbuf;
-	Schema schema = sb.getSchema();
+	SqlSchema schema = sb.getSchema();
 
 	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.DELETE);
 	q.setMainTable(qs.table);

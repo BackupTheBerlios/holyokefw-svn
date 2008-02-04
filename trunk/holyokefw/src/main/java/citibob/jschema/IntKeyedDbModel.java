@@ -84,11 +84,11 @@ public IntKeyedDbModel(SchemaBuf buf, String keyField, DbChangeModel dbChange, P
 	this.keyCol = buf.findColumn(keyField);
 }
 
-public IntKeyedDbModel(Schema schema, String keyField)
+public IntKeyedDbModel(SqlSchema schema, String keyField)
 { this(schema, keyField, new Params()); }
-public IntKeyedDbModel(Schema schema, String keyField, Params prm)
+public IntKeyedDbModel(SqlSchema schema, String keyField, Params prm)
 { this(schema, keyField, null, prm); }
-public IntKeyedDbModel(Schema schema, String keyField, DbChangeModel dbChange, Params prm)
+public IntKeyedDbModel(SqlSchema schema, String keyField, DbChangeModel dbChange, Params prm)
 {
 	this(new SchemaBuf(schema), keyField, dbChange, prm);
 }

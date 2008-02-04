@@ -171,7 +171,7 @@ public static String readString(Statement st, String sql) throws SQLException
 // -----------------------------------------------------------
 /** Adds a bunch of key/value pairs to a query; this happens when we're
  making INSERT queries from Wizard data. */
-public static void addColumns(ConsSqlQuery sql, HashMap v, Schema schema)
+public static void addColumns(ConsSqlQuery sql, HashMap v, SqlSchema schema)
 {
 	int ncol = schema.getColCount();
 	for (int i=0; i<ncol; ++i) {
@@ -183,7 +183,7 @@ public static void addColumns(ConsSqlQuery sql, HashMap v, Schema schema)
 	}
 }
 
-public static ConsSqlQuery newInsertQuery(String mainTable, HashMap v, Schema schema)
+public static ConsSqlQuery newInsertQuery(String mainTable, HashMap v, SqlSchema schema)
 {
 	ConsSqlQuery sql = new ConsSqlQuery(mainTable, ConsSqlQuery.INSERT);
 	addColumns(sql, v, schema);

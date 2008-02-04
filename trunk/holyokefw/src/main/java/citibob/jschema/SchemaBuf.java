@@ -34,14 +34,14 @@ public class SchemaBuf extends AbstractJTypeTableModel
 implements OrigTableModel
 {
 
-// Extra columns at end (so col #'s match between Schema and Model): __status__ and __rowno__
+// Extra columns at end (so col #'s match between SqlSchema and Model): __status__ and __rowno__
 static final int C_STATUS = 0;
 static final int C_ROWNO = 1;
 static final int C_COUNT = 2;
 static final String[] xtraColNames = {"__status__", "__rowno__"};
 
 /** Data model that defines the main columns */
-Schema schema;
+SqlSchema schema;
 
 // =====================================================
 // Our data storage
@@ -59,20 +59,20 @@ private SqlRow2 newRow()
 	return row;
 }
 // =====================================================
-public SchemaBuf(Schema schema)
+public SchemaBuf(SqlSchema schema)
 {
 	this.schema = schema;
 }
 
-public SchemaBuf(ResultSet rs, Schema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
+public SchemaBuf(ResultSet rs, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
 throws SQLException
 	{ this(new RSSchema(rs, typeSchemas, keyFields, tset)); }
-public SchemaBuf(SqlRunner str, String protoSql, Schema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
+public SchemaBuf(SqlRunner str, String protoSql, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
 	{ setCols(str, protoSql, typeSchemas, keyFields, tset); }
 // =====================================================
 // Unique to SchemaBuf
 /** The schema describing the columns */
-public Schema getSchema()
+public SqlSchema getSchema()
 	{ return schema; }
 
 public String getDefaultTable()
@@ -163,7 +163,7 @@ public void setRows(SqlRunner str, String sql)
 	}});
 }
 public void setCols(SqlRunner str, String sql,
-final Schema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
+final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 {
 	str.execSql(sql,new RsRunnable() {
 	public void run(SqlRunner str, ResultSet rs) throws SQLException {
@@ -173,7 +173,7 @@ final Schema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 	}});
 }
 public void setRowsAndCols(SqlRunner str, String sql,
-final Schema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
+final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 {
 	str.execSql(sql,new RsRunnable() {
 	public void run(SqlRunner str, ResultSet rs) throws SQLException {
@@ -188,7 +188,7 @@ final Schema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 // --------------------------------------------------
 /** Makes update query update column(s) represented by this object.
  @param updateUnchanged If true, update even columns that haven't been edited.
- @param qschema Schema to use for generating the query. */
+ @param qschema SqlSchema to use for generating the query. */
 public void getUpdateCols(int row, ConsSqlQuery q, boolean updateUnchanged, SchemaInfo qs)
 {
 	SqlRow2 r = (SqlRow2)rows.get(row);
@@ -357,7 +357,7 @@ for (int i = 0; i < colNames.length; ++i) System.out.println("    insertRow " + 
 		if (isKey(coli[i])) ++numKey;
 	}
 
-	// Count # of keys in Schema.  If we haven't inserted into all of them
+	// Count # of keys in SqlSchema.  If we haven't inserted into all of them
 	// assume we're using an auto-increment or default key field, and thus
 	// no key violation.
 	int fullKeyCount = 0;

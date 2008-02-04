@@ -37,7 +37,7 @@ public class RSSchema extends ConstSchema
 {
 
 /** Creates a new instance of RSSchema */
-public RSSchema(ResultSet rs, Schema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
+public RSSchema(ResultSet rs, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
 throws SQLException
 {
 	ResultSetMetaData md = rs.getMetaData();

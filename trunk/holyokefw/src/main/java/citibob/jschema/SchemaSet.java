@@ -33,6 +33,6 @@ package citibob.jschema;
  */
 public interface SchemaSet {
 	
-	public Schema get(String name);
+	public SqlSchema get(String name);
 	
 }

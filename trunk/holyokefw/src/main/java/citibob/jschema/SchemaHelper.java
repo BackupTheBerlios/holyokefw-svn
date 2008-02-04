@@ -22,12 +22,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-/** Extra methods for Schema, but not included in the interface. */
+/** Extra methods for SqlSchema, but not included in the interface. */
 public class SchemaHelper
 {
 
 /** @deprecated */
-public static void getSelectCols(Schema schema, ConsSqlQuery q, String table, String colPrefix)
+public static void getSelectCols(SqlSchema schema, ConsSqlQuery q, String table, String colPrefix)
 {
 	for (int col = 0; col < schema.getColCount(); ++col) {
 		SqlCol c = (SqlCol)schema.getCol(col);
@@ -41,7 +41,7 @@ public static void getSelectCols(Schema schema, ConsSqlQuery q, String table, St
  * or not.  For records, will call getWhereKey on children
  * (unless the record has special knowledge about itself.) */
 /** @deprecated */
-public static void getWhereKey(Schema schema, ConsSqlQuery q, String table, Object[] whereKey)
+public static void getWhereKey(SqlSchema schema, ConsSqlQuery q, String table, Object[] whereKey)
 {
 	for (int col = 0; col < schema.getColCount(); ++col) {
 		SqlCol c = (SqlCol)schema.getCol(col);
@@ -53,7 +53,7 @@ public static void getWhereKey(Schema schema, ConsSqlQuery q, String table, Obje
 }
 // ---------------------------------------------------------------------
 /** @returns map[] such that column i in a is column map[i] i b */
-public static int[] newSchemaMap(Schema a, Schema b)
+public static int[] newSchemaMap(SqlSchema a, SqlSchema b)
 {
 	int[] map = new int[a.getColCount()];
 	for (int i=0; i<a.getColCount(); ++i)
@@ -61,7 +61,7 @@ public static int[] newSchemaMap(Schema a, Schema b)
 	return map;
 }
 /** @param colPrefix a prefix used in rs, but not in b */
-public static int[] newSchemaMap(ResultSet rs, Schema b)
+public static int[] newSchemaMap(ResultSet rs, SqlSchema b)
 throws SQLException
 {
 	ResultSetMetaData md = rs.getMetaData();
@@ -71,7 +71,7 @@ throws SQLException
 		map[i] = b.findCol(md.getColumnName(i));
 	return map;
 }
-public static int[] newSchemaMap(Schema a, ResultSet rs)
+public static int[] newSchemaMap(SqlSchema a, ResultSet rs)
 throws SQLException
 {
 	int[] map = new int[a.getColCount()];

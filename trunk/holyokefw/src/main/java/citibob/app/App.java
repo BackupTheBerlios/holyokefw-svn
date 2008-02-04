@@ -71,7 +71,7 @@ public void runGui(java.awt.Component c, String[] permissionGroups, CBRunnable r
 // Type conversions, Swingers, SFormats
 /** Override this. */
 public SchemaSet getSchemaSet() { return null; }
-public Schema getSchema(String name)
+public SqlSchema getSchema(String name)
 	{ return getSchemaSet().get(name); }
 
 public SwingerMap getSwingerMap() { return null; }

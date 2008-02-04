@@ -25,7 +25,7 @@ private Object[] data;
 /** The "original" version of this data.  Used to see if values have changed. */
 private Object[] origData;
 
-public Row(Schema s, int ncols)
+public Row(SqlSchema s, int ncols)
 {
 	data = new Object[ncols];
 	origData = new Object[ncols];

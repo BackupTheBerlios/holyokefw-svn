@@ -19,14 +19,14 @@ package citibob.jschema;
 
 import citibob.swing.RowModel;
 
- /** A row model that is attached to data associated with one Schema.
+ /** A row model that is attached to data associated with one SqlSchema.
   * The columns in the RowModel must match EXACTLY the columns in the schema.
   * Thus, schema.findCol() returns column indices that are relevant
   * to the SchemaRowModel.
   * NOTE: (x instanceof SchemaRowModel) ==> (x instanceof TableRowModel) */
 public interface SchemaRowModel extends RowModel
 {
-	Schema getSchema();
+	SqlSchema getSchema();
 	Object getOrigValue(int col);
 	int getCurRow();
 }
