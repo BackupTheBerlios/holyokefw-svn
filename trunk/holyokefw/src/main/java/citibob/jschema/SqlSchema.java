@@ -23,5 +23,5 @@ public interface SqlSchema extends Schema
 {
 	/** The table with which this schema is MOST COMMONLY used. */
 	String getDefaultTable();
-
+ 
 }
