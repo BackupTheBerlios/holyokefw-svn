@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  *
  * @author fiscrob
  */
-public class PojoSchema extends ConstSqlSchema
+public class PojoSchema extends ConstSchema
 {
 	
 Class klass;		// Class from which this Schema was made
@@ -22,7 +22,6 @@ public Class getKlass() { return klass; }
 public PojoSchema(Class klass)
 {
 	this.klass = klass;
-	super.table = klass.getName();
 	Field[] fields = klass.getFields();
 	super.cols = new Column[fields.length];
 	for (int i=0; i<fields.length; ++i) {
