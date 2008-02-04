@@ -19,9 +19,27 @@ package citibob.jschema;
 
 import java.util.*;
 
-public interface SqlSchema extends Schema
+public interface Schema
 {
-	/** The table with which this schema is MOST COMMONLY used. */
-	String getDefaultTable();
+	/** Number of cols in this SqlSchema */
+	int getColCount();
+
+	/** Retrieve info on a column by number. */
+	Column getCol(int colNo);
+	Column getCol(String name);
+	
+//	ColIterator colIterator();
+
+	/** Retrieve a column's index by name. */
+	int findCol(String name);
+
+	/** This might be more useful... */
+	// ColumnIterator colIterator();
+
+	/** Gets a set of prototype values for the columns, of the given types.  This is used to properly set table display parameters in Swing. */
+//	List getPrototypes();
+
+//void getWhereKey(SqlQuery q, String table, Object[] whereKey);
+//void getSelectCols(SqlQuery q, String table);
 
 }

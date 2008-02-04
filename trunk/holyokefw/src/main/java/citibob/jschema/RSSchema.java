@@ -33,7 +33,7 @@ import java.sql.*;
  *
  * @author citibob
  */
-public class RSSchema extends ConstSchema
+public class RSSchema extends ConstSqlSchema
 {
 
 /** Creates a new instance of RSSchema */

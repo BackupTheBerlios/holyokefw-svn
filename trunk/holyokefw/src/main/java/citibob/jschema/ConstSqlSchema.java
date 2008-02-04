@@ -19,9 +19,35 @@ package citibob.jschema;
 
 import java.util.*;
 
-public interface SqlSchema extends Schema
+public class ConstSqlSchema
+extends ConstSchema
+implements SqlSchema
 {
-	/** The table with which this schema is MOST COMMONLY used. */
-	String getDefaultTable();
+
+protected String table;
+
+//public List getPrototypes()
+//{
+//	ArrayList ls = new ArrayList(cols.length);
+//	for (int i = 0; i < cols.length; ++i) {
+//		ls.add(cols[i].getType().getPrototype());
+//	}
+//	return ls;
+//}
+
+public ConstSqlSchema() {}
+/** @Deprecated */
+public ConstSqlSchema(Column[] cols, String table)
+{
+	this(table, cols);
+}
+public ConstSqlSchema(String table, Column... cols)
+{
+	this.table = table;
+	this.cols = cols;
+}
+
+public String getDefaultTable()
+	{ return table; }
 
 }

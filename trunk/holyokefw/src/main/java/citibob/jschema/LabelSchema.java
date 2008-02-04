@@ -10,7 +10,7 @@ package citibob.jschema;
  * a CSV file.
  * @author fiscrob
  */
-public class LabelSchema extends ConstSchema
+public class LabelSchema extends ConstSqlSchema
 {
 
 /** Format: namesLabels[i] = name, namesLabels[i+1] = label */
