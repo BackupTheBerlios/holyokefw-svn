@@ -296,8 +296,8 @@ public boolean valueChanged()
 // -----------------------------------------------------------
 /** Get Sql query to flush updates to database.
 * Only updates records that have changed.
- @returns true if the row was deleted from the model. */
-public boolean doUpdate(SqlRunner str, int row, SchemaInfo qs)
+ @returns status of what was done to the row (DELETED, INSERTED, CHANGED, 0) */
+public int doUpdate(SqlRunner str, int row, SchemaInfo qs)
 {
 	boolean deleted = false;
 //System.out.println("doUpdate.status(" + row + ") = " + sbuf.getStatus(row));
@@ -309,21 +309,24 @@ public boolean doUpdate(SqlRunner str, int row, SchemaInfo qs)
 		case DELETED :
 		case DELETED | CHANGED :
 			doSimpleDeleteNoRemoveRow(row, str, qs);
-			deleted = true;
-		break;
+			return DELETED;
 		case INSERTED :
-			if (insertBlankRow) doSimpleInsert(row, str, qs);
-			else sbuf.removeRow(row);
-		break;
+			if (insertBlankRow) {
+				doSimpleInsert(row, str, qs);
+				return INSERTED;
+			} else {
+				sbuf.removeRow(row);
+				return 0;
+			}
 		case INSERTED | CHANGED :
 			doSimpleInsert(row, str, qs);
-		break;
+			return INSERTED;
 		case 0 :
 		case CHANGED :	// No status bits, just a normal record
-			doSimpleUpdate(row, str, qs);
-		break;
+			SqlQuery q = doSimpleUpdate(row, str, qs);
+			return (q != null ? CHANGED : 0);
 	}
-	return deleted;
+	return 0;
 }
 // -----------------------------------------------------------
 void fireTablesWillChange(SqlRunner str)
@@ -337,19 +340,23 @@ void fireTablesWillChange(SqlRunner str)
 * if nothing has changed. */
 public void doUpdate(SqlRunner str)
 {
+	boolean changed = false;
 	for (int row = 0; row < sbuf.getRowCount(); ++row) {
-		if (doUpdateNoFireTableWillChange(str, row)) --row;
+		int status = doUpdateNoFireTableWillChange(str, row);
+		if (status != 0) changed = true;
+		if ((status & DELETED) != 0) --row;
 	}
-	fireTablesWillChange(str);
+	if (changed) fireTablesWillChange(str);
 }
-boolean doUpdateNoFireTableWillChange(SqlRunner str, int row)
+/** Returns status of what was done */
+int doUpdateNoFireTableWillChange(SqlRunner str, int row)
 {
-	boolean deleted = false;
+	int status = 0;
 	for (SchemaInfo qs : updateSchemas) {
-		if (doUpdate(str, row, qs)) deleted = true;
+		status = status | doUpdate(str, row, qs);
 	}
-	if (deleted) sbuf.removeRow(row);
-	return deleted;
+	if ((status & DELETED) != 0) sbuf.removeRow(row);
+	return status;
 }
 // -----------------------------------------------------------
 /** Get Sql query to delete current record. */

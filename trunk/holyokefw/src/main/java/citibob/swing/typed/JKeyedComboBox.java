@@ -72,6 +72,7 @@ public void setKeyedModel(KeyedModel kmodel)
 }
 public void refreshKeyedModel()
 {
+	Object val = getValue();
 	kformatter = new KeyedSFormat(kmodel);
 	Vector keyList = kmodel.getKeyList();
 	// Handle null specially if it is in our key list.
@@ -83,7 +84,10 @@ public void refreshKeyedModel()
 //System.out.println("keyList.size() = " + keyList.size());
 	DefaultComboBoxModel cmodel = new DefaultComboBoxModel(keyList);
 	super.setModel(cmodel);
-	if (keyList.size() > 0) this.setSelectedIndex(0);	// Make sure getValue() returns something
+	if (keyList.size() > 0) {
+		if (val == null) this.setSelectedIndex(0);	// Make sure getValue() returns something
+		else setSelectedItem(val);
+	}
 }
 public KeyedModel getKeyedModel()
 { return kmodel; }

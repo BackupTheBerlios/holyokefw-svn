@@ -19,7 +19,7 @@ package citibob.sql;
 
 import java.util.*;
 
-public class ConsSqlQuery
+public class ConsSqlQuery implements SqlQuery
 {
 public static final int SELECT = 0;
 public static final int INSERT = 1;

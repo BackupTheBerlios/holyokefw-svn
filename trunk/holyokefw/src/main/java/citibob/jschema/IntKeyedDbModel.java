@@ -51,6 +51,15 @@ public int getIntKey() { return idValue; }
 //	Integer I = (Integer)getSchemaBuf().getValueAt(row, keyCol);
 //	return (I == null ? -1 : I.intValue());
 //}
+// -----------------------------------------------------------
+/** Overrides to protect against int key < 0 --- meaning
+ don't select anything. */
+public void doSelect(SqlRunner str)
+{
+	if (getIntKey() >= 0) super.doSelect(str);
+	else sbuf.clear();
+}
+// -----------------------------------------------------------
 // --------------------------------------------------------------
 public static class Params {
 	public Params(boolean doInsertKeys, boolean selectAllOnNull) {
