@@ -16,39 +16,25 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
- * BaseSqlTypeFactory.java
+ * SqlOid.java
  *
- * Created on January 28, 2007, 9:25 PM
+ * Created on July 3, 2007, 10:20 PM
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
 
-package citibob.sql;
-
-import java.sql.*;
+package citibob.sql.pgsql;
 
 /**
  *
  * @author citibob
  */
-public abstract class BaseSqlTypeSet implements SqlTypeSet
+public class SqlOid extends SqlInteger
 {
-protected boolean msDates;
-public BaseSqlTypeSet(boolean msDates)
-{
-	this.msDates = msDates;
-}
-	
-public SqlType getSqlType(ResultSet rs, int col) throws SQLException
-{
-	return getSqlType(rs.getMetaData(), col);
-}
-public SqlType getSqlType(ResultSetMetaData md, int col) throws SQLException
-{
-	boolean nullable = (md.isNullable(col) != ResultSetMetaData.columnNoNulls);
-//System.out.println("col = " + col);
-	return getSqlType(md.getColumnType(col), md.getPrecision(col), md.getScale(col), nullable);
-}
+	/** Creates a new instance of SqlOid */
+	public SqlOid()
+	{ super(false);
+	}
 	
 }

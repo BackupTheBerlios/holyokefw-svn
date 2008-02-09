@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.jschema;
 
+import citibob.sql.pgsql.SqlInteger;
 import citibob.jschema.*;
-import citibob.sql.pgsql.*;
 import java.sql.*;
 import citibob.sql.*;
 //import java.util.*;

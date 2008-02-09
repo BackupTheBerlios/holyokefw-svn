@@ -36,7 +36,10 @@ public int getColCount()
 public Column getCol(int colNo)
 	{ return cols[colNo]; }
 public Column getCol(String col)
-	{ return getCol(findCol(col)); }
+{
+	int ix = findCol(col);
+	return (ix < 0 ? null : getCol(ix));
+}
 //public ColIterator colIterator()
 //	{ return new MyColIterator(); }
 

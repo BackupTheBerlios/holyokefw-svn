@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.jschema;
 
 import citibob.jschema.*;
-import citibob.sql.pgsql.*;
 import java.sql.*;
 import citibob.sql.*;
 //import java.util.*;
@@ -85,7 +84,7 @@ public void setInsertKeys(int row, ConsSqlQuery q)
 {
 	super.setInsertKeys(row, q);
 	if (doInsertKeys) for (int i=0; i<keyField.length; ++i) {
-		q.addColumn(keyField[i], SqlInteger.sql(idValue[i]));
+		q.addColumn(keyField[i], citibob.sql.ansi.SqlInteger.sql(idValue[i]));
 	}
 }
 // -----------------------------------------------------------

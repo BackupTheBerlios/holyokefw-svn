@@ -16,39 +16,34 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
- * BaseSqlTypeFactory.java
+ * TypedWidgetSTFactory.java
  *
- * Created on January 28, 2007, 9:25 PM
+ * Created on March 18, 2006, 6:14 PM
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * To change this template, choose Tools | Options and locate the template under
+ * the Source Creation and Management node. Right-click the template and choose
+ * Open. You can then make changes to the template in the Source Editor.
  */
 
-package citibob.sql;
+package citibob.swing.sql;
 
-import java.sql.*;
+import citibob.sql.*;
+import citibob.swingers.TypedTextSwinger;
+import citibob.text.StringSFormat;
+import javax.swing.text.*;
+import java.text.*;
+import citibob.swing.typed.*;
+import citibob.sql.ansi.*;
 
 /**
  *
  * @author citibob
  */
-public abstract class BaseSqlTypeSet implements SqlTypeSet
+public class SqlStringSwinger extends TypedTextSwinger
 {
-protected boolean msDates;
-public BaseSqlTypeSet(boolean msDates)
-{
-	this.msDates = msDates;
+
+/** Creates a new instance of TypedWidgetSTFactory */
+public SqlStringSwinger(SqlString sqlType) {
+	super(sqlType, new citibob.text.StringSFormat(sqlType.getLimit(), ""));
 }
-	
-public SqlType getSqlType(ResultSet rs, int col) throws SQLException
-{
-	return getSqlType(rs.getMetaData(), col);
-}
-public SqlType getSqlType(ResultSetMetaData md, int col) throws SQLException
-{
-	boolean nullable = (md.isNullable(col) != ResultSetMetaData.columnNoNulls);
-//System.out.println("col = " + col);
-	return getSqlType(md.getColumnType(col), md.getPrecision(col), md.getScale(col), nullable);
-}
-	
 }
