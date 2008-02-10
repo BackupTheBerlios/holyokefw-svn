@@ -15,16 +15,28 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package citibob.multithread;
+/*
+ * ActionRunner.java
+ *
+ * Created on January 29, 2006, 7:49 PM
+ *
+ * To change this template, choose Tools | Options and locate the template under
+ * the Source Creation and Management node. Right-click the template and choose
+ * Open. You can then make changes to the template in the Source Editor.
+ */
 
-import citibob.multithread.ExpHandler;
+package citibob.task;
 
-public class SimpleExpHandler implements ExpHandler
-{
-
-public void consume(Throwable e)
-{
-	e.printStackTrace(System.out);
-}
+/**
+ * Runs the various kinds of runnables in the current thread, and returns any exceptions.
+ * @author citibob
+ */
+public interface RawRunner {
 	
+//public void run(ERunnable r);
+//public void run(StRunnable r);
+//public void run(DbRunnable r);
+
+public Throwable doRun(CBRunnable r);
+
 }

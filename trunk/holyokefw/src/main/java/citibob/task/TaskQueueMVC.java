@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package citibob.multithread;
+package citibob.task;
 
 import java.util.*;
 import java.io.*;
@@ -24,19 +24,19 @@ public abstract class TaskQueueMVC extends Thread implements TaskRunner
 {
 public static interface Listener {
     /**  Task added to queue. */
-    public void taskAdded(CBTask t);
+    public void taskAdded(Task t);
 
 
     /**  Task removed from the queue */
-    public void taskRemoved(CBTask t);
+    public void taskRemoved(Task t);
 
 
     /**  Task being executed */
-    public void taskStarting(CBTask t);
+    public void taskStarting(Task t);
 
 
     /**  Task finished running --- exception (if any) is passed along */
-    public void taskFinished(CBTask t, Throwable e);
+    public void taskFinished(Task t, Throwable e);
 
 
     /**  Queue cleared (usually, the running task will be finished here as well.) */
@@ -45,19 +45,19 @@ public static interface Listener {
 // ======================================================
 public static class Adapter implements TaskQueueMVC.Listener {
     /**  Task added to queue. */
-    public void taskAdded(CBTask t) {}
+    public void taskAdded(Task t) {}
 
 
     /**  Task removed from the queue */
-    public void taskRemoved(CBTask t) {}
+    public void taskRemoved(Task t) {}
 
 
     /**  Task being executed */
-    public void taskStarting(CBTask t) {}
+    public void taskStarting(Task t) {}
 
 
     /**  Task finished running --- exception (if any) is passed along */
-    public void taskFinished(CBTask t, Throwable e) {}
+    public void taskFinished(Task t, Throwable e) {}
 
 
     /**  Queue cleared (usually, the running task will be finished here as well.) */
@@ -71,28 +71,28 @@ public void removeListener(TaskQueueMVC.Listener l)
 	{ listeners.remove(l); }
 
 // ======================================================
-public void fireTaskAdded(CBTask t)
+public void fireTaskAdded(Task t)
 {
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
 		TaskQueueMVC.Listener l = (TaskQueueMVC.Listener)ii.next();
 		l.taskAdded(t);
 	}
 }
-public void fireTaskRemoved(CBTask t)
+public void fireTaskRemoved(Task t)
 {
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
 		TaskQueueMVC.Listener l = (TaskQueueMVC.Listener)ii.next();
 		l.taskRemoved(t);
 	}
 }
-public void fireTaskStarting(CBTask t)
+public void fireTaskStarting(Task t)
 {
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
 		TaskQueueMVC.Listener l = (TaskQueueMVC.Listener)ii.next();
 		l.taskStarting(t);
 	}
 }
-public void fireTaskFinished(CBTask t, Throwable e)
+public void fireTaskFinished(Task t, Throwable e)
 {
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
 		TaskQueueMVC.Listener l = (TaskQueueMVC.Listener)ii.next();

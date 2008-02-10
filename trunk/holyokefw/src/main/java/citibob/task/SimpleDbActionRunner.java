@@ -15,48 +15,41 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package citibob.multithread;
+package citibob.task;
 
 import citibob.app.App;
-import citibob.swing.*;
 import citibob.sql.*;
-import java.awt.*;
 
 /**
  * Just run the CBRunnables in the current thread.  Route exceptions to the ExpHandler.
  * @author citibob
  */
-public class BusybeeDbActionRunner implements SwingActionRunner
+public class SimpleDbActionRunner implements ActionRunner
 {
 
 DbRawRunner raw;
 ExpHandler eh;
-int recursionDepth;
 
-//public ConnPool getPool() { return raw.getPool(); }
+public ConnPool getPool() { return raw.getPool(); }
 
-public BusybeeDbActionRunner(DbRawRunner raw, ExpHandler eh)
+public SimpleDbActionRunner(DbRawRunner raw, ExpHandler eh)
 {
 	this.raw = raw;
 	this.eh = eh;
 }
-public BusybeeDbActionRunner(App app, ExpHandler eh)
+public SimpleDbActionRunner(App app, ExpHandler eh)
 {
 	this(new DbRawRunner(app), eh);
 }
-public BusybeeDbActionRunner(App app)
+public SimpleDbActionRunner(App app)
 {
 	this(new DbRawRunner(app), new SimpleExpHandler());
 }
 
-public void doRun(Component component, CBRunnable rr)
+public void doRun(CBRunnable rr)
 {
-	++recursionDepth;
-	if (recursionDepth == 1) SwingUtil.setCursor(component, Cursor.WAIT_CURSOR);
 	Throwable e = raw.doRun(rr);
-	SwingUtil.setCursor(component, Cursor.DEFAULT_CURSOR);
 	if (e != null && eh != null) eh.consume(e);
-	--recursionDepth;
 }
 
 }

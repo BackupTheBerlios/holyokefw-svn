@@ -14,7 +14,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*//*
+*/
+/*
  * ERunnable.java
  *
  * Created on January 29, 2006, 7:50 PM
@@ -24,39 +25,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Open. You can then make changes to the template in the Source Editor.
  */
 
-package citibob.multithread;
+package citibob.task;
 
 /**
- * A runnable with addiontal stuff..
+ *
+ * @author citibob
  */
-public class CBTask
-{
-String name;
-CBRunnable runnable;
-java.util.Date dTime;
-String[] permissions;		// Describes who can and cannot run this task.
+public interface ERunnable extends CBRunnable {
 
-public CBTask(String name, String[] permissions, CBRunnable runnable)
-{
-	this.name = name;
-	this.runnable = runnable;
-	this.dTime = new java.util.Date();	
-	this.permissions = permissions;
-}
-public CBTask(String name, CBRunnable runnable)
-{
-	this(name, (String[])null, runnable);
-}	
-
-/** @param permissions Comma-separated list of permissions */
-public CBTask(String name, String permissions, CBRunnable runnable)
-{
-	this(name, permissions.split(","), runnable);
-}
-
-public String[] getPermissions() { return permissions; }
-public String getName() { return name; }
-public java.util.Date getDTime() { return dTime; }
-public CBRunnable getCBRunnable() { return runnable; }
-
+public void run() throws Exception;
+	
 }

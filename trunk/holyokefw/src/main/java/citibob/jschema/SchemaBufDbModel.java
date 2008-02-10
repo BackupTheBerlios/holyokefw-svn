@@ -19,7 +19,7 @@ package citibob.jschema;
 
 import java.sql.*;
 import javax.swing.event.*;
-import citibob.multithread.*;
+import citibob.task.*;
 import citibob.sql.*;
 import java.util.*;
 import citibob.jschema.log.*;
@@ -48,6 +48,7 @@ String orderClause;
 /** Convenience for subclasses */
 protected int intKey;
 protected String stringKey;
+protected Object[] key;
 
 // -------------------------------------------------------------
 protected void init(SchemaBuf sbuf, String selectTable, SchemaInfo[] updateSchemas, DbChangeModel dbChange)
@@ -97,6 +98,7 @@ public void setUpdateBufOnUpdate(boolean b) { updateBufOnUpdate = b; }
 /** This will sometimes be overridden. */
 public void setKey(Object[] key)
 {
+	this.key = key;
 	if (key == null || key.length == 0) return;
 	
 	SqlSchema schema = sbuf.getSchema();
@@ -105,6 +107,7 @@ public void setKey(Object[] key)
 	for (int i=0; i<schema.getColCount(); ++i) {
 		SqlCol c = (SqlCol)schema.getCol(i);
 		if (!c.isKey()) continue;
+//System.out.println("SchemaBufDbModel.setKey found key col " + j + ": " + c.getName());
 		sb.append(" and " + selectTable + "." + c.getName() +
 			"=" + c.toSql(key[j]));
 		++j;

@@ -20,7 +20,7 @@ package citibob.swing.html;
 
 import citibob.app.App;
 import java.util.*;
-import citibob.multithread.*;
+import citibob.task.*;
 import citibob.swing.*;
 import javax.swing.*;
 import citibob.sql.*;
@@ -35,24 +35,24 @@ implements ObjHtmlPanel.Listener
 {
 
 protected App app;
-HashMap<String,CBTask> actionMap = new HashMap();
+HashMap<String,Task> actionMap = new HashMap();
 
 
 
 public void addAction(String url,
 String name, String[] permissions, CBRunnable runnable)
 {
-	actionMap.put(url, new CBTask(name, permissions, runnable));
+	actionMap.put(url, new Task(name, permissions, runnable));
 }
 public void addAction(String url, String name, CBRunnable runnable)
 {
-	actionMap.put(url, new CBTask(name, (String[])null, runnable));
+	actionMap.put(url, new Task(name, (String[])null, runnable));
 }	
 
 /** @param permissions Comma-separated list of permissions */
 public void addAction(String url, String name, String permissions, CBRunnable runnable)
 {
-	actionMap.put(url, new CBTask(name, permissions, runnable));
+	actionMap.put(url, new Task(name, permissions, runnable));
 }
 
 
@@ -74,7 +74,7 @@ public void linkSelected(java.net.URL href, String target)
 	int slash = url.lastIndexOf('/');
 	if (slash > 0) url = url.substring(slash+1);
 	
-	CBTask t = actionMap.get(url);
+	Task t = actionMap.get(url);
 	if (t != null) app.runGui(this, t.getPermissions(), t.getCBRunnable());
 }
 }

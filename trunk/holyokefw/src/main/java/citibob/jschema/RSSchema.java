@@ -53,13 +53,17 @@ throws SQLException
 	copyFrom(typeSchemas);
 
 	// Set up key fields
-	if (keyFields != null)
-	for (int i=0; i<keyFields.length; ++i) {
-//System.out.println("Find col key field: " + keyFields[i]);
-		SqlCol col = (SqlCol)cols[findCol(keyFields[i])];
-		col.key = true;
+	if (keyFields != null) {
+		for (int i=0; i<cols.length; ++i) {
+			SqlCol col = (SqlCol)cols[i];
+			col.key = false;
+		}
+		for (int i=0; i<keyFields.length; ++i) {
+	//System.out.println("Find col key field: " + keyFields[i]);
+			SqlCol col = (SqlCol)cols[findCol(keyFields[i])];
+			col.key = true;
+		}
 	}
-	
 }
 
 }

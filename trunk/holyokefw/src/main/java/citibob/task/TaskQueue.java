@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package citibob.multithread;
+package citibob.task;
 
 import citibob.app.App;
 import java.util.*;
@@ -48,7 +48,7 @@ public void setSingleTask(boolean b)
 	this.singleTask = b;
 }
 // -------------------------------------------------------
-synchronized public void doRun(CBTask r)
+synchronized public void doRun(Task r)
 {
 //System.out.println("Adding task: " + r + "(" + r.getCBRunnable());
 	tasks.addLast(r);
@@ -58,7 +58,7 @@ synchronized public void doRun(CBTask r)
 /** Convenience function */
 public void doRun(String name, CBRunnable r)
 {
-	CBTask task = new CBTask(name, r);
+	Task task = new Task(name, r);
 	doRun(task);
 }
 public void doRun(CBRunnable r)
@@ -82,7 +82,7 @@ public void clear()
 
 public void run() {
 	for (;;) {
-		CBTask r = null;
+		Task r = null;
 
 		// Remove element from the queue
 		try {
@@ -96,7 +96,7 @@ public void run() {
 		for (;;) {
 			try {
 				synchronized(this) {
-					r = (CBTask)tasks.removeFirst();
+					r = (Task)tasks.removeFirst();
 				}
 //System.out.println("Removed task: " + r);
 				fireTaskRemoved(r);

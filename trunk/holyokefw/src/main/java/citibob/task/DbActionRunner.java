@@ -1,3 +1,5 @@
+package citibob.task;
+
 /*
 JSchema: library for GUI-based database applications
 This file Copyright (c) 2006-2007 by Robert Fischer
@@ -15,28 +17,24 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*
- * ActionRunner.java
- *
- * Created on January 29, 2006, 7:49 PM
- *
- * To change this template, choose Tools | Options and locate the template under
- * the Source Creation and Management node. Right-click the template and choose
- * Open. You can then make changes to the template in the Source Editor.
- */
-
-package citibob.multithread;
-
-/**
- * Runs the various kinds of runnables in the current thread, and returns any exceptions.
- * @author citibob
- */
-public interface RawRunner {
-	
-//public void run(ERunnable r);
-//public void run(StRunnable r);
-//public void run(DbRunnable r);
-
-public Throwable doRun(CBRunnable r);
-
-}
+///*
+// * DbActionRunner.java
+// *
+// * Created on February 15, 2006, 10:10 PM
+// *
+// * To change this template, choose Tools | Options and locate the template under
+// * the Source Creation and Management node. Right-click the template and choose
+// * Open. You can then make changes to the template in the Source Editor.
+// */
+//
+//package citibob.multithread;
+//
+///**
+// *
+// * @author citibob
+// */
+//public interface DbActionRunner extends ActionRunner
+//{
+//	public citibob.sql.ConnPool getPool();
+//
+//}

@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package citibob.multithread;
+package citibob.task;
 
 /** Takes multiple result sets from one segment of a batch query. */
 public interface BatchRunnable extends CBRunnable {

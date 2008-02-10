@@ -14,28 +14,24 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*
- * ActionRunner.java
+*//*
+ * ERunnable.java
  *
- * Created on January 29, 2006, 7:49 PM
+ * Created on January 29, 2006, 7:50 PM
  *
  * To change this template, choose Tools | Options and locate the template under
  * the Source Creation and Management node. Right-click the template and choose
  * Open. You can then make changes to the template in the Source Editor.
  */
 
-package citibob.multithread;
+package citibob.task;
 
 /**
  *
  * @author citibob
  */
-public interface ActionRunner {
+public interface DbRunnable extends CBRunnable {
 
-/** This call must be reentrant.  In other words, actionRunner.doRun() can be called recursively.  The recursive
- call to doRun() must execute and finish BEFORE the outer call.  It is incorrect for duRun() to simply put
- the runnable on a queue without checking first, as this would cause deadlock. */
-public void doRun(CBRunnable r);
-
+public void run(java.sql.Connection dbb) throws Exception;
+	
 }

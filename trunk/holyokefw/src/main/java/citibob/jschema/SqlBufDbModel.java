@@ -87,7 +87,10 @@ String[] sTypeSchemas, String[] keyFields, String[] sUpdateSchemas)
 	init(str, app, typeSchemas, keyFields, updateSchemas);
 }
 
-
+public void setKey(Object[] key)
+{
+	this.key = key;
+}
 
 /** Get Sql query to re-select current records
 * from database.  When combined with an actual

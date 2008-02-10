@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.mail;
 
-import citibob.multithread.*;
+import citibob.task.*;
 import java.io.*;
 import javax.mail.*;
 import javax.mail.internet.*;

@@ -29,7 +29,7 @@ import citibob.jschema.swing.*;
 //import citibob.jschema.swing.JSchemaWidgetTree;
 import citibob.swing.table.*;
 import citibob.swing.typed.*;
-import citibob.multithread.*;
+import citibob.task.*;
 import citibob.jschema.swing.StatusTable;
 import citibob.sql.*;
 import citibob.app.*;

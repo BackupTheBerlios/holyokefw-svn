@@ -15,24 +15,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*
- * ActionRunner.java
- *
- * Created on January 29, 2006, 7:49 PM
- *
- * To change this template, choose Tools | Options and locate the template under
- * the Source Creation and Management node. Right-click the template and choose
- * Open. You can then make changes to the template in the Source Editor.
- */
+package citibob.task;
 
-package citibob.multithread;
+import citibob.task.ExpHandler;
 
 /**
- *
- * @author citibob
+ * Collects any exceptions received...
  */
-public interface TaskRunner {
+public class CollectExpHandler
+extends java.util.LinkedList
+implements ExpHandler
+{
+	public void consume(Throwable e) { this.add(e); }
 	
-public void doRun(CBTask r);
-
 }

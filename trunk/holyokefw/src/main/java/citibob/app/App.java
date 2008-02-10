@@ -19,7 +19,7 @@ package citibob.app;
 import citibob.swing.typed.SwingerMap;
 import java.util.*;
 import citibob.sql.*;
-import citibob.multithread.*;
+import citibob.task.*;
 import citibob.mail.*;
 import citibob.jschema.*;
 import citibob.swing.prefs.*;

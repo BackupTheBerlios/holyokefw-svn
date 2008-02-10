@@ -15,17 +15,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package citibob.multithread;
+package citibob.task;
 
-import citibob.multithread.ExpHandler;
+import citibob.task.ExpHandler;
 
-/**
- * Collects any exceptions received...
- */
-public class CollectExpHandler
-extends java.util.LinkedList
-implements ExpHandler
+public class SimpleExpHandler implements ExpHandler
 {
-	public void consume(Throwable e) { this.add(e); }
+
+public void consume(Throwable e)
+{
+	e.printStackTrace(System.out);
+}
 	
 }

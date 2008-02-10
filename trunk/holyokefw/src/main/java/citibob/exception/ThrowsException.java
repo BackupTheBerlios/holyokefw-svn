@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.exception;
 
-import citibob.multithread.ExpHandler;
+import citibob.task.ExpHandler;
 
 
 /**
