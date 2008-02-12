@@ -57,8 +57,10 @@ public JTypeTableModel toTableModel(java.sql.ResultSet rs)
 throws java.sql.SQLException
 {
 	RSTableModel mod = new citibob.sql.RSTableModel(app.getSqlTypeSet());
-	mod.setColHeaders(rs);
-	mod.addAllRows(rs);
+	mod.executeQuery(rs);
+//	mod.setRowsAndCols(rs);
+//	mod.setColHeaders(rs);
+//	mod.addAllRows(rs);
 	return mod;
 }
 //public JTypeTableModel toTableModel(SqlRunner str, String sql)
@@ -325,7 +327,7 @@ public void writeCSV(StringTableModel model, Writer out) throws IOException, jav
 	for (int i=0; i<ncol; ++i) {
 		pout.print(model.getColumnName(i));
 	}
-	pout.println();
+	pout.println();	
 	
 	// Do each row
 	for (int j=0; j<model.getRowCount(); ++j) {

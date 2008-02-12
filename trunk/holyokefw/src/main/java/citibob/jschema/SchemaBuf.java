@@ -41,12 +41,12 @@ static final int C_COUNT = 2;
 static final String[] xtraColNames = {"__status__", "__rowno__"};
 
 /** Data model that defines the main columns */
-SqlSchema schema;
+Schema schema;
 
 // =====================================================
 // Our data storage
 ArrayList<SqlRow2> rows = new ArrayList();			// ArrayList<SqlRow2>
-private SqlRow2 newRow()
+protected SqlRow2 newRow()
 {
 	int n = getSchemaColumnCount();
 	SqlRow2 row = new SqlRow2(n);
@@ -63,7 +63,7 @@ public SchemaBuf(SqlSchema schema)
 {
 	this.schema = schema;
 }
-
+protected SchemaBuf() {}
 public SchemaBuf(ResultSet rs, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
 throws SQLException
 	{ this(new RSSchema(rs, typeSchemas, keyFields, tset)); }
@@ -72,11 +72,13 @@ public SchemaBuf(SqlRunner str, String protoSql, SqlSchema[] typeSchemas, String
 // =====================================================
 // Unique to SchemaBuf
 /** The schema describing the columns */
-public SqlSchema getSchema()
+public Schema getSchema()
 	{ return schema; }
+public void setSchema(Schema schema)
+	{ this.schema = schema; }
 
 public String getDefaultTable()
-	{ return schema.getDefaultTable(); }
+	{ return ((SqlSchema)schema).getDefaultTable(); }
 // --------------------------------------------------
 /** Tests whether a value in the table model has changed... */
 boolean valueChanged(SqlRow2 r, int col)
@@ -135,6 +137,30 @@ public int addRowNoFire(ResultSet rs, int rowIndex, int[] colmap) throws SQLExce
 	rows.add(rowIndex, row);
 	return rowIndex;
 }
+// -------------------------------------------------------------
+public void addNewRowsNoFire(int nrow)
+{
+	int ncol = getSchemaColumnCount();
+	for (int i=0; i<nrow; ++i) {
+		SqlRow2 row = new SqlRow2(ncol);
+		rows.add(row);
+	}	
+}
+/** Add a bunch of blank rows.  Does not set any defaults */
+public void addNewRows(int nrow)
+{
+	int firstRow = rows.size();
+	addNewRowsNoFire(nrow);
+	int lastRow = rows.size()-1;
+	if (lastRow >= firstRow) fireTableRowsInserted(firstRow, lastRow);
+
+}
+public void setRowCount(int nrow)
+{
+	if (nrow == 0) clear();
+	addNewRows(nrow - getRowCount());
+}
+// -------------------------------------------------------------
 /** Convenience function (sort of)... */
 public void addAllRowsNoFire(ResultSet rs) throws SQLException
 {
@@ -167,7 +193,7 @@ final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 {
 	str.execSql(sql,new RsRunnable() {
 	public void run(SqlRunner str, ResultSet rs) throws SQLException {
-		clear();
+		clearNoFire();
 		schema = new RSSchema(rs, typeSchemas, keyFields, tset);
 		fireTableStructureChanged();
 	}});
@@ -177,11 +203,17 @@ final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 {
 	str.execSql(sql,new RsRunnable() {
 	public void run(SqlRunner str, ResultSet rs) throws SQLException {
-		clear();
-		schema = new RSSchema(rs, typeSchemas, keyFields, tset);
-		addAllRowsNoFire(rs);
-		fireTableStructureChanged();
+		setRowsAndCols(rs, typeSchemas, keyFields, tset);
 	}});
+}
+public void setRowsAndCols(ResultSet rs,
+final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
+throws SQLException
+{
+	clearNoFire();
+	schema = new RSSchema(rs, typeSchemas, keyFields, tset);
+	addAllRowsNoFire(rs);
+	fireTableStructureChanged();
 }
 // ===============================================================
 // Implementation of SqlGen: Help with writing rows to the database
@@ -189,7 +221,7 @@ final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 /** Makes update query update column(s) represented by this object.
  @param updateUnchanged If true, update even columns that haven't been edited.
  @param qschema SqlSchema to use for generating the query. */
-public void getUpdateCols(int row, ConsSqlQuery q, boolean updateUnchanged, SchemaInfo qs)
+public void getUpdateCols(int row, ConsSqlQuery q, boolean updateUnchanged, SqlSchemaInfo qs)
 {
 	SqlRow2 r = (SqlRow2)rows.get(row);
 	for (int qcol = 0; qcol < qs.schema.getColCount(); ++qcol) {
@@ -206,7 +238,7 @@ public void getUpdateCols(int row, ConsSqlQuery q, boolean updateUnchanged, Sche
 	}
 }
 // --------------------------------------------------
-public void getInsertCols(int row, ConsSqlQuery q, boolean insertUnchanged, SchemaInfo qs)
+public void getInsertCols(int row, ConsSqlQuery q, boolean insertUnchanged, SqlSchemaInfo qs)
 {
 	SqlRow2 r = (SqlRow2)rows.get(row);
 	for (int qcol = 0; qcol < qs.schema.getColCount(); ++qcol) {
@@ -229,7 +261,7 @@ System.out.println("   getInsertCols(" + row + ", " + col + "): " + !unchanged +
  * For columns, this will just check the isKey() field and add itself
  * or not.  For records, will call getWhereKey on children
  * (unless the record has special knowledge about itself.) */
-public void getWhereKey(int row, ConsSqlQuery q, SchemaInfo qs)
+public void getWhereKey(int row, ConsSqlQuery q, SqlSchemaInfo qs)
 {
 	SqlRow2 r = (SqlRow2)rows.get(row);
 	for (int qcol = 0; qcol < qs.schema.getColCount(); ++qcol) {
@@ -266,11 +298,15 @@ public void getSelectCols(ConsSqlQuery q, String asName)
 	}
 }
 // --------------------------------------------------
+protected void clearNoFire()
+{
+	rows.clear();	
+}
 /** Clear all rows from RecSet, sets nRows() == 0 */
 public void clear()
 {
 	int oldSize = rows.size();
-	rows.clear();
+	clearNoFire();
 	if (oldSize > 0) fireTableRowsDeleted(0, oldSize - 1);
 }
 // --------------------------------------------------
@@ -420,6 +456,7 @@ throws KeyViolationException
 // --------------------------------------------------
 public int findColumn(String colName)
 {
+System.out.println("this = " + this);
 	for (int i=0; i<xtraColNames.length; ++i)
 		if (xtraColNames[i].equals(colName)) return getSchemaColumnCount()+i;
 	return schema.findCol(colName);
@@ -509,7 +546,7 @@ public Object getValueAt(int row, int col)
 }
 
 // ===================================================================
-static class SqlRow2
+protected static class SqlRow2
 {
 	/** Status bits; @see DbModel. */
 	int status = 0;

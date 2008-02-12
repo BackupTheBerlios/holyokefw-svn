@@ -38,6 +38,16 @@ public abstract class SwingTaskRunner extends TaskRunner
  call to doRun() must execute and finish BEFORE the outer call.  It is incorrect for duRun() to simply put
  the runnable on a queue without checking first, as this would cause deadlock. */
 public abstract void doRun(java.awt.Component component, CBRunnable r);
-public abstract void doRun(java.awt.Component component, Task task);
 
+public void doRun(CBRunnable r) { doRun(null, r); }
+
+public boolean doRun(java.awt.Component component, Task task)
+{
+	if (checkPermissions(task.getPermissions())) {
+		doRun(component, task.getCBRunnable());
+		return true;
+	} else {
+		return false;
+	}
+}
 }

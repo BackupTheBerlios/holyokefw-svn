@@ -23,6 +23,7 @@ import java.util.*;
 public class TaskQueue extends TaskQueueMVC
 {
 
+Thread qThread;
 boolean singleTask = false;		// ONly do 1 task at a time
 LinkedList tasks = new LinkedList();
 Thread curTask;
@@ -48,12 +49,15 @@ public void setSingleTask(boolean b)
 	this.singleTask = b;
 }
 // -------------------------------------------------------
-synchronized public void doRun(Task r)
+synchronized public boolean doRun(Task r)
 {
 //System.out.println("Adding task: " + r + "(" + r.getCBRunnable());
-	tasks.addLast(r);
-	fireTaskAdded(r);
-	this.notify();
+	if (super.checkPermissions(r.getPermissions())) {
+		tasks.addLast(r);
+		fireTaskAdded(r);
+		this.notify();
+		return true;
+	} else return false;
 }
 /** Convenience function */
 public void doRun(String name, CBRunnable r)
@@ -73,10 +77,15 @@ public void doRun(CBRunnable r)
 //	this.interrupt();
 //}
 
+public void start()
+{
+	qThread = new Thread(this);
+	qThread.start();
+}
 public void clear()
 {
 	tasks.clear();
-	this.interrupt();
+	qThread.interrupt();
 	fireQueueCleared();
 }
 

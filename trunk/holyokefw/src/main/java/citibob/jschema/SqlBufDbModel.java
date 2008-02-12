@@ -48,7 +48,7 @@ public abstract String getSelectSql(boolean proto);
 @param keyFields Which columns are key fields (beyond that as determined by typeSchemas).
 @param sinfos Schemas/Tables used to send updates back to database */
 protected void init(SqlRunner str, final App app,
-SqlSchema[] typeSchemas, String[] keyFields, final SchemaInfo[] updateSchemas)
+SqlSchema[] typeSchemas, String[] keyFields, final SqlSchemaInfo[] updateSchemas)
 {
 	final SchemaBuf sb = new SchemaBuf(str, getSelectSql(true), typeSchemas, keyFields, app.getSqlTypeSet());
 	str.execUpdate(new UpdRunnable() {
@@ -62,7 +62,7 @@ SqlSchema[] typeSchemas, String[] keyFields, final SchemaInfo[] updateSchemas)
 @param keyFields Which columns are key fields (beyond that as determined by typeSchemas).
 @param sinfos Schemas/Tables used to send updates back to database */
 public SqlBufDbModel(SqlRunner str, final App app,
-SqlSchema[] typeSchemas, String[] keyFields, final SchemaInfo[] updateSchemas)
+SqlSchema[] typeSchemas, String[] keyFields, final SqlSchemaInfo[] updateSchemas)
 	{ init(str,app,typeSchemas,keyFields,updateSchemas); }
 
 
@@ -71,7 +71,7 @@ public SqlBufDbModel(SqlRunner str, App app,
 String[] sTypeSchemas, String[] keyFields, String[] sUpdateSchemas)
 {
 	SqlSchema[] typeSchemas = null;
-	SchemaInfo[] updateSchemas = null;
+	SqlSchemaInfo[] updateSchemas = null;
 
 	if (sTypeSchemas != null) {
 		typeSchemas = new SqlSchema[sTypeSchemas.length];
@@ -79,9 +79,9 @@ String[] sTypeSchemas, String[] keyFields, String[] sUpdateSchemas)
 			typeSchemas[i] = app.getSchema(sTypeSchemas[i]);
 	}
 	if (sUpdateSchemas != null) {
-		updateSchemas = new SchemaInfo[sUpdateSchemas.length];
+		updateSchemas = new SqlSchemaInfo[sUpdateSchemas.length];
 		for (int i=0; i<updateSchemas.length; ++i)
-			updateSchemas[i] = new SchemaInfo(app.getSchema(sUpdateSchemas[i]));
+			updateSchemas[i] = new SqlSchemaInfo(app.getSchema(sUpdateSchemas[i]));
 	}
 
 	init(str, app, typeSchemas, keyFields, updateSchemas);

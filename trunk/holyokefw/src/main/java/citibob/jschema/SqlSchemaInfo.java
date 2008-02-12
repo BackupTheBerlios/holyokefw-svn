@@ -27,16 +27,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.jschema;
 
 /** Stuff going with a SqlSchema in a SchemaBuf2Writer */
-public class SchemaInfo {
+public class SqlSchemaInfo {
 	public SqlSchema schema;	// Schemas used for SQL update generation against sbuf
 	public String table;	// Tables to generate SQL for each...
 	public int[] schemaMap;	// Column i in schema = column colmap[i] in sbuf.getSchema().  User need not set.
-	public SchemaInfo(SqlSchema schema, String table) {
+	public SqlSchemaInfo(SqlSchema schema, String table) {
 		this.schema = schema;
-		if (table == null) table = schema.getDefaultTable();
+		//if (table == null) table = schema.getDefaultTable();
 		this.table = table;
 	}
-	public SchemaInfo(SqlSchema schema) {
+	public SqlSchemaInfo(SqlSchema schema) {
 		this(schema, schema.getDefaultTable());
 	}
 }

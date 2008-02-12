@@ -45,11 +45,27 @@ public class StringTableModel extends AbstractTableModel {
 
 SFormat[] formatters;		// Formatter for each column
 JTypeTableModel mod;
+int[] colMap;					// The columns we want to do
 
 public StringTableModel(JTypeTableModel mod, SFormat[] formatters)
 {
 	this.mod = mod;
 	this.formatters = formatters;
+	
+	// ColMap by default will just be non-__ columns
+	int ngood = 0;
+	for (int i=0; i<mod.getColumnCount(); ++i) {
+		String name = mod.getColumnName(i);
+		if (!name.startsWith("__")) ++ngood;
+	}
+	colMap = new int[ngood];
+	int j=0;
+	for (int i=0; i<mod.getColumnCount(); ++i) {
+		String name = mod.getColumnName(i);
+		if (!name.startsWith("__")) {
+			colMap[j++] = i;
+		}
+	}
 }
 
 
@@ -78,14 +94,15 @@ public void setSFormat(String uname, java.text.Format fmt)
 // -----------------------------------------------------------------------
 
 public int getRowCount() { return mod.getRowCount(); }
-public int getColumnCount() { return mod.getColumnCount(); }
-public String 	getColumnName(int column) { return mod.getColumnName(column); }
+public int getColumnCount() { return colMap.length; }
+public String getColumnName(int column) { return mod.getColumnName(colMap[column]); }
 public Object getValueAt(int row, int col) {
 	try {
-		return formatters[col].valueToString(mod.getValueAt(row,col));
+		int mcol = colMap[col];
+		return formatters[mcol].valueToString(mod.getValueAt(row,mcol));
 	} catch(Exception e) {
 		return e.toString();
 	}
 }
-public Class 	getColumnClass(int columnIndex) { return String.class; }
+public Class getColumnClass(int columnIndex) { return String.class; }
 }

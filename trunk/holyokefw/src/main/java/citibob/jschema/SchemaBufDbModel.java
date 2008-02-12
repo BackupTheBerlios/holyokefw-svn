@@ -37,7 +37,7 @@ DbChangeModel dbChange;
 SchemaBuf sbuf;		// The buffer -- has its own schema, to be used for SQL selects in subclass
 String selectTable = null;		// Table to use for select queries
 
-SchemaInfo[] updateSchemas;
+SqlSchemaInfo[] updateSchemas;
 /** The listener used to push updates to the database instantly (a la Access) */
 TableModelListener instantUpdateListener = null;
 //InstantUpdateListener instantUpdateListener;
@@ -51,7 +51,7 @@ protected String stringKey;
 protected Object[] key;
 
 // -------------------------------------------------------------
-protected void init(SchemaBuf sbuf, String selectTable, SchemaInfo[] updateSchemas, DbChangeModel dbChange)
+protected void init(SchemaBuf sbuf, String selectTable, SqlSchemaInfo[] updateSchemas, DbChangeModel dbChange)
 {
 	this.sbuf = sbuf;
 	this.selectTable = selectTable;
@@ -64,7 +64,7 @@ protected void init(SchemaBuf sbuf, String selectTable, SchemaInfo[] updateSchem
 protected SchemaBufDbModel() {}
 
 /** Uses the default table for the SqlSchema in buf. */
-public SchemaBufDbModel(SchemaBuf sbuf, SchemaInfo[] updateSchemas, DbChangeModel dbChange)
+public SchemaBufDbModel(SchemaBuf sbuf, SqlSchemaInfo[] updateSchemas, DbChangeModel dbChange)
 	{ init(sbuf, sbuf.getDefaultTable(), updateSchemas, dbChange); }
 public SchemaBufDbModel(SchemaBuf sbuf, DbChangeModel dbChange)
 	{ this(sbuf, sbuf.getDefaultTable(), dbChange); }
@@ -76,14 +76,14 @@ public SchemaBufDbModel(SchemaBuf sbuf, String table, DbChangeModel dbChange)
 {
 	if (table == null) table = sbuf.getDefaultTable();
 	init(sbuf, table,
-		new SchemaInfo[] {new SchemaInfo(sbuf.getSchema(), table)},
+		new SqlSchemaInfo[] {new SqlSchemaInfo((SqlSchema)sbuf.getSchema(), table)},
 		dbChange);
 }
 public SchemaBufDbModel(SqlSchema schema, String table, DbChangeModel dbChange)
 {
 	if (table == null) table = schema.getDefaultTable();
 	init(new SchemaBuf(schema), table,
-		new SchemaInfo[] {new SchemaInfo(schema, table)},
+		new SqlSchemaInfo[] {new SqlSchemaInfo(schema, table)},
 		dbChange);
 }
 
@@ -101,7 +101,7 @@ public void setKey(Object[] key)
 	this.key = key;
 	if (key == null || key.length == 0) return;
 	
-	SqlSchema schema = sbuf.getSchema();
+	Schema schema = sbuf.getSchema();
 	StringBuffer sb = new StringBuffer("1=1");
 	int j = 0;
 	for (int i=0; i<schema.getColCount(); ++i) {
@@ -147,7 +147,7 @@ public void setSelectWhere(ConsSqlQuery q)
 /** This should NOT be used by subclasses.  In general, instant update is a property
 assigned by enclosing objects --- panels that USE this DbModel.
 TODO: Make instant updates delete instantly when user hits "delete". */
-public void setInstantUpdate(ActionRunner runner, boolean instantUpdate)
+public void setInstantUpdate(TaskRunner runner, boolean instantUpdate)
 {
 	if (instantUpdate) {
 		if (instantUpdateListener == null) {
@@ -167,7 +167,7 @@ public boolean isInstantUpdate()
 }
 
 // -----------------------------------------------------------
-protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SchemaInfo qs)
+protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SqlSchemaInfo qs)
 {
 	// Put together the insert for this row
 	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.INSERT);
@@ -209,7 +209,7 @@ protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SchemaInfo q
 	return q;
 }
 // -----------------------------------------------------------
-protected ConsSqlQuery doSimpleUpdate(int row, SqlRunner str, SchemaInfo qs)
+protected ConsSqlQuery doSimpleUpdate(int row, SqlRunner str, SqlSchemaInfo qs)
 {
 	SchemaBuf sb = (SchemaBuf)sbuf;
 	SqlSchema schema = qs.schema;
@@ -240,10 +240,10 @@ System.out.println("doSimpleUpdate: " + sql);
 	}
 }
 /** Get Sql query to delete current record. */
-protected ConsSqlQuery doSimpleDeleteNoRemoveRow(int row, SqlRunner str, SchemaInfo qs)
+protected ConsSqlQuery doSimpleDeleteNoRemoveRow(int row, SqlRunner str, SqlSchemaInfo qs)
 {
 	SchemaBuf sb = (SchemaBuf)sbuf;
-	SqlSchema schema = sb.getSchema();
+	Schema schema = sb.getSchema();
 
 	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.DELETE);
 	q.setMainTable(qs.table);
@@ -283,7 +283,7 @@ public void doSelect(SqlRunner str)
 public void doInsert(SqlRunner str)
 {
 	for (int row = 0; row < sbuf.getRowCount(); ++row) {
-		for (SchemaInfo qs : updateSchemas) doSimpleInsert(row, str, qs);
+		for (SqlSchemaInfo qs : updateSchemas) doSimpleInsert(row, str, qs);
 	}
 }
 // -----------------------------------------------------------
@@ -300,7 +300,7 @@ public boolean valueChanged()
 /** Get Sql query to flush updates to database.
 * Only updates records that have changed.
  @returns status of what was done to the row (DELETED, INSERTED, CHANGED, 0) */
-public int doUpdate(SqlRunner str, int row, SchemaInfo qs)
+public int doUpdate(SqlRunner str, int row, SqlSchemaInfo qs)
 {
 	boolean deleted = false;
 //System.out.println("doUpdate.status(" + row + ") = " + sbuf.getStatus(row));
@@ -334,7 +334,7 @@ public int doUpdate(SqlRunner str, int row, SchemaInfo qs)
 // -----------------------------------------------------------
 void fireTablesWillChange(SqlRunner str)
 {
-	for (SchemaInfo qs : updateSchemas) if (dbChange != null) {
+	for (SqlSchemaInfo qs : updateSchemas) if (dbChange != null) {
 		dbChange.fireTableWillChange(str, qs.table);
 	}
 }
@@ -355,7 +355,7 @@ public void doUpdate(SqlRunner str)
 int doUpdateNoFireTableWillChange(SqlRunner str, int row)
 {
 	int status = 0;
-	for (SchemaInfo qs : updateSchemas) {
+	for (SqlSchemaInfo qs : updateSchemas) {
 		status = status | doUpdate(str, row, qs);
 	}
 	if ((status & DELETED) != 0) sbuf.removeRow(row);
@@ -366,7 +366,7 @@ int doUpdateNoFireTableWillChange(SqlRunner str, int row)
 public void doDelete(SqlRunner str)
 {
 	for (int row = 0; row < sbuf.getRowCount(); ++row) {
-		for (SchemaInfo qs : updateSchemas) {
+		for (SqlSchemaInfo qs : updateSchemas) {
 			// Only delete if this is a real record in the DB.
 			if ((sbuf.getStatus(row) & INSERTED) == 0) {
 				doSimpleDeleteNoRemoveRow(row, str, qs);
@@ -383,9 +383,9 @@ public void doClear()
 // ==============================================
 private static class InstantUpdateListener implements TableModelListener {
 //	SqlRunner str;
-	ActionRunner runner;
+	TaskRunner runner;
 	SchemaBufDbModel dbModel;
-	public InstantUpdateListener(SchemaBufDbModel dbModel, ActionRunner runner)
+	public InstantUpdateListener(SchemaBufDbModel dbModel, TaskRunner runner)
 	{
 		this.runner = runner;
 		this.dbModel = dbModel;

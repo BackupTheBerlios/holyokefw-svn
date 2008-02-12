@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.sql;
 
 import java.sql.*;
-import citibob.multithread.*;
 
 public abstract class SimpleConnPool implements ConnPool
 {

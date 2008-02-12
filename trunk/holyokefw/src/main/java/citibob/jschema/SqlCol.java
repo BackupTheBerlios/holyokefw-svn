@@ -25,6 +25,8 @@ public class SqlCol extends Column
 
 protected boolean key;
 
+public SqlCol(String name, SqlType type)
+	{ this(type, name, name, false); }
 public SqlCol(SqlType type, String name, boolean key)
 	{ this(type, name, name, key); }
 public SqlCol(SqlType type, String name)

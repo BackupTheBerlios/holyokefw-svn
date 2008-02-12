@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.sql;
 
+import citibob.jschema.Column;
+import citibob.jschema.ConstSchema;
 import citibob.swing.table.*;
 import java.sql.*;
 import javax.swing.table.*;
@@ -41,10 +43,11 @@ public abstract class AdhocOJSqlTableModel extends OuterJoinSqlTableModel
 {
 
 public AdhocOJSqlTableModel(MainSqlTableModel main, String mainJoinCol, String joinCol,
-Col[] tableCols, SqlTypeSet tset, String sql)
+Column[] tableCols, SqlTypeSet tset, String sql)
 {
 	super(main, mainJoinCol, joinCol, tset, sql);
-	setColHeaders(tableCols);
+	super.setSchema(new ConstSchema(tableCols));
+//	setColHeaders(tableCols);
 //	setColumnCount(tableCols.length);
 //System.out.println("Column Count set to " + getColumnCount());
 }
@@ -56,6 +59,8 @@ public void executeQuery(Statement st, String sql) throws SQLException
 //	for (int i=0; i<main.getRowCount(); ++i) {
 //		addRow(new Vector(getColumnCount()));
 //	}
+//	addNewRows(main.getRowCount() - getRowCount());
+	clear();
 	setRowCount(main.getRowCount());
 	ResultSet rs = null;
 	try {

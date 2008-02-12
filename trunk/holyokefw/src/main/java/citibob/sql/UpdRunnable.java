@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.sql;
 
-import citibob.multithread.*;
 
 /**
  * Runs after an update.

@@ -31,7 +31,6 @@ import citibob.swing.*;
 import citibob.jschema.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
-import citibob.multithread.*;
 import java.sql.*;
 
 /**

@@ -55,9 +55,9 @@ public citibob.gui.FrameSet getFrameSet() { return null; }
 /** Handler for all unhandled exceptions */
 public ExpHandler getExpHandler() { return null; }
 
-public ActionRunner getAppRunner() { return null; }		// Useful for some things that need it.
+public TaskRunner getAppRunner() { return null; }		// Useful for some things that need it.
 
-protected ActionRunner getGuiRunner() { return null; }
+protected TaskRunner getGuiRunner() { return null; }
 /** Runs an action started from a specific Swing component. */
 public void runGui(java.awt.Component c, CBRunnable r)
 	{ getGuiRunner().doRun(r); }

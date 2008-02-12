@@ -55,7 +55,7 @@ public Task(String permissions, CBRunnable runnable)
 }
 
 public String[] getPermissions() { return permissions; }
-public String getName() { return name; }
+//public String getName() { return name; }
 //public java.util.Date getDTime() { return dTime; }
 public CBRunnable getCBRunnable() { return runnable; }
 

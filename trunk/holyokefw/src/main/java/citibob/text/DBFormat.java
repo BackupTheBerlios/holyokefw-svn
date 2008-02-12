@@ -31,7 +31,6 @@ import citibob.types.KeyedModel;
 import javax.swing.*;
 import citibob.sql.*;
 import java.sql.*;
-import citibob.multithread.*;
 
 /**
  * An AbstractFormatter that must make a database query to do its formatting.

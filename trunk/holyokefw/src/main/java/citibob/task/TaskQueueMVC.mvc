@@ -20,7 +20,7 @@ package citibob.multithread;
 import java.util.*;
 import java.io.*;
 
-listeners TaskQueueMVC extends Thread implements TaskRunner
+listeners TaskQueueMVC extends TaskRunner implements Runnable
 {
     /** Task added to queue. */
     taskAdded(CBTask t);

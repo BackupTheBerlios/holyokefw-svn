@@ -65,7 +65,8 @@ public void doSelect(SqlRunner str)
 is no current record. */
 public void doClear()
 {
-	model.setRowCount(0);
+	model.clear();
+//	model.setRowCount(0);
 }
 /** This is read-only, so key doesn't matter. */
 public void setKey(Object[] key) {}

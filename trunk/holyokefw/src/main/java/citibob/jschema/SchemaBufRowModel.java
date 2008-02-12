@@ -39,7 +39,7 @@ ListSelectionModel. */
 		super(buf,listen);
 		schemaBuf = buf;
 	}
-	public SqlSchema getSchema()
+	public Schema getSchema()
 	{
 		SchemaBuf buf = (SchemaBuf)getTableModel();
 		return buf.getSchema();

@@ -37,6 +37,8 @@ public void copyFrom(Column scol)
 	label = scol.getLabel();
 }
 
+public Column(String name, JType type)
+	{ this(type, name); }
 public Column(JType type, String name)
 	{ this(type, name, name); }
 public Column(JType type, String name, String label)

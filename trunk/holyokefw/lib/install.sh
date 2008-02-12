@@ -7,3 +7,5 @@ mvn install:install-file  -Dfile=jooreports-2.0.0.jar -DgroupId=org.citibob.jar 
 mvn install:install-file  -Dfile=ostermillerutils_1_04_03_for_java_1_4.jar -DgroupId=org.citibob.jar -DartifactId=ostermillerutils -Dversion=1_04_03_for_java_1_4 -Dpackaging=jar -DgeneratePom=true
 
 mvn install:install-file  -Dfile=prefedit-0.7.jar -DgroupId=org.citibob.jar -DartifactId=prefedit -Dversion=0.7 -Dpackaging=jar -DgeneratePom=true
+
+mvn install:install-file  -Dfile=swing-layout-1.0.3.jar -DgroupId=net.java.dev -DartifactId=swing-layout -Dversion=1.0.3 -Dpackaging=jar -DgeneratePom=true

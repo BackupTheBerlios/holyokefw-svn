@@ -42,17 +42,17 @@ HashMap<String,Task> actionMap = new HashMap();
 public void addAction(String url,
 String name, String[] permissions, CBRunnable runnable)
 {
-	actionMap.put(url, new Task(name, permissions, runnable));
+	actionMap.put(url, new Task(permissions, runnable));
 }
 public void addAction(String url, String name, CBRunnable runnable)
 {
-	actionMap.put(url, new Task(name, (String[])null, runnable));
+	actionMap.put(url, new Task((String[])null, runnable));
 }	
 
 /** @param permissions Comma-separated list of permissions */
 public void addAction(String url, String name, String permissions, CBRunnable runnable)
 {
-	actionMap.put(url, new Task(name, permissions, runnable));
+	actionMap.put(url, new Task(permissions, runnable));
 }
 
 

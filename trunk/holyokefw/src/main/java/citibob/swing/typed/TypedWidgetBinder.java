@@ -151,7 +151,7 @@ public static void setJType(TypedWidget tw, SchemaRowModel bufRow, String colNam
 {
 	// Set the type
 	if (map != null) {
-		SqlSchema schema = bufRow.getSchema();
+		Schema schema = bufRow.getSchema();
 		int col = schema.findCol(colName);
 		if (col < 0) return;		// This widget was not meant for us
 //		if (col < 0) System.out.println("TypedWidgetBinder: Cannot find column nanmed " + colName);

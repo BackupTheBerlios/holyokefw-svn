@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.sql;
 
-import citibob.multithread.*;
 
 /** Takes multiple result sets from one segment of a batch query. */
 public interface RssRunnable extends SqlRunnable {

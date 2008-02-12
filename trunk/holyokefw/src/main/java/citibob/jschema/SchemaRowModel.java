@@ -26,7 +26,7 @@ import citibob.swing.RowModel;
   * NOTE: (x instanceof SchemaRowModel) ==> (x instanceof TableRowModel) */
 public interface SchemaRowModel extends RowModel
 {
-	SqlSchema getSchema();
+	Schema getSchema();
 	Object getOrigValue(int col);
 	int getCurRow();
 }

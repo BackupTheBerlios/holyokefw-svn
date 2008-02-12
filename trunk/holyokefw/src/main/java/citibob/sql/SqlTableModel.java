@@ -35,7 +35,7 @@ import citibob.swing.typed.*;
  */
 public class SqlTableModel extends RSTableModel
 {
-String sql;
+protected String sql;
 
 public void setSql(String sql) {this.sql = sql; }
 public String getSql() { return sql; }

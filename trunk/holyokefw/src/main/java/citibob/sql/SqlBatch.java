@@ -28,7 +28,6 @@ package citibob.sql;
 
 import citibob.app.App;
 import java.sql.*;
-import citibob.multithread.*;
 import java.util.*;
 
 /**

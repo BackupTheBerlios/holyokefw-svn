@@ -50,7 +50,7 @@ public static class ColUpdate {
 
 /** For INSERT queries only --- if we can read the WHERE clause, we can use
  this for UPDATE and DELETE queries as well. */
-public QueryLogRec(ConsSqlQuery q, SchemaInfo qc)
+public QueryLogRec(ConsSqlQuery q, SqlSchemaInfo qc)
 	{ this(q, qc, null, -1); }
 
 public QueryLogRec(ConsSqlQuery q, SqlSchema schema)
@@ -60,7 +60,7 @@ public QueryLogRec(ConsSqlQuery query, SqlSchema schema, SchemaBuf sb, int row)
 {
 	this(query, schema, null, sb, row);
 }
-public QueryLogRec(ConsSqlQuery query, SchemaInfo qs, SchemaBuf sb, int row)
+public QueryLogRec(ConsSqlQuery query, SqlSchemaInfo qs, SchemaBuf sb, int row)
 { this(query, qs.schema, qs.schemaMap, sb, row); }
 
 /** For INSERT, UPDATE and DELETE queries.

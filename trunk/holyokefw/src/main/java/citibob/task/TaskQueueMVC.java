@@ -20,7 +20,7 @@ package citibob.task;
 import java.util.*;
 import java.io.*;
 
-public abstract class TaskQueueMVC extends Thread implements TaskRunner
+public abstract class TaskQueueMVC extends TaskRunner implements Runnable
 {
 public static interface Listener {
     /**  Task added to queue. */
