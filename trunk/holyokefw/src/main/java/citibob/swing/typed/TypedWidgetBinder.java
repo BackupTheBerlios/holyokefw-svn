@@ -241,6 +241,13 @@ public void propertyChange(java.beans.PropertyChangeEvent evt)
 	inPropertyChange = false;
 }
 // ===============================================================
+/** Convenience method: make a SchemaRowModel, then bind... */
+public static void bindRecursive(Component c, SchemaBuf sb, SwingerMap map)
+{
+	SchemaBufRowModel rmodel = new SchemaBufRowModel(sb);
+	bindRecursive(c, rmodel, map);
+}
+
 /** Binds all components in a widget tree to a (SqlSchema, RowModel), if they implement SchemaRowBinder. */
 public static void bindRecursive(Component c, SchemaRowModel bufRow, SwingerMap map)
 {

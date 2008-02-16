@@ -33,7 +33,7 @@ public interface DbModel
 
 /** Changes the intrinsic key fields representing the row(s) this DbModel
  will select. */
-public void setKey(Object[] key);
+public void setKey(Object... key);
 
 /** Get Sql query to re-select current record
 * from database.  When combined with an actual

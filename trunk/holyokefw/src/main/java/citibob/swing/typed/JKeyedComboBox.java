@@ -20,6 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.swing.typed;
 //import java.text.DateFormat;
 //import java.util.Date;
+import citibob.jschema.Column;
+import citibob.jschema.Schema;
+import citibob.jschema.SchemaSet;
 import citibob.text.KeyedSFormat;
 import javax.swing.*;
 import java.util.*;
@@ -28,6 +31,8 @@ import citibob.types.KeyedModel;
 import java.awt.*;
 import java.awt.event.*;
 import citibob.sql.*;
+import citibob.types.JEnum;
+import citibob.types.JEnum;
 
 /**
  *
@@ -61,6 +66,21 @@ public JKeyedComboBox(KeyedModel kmodel)
 	setKeyedModel(kmodel);
 }
 // --------------------------------------------------------------
+/** Convenience method */
+public void setKeyedModel(JEnum jenum)
+	{ setKeyedModel(jenum.getKeyedModel()); }
+/** Convenience method: sets dropdown equal to the type of the column;
+ column must be of type JEnum. */
+public void setKeyedModel(Column col)
+	{ setKeyedModel((JEnum)col.getType()); }
+/** Convenience method: sets dropdown equal to the type of the column.
+ Column must be of type JEnum*/
+public void setKeyedModel(Schema schema, String colName)
+	{ setKeyedModel(schema.getCol(colName)); }
+public void setKeyedModel(SchemaSet sset, String schemaName, String colName)
+	{ setKeyedModel(sset.get(schemaName), colName); }
+
+
 public void setKeyedModel(KeyedModel kmodel)
 {
 	if (this.kmodel != null) {
