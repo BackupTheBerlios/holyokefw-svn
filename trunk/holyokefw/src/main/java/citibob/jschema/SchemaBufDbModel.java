@@ -96,7 +96,7 @@ public void setUpdateBufOnUpdate(boolean b) { updateBufOnUpdate = b; }
 
 // -----------------------------------------------------------
 /** This will sometimes be overridden. */
-public void setKey(Object[] key)
+public void setKey(Object... key)
 {
 	this.key = key;
 	if (key == null || key.length == 0) return;

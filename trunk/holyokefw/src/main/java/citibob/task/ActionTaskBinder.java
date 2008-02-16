@@ -45,10 +45,10 @@ public void bind(AbstractButton button, String key)
 	button.addActionListener(newListener(map.get(key)));
 }
 
-public void bind(AbstractButton button, Task task)
-{
-	button.addActionListener(newListener(task));
-}
+//public void bind(AbstractButton button, Task task)
+//{
+//	button.addActionListener(newListener(task));
+//}
 
 
 }

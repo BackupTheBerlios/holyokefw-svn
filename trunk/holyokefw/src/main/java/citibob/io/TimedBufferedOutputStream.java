@@ -22,7 +22,8 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class TimedBufferedOutputStream extends FilterOutputStream implements java.awt.event.ActionListener
+public class TimedBufferedOutputStream extends FilterOutputStream
+implements java.awt.event.ActionListener
 {
 	byte buffer[];
 	int index=0;
