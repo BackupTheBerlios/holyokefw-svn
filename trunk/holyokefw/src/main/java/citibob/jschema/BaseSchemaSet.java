@@ -32,7 +32,7 @@ import java.util.*;
  *
  * @author citibob
  */
-public class BaseSchemaSet implements SchemaSet
+public class BaseSchemaSet extends SchemaSet
 {
 
 protected TreeMap map = new TreeMap();

@@ -27,12 +27,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.jschema;
 
+import citibob.types.JEnum;
+import citibob.types.JType;
+import citibob.types.KeyedModel;
+
 /**
  *
  * @author citibob
  */
-public interface SchemaSet {
+public abstract class SchemaSet {
 	
-	public SqlSchema get(String name);
+	public abstract SqlSchema get(String name);
 	
+	/** Convenience Function */
+	public Column get(String schemaName, String colName)
+	{
+		SqlSchema schema = get(schemaName);
+		return schema.getCol(colName);
+	}
+	
+	/** Convenience Function */
+	public JType getJType(String schemaName, String colName)
+	{
+		Column col = get(schemaName, colName);
+		return col.getType();
+	}
+	
+	/** Convenience Function */
+	public KeyedModel getKeyedModel(String schemaName, String colName)
+	{
+		return ((JEnum)getJType(schemaName, colName)).getKeyedModel();
+	}
 }

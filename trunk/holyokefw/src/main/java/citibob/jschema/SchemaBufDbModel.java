@@ -24,7 +24,8 @@ import citibob.sql.*;
 import java.util.*;
 import citibob.jschema.log.*;
 
-public class SchemaBufDbModel implements TableDbModel, RowStatusConst
+public class SchemaBufDbModel extends BaseDbModel
+implements TableDbModel, RowStatusConst
 {
 QueryLogger logger;
 
@@ -46,10 +47,20 @@ String whereClause;
 String orderClause;
 
 /** Convenience for subclasses */
-protected int intKey;
-protected String stringKey;
-protected Object[] key;
+//protected int intKey;
+//protected String stringKey;
+//protected Object[] keys;
+protected int[] keyFields, invKeyFields;
 
+	/** Should we add the key field to the SQL statement when we insert records?  Generally,
+	this will be false for main tables (because they have auto-insert), and
+	true for subsidiary tables. Defaults to true. */
+	public boolean doInsertKeys = true;
+	/** Should we select entire table if key value is null? */
+	public boolean selectAllOnNull = false;
+
+public void setDoInsertKeys(boolean doInsertKeys) { this.doInsertKeys = doInsertKeys; }
+public void setSelectAllOnNull(boolean selectAllOnNull) { this.selectAllOnNull = selectAllOnNull; }
 // -------------------------------------------------------------
 protected void init(SchemaBuf sbuf, String selectTable, SqlSchemaInfo[] updateSchemas, DbChangeModel dbChange)
 {
@@ -57,6 +68,13 @@ protected void init(SchemaBuf sbuf, String selectTable, SqlSchemaInfo[] updateSc
 	this.selectTable = selectTable;
 	this.dbChange = dbChange;
 	this.updateSchemas = updateSchemas;
+
+	// Set the select key fields
+	Schema schema = sbuf.getSchema();
+	this.keyFields = new int[0];
+	invKeyFields = new int[schema.getColCount()];
+	for (int i=0; i<schema.getColCount(); ++i) invKeyFields[i] = -1;
+	
 	for (int i=0; i<updateSchemas.length; ++i) {
 		updateSchemas[i].schemaMap = SchemaHelper.newSchemaMap(updateSchemas[i].schema, sbuf.getSchema());
 	}
@@ -95,30 +113,87 @@ public void setLogger(QueryLogger logger) { this.logger = logger; }
 public void setUpdateBufOnUpdate(boolean b) { updateBufOnUpdate = b; }
 
 // -----------------------------------------------------------
-/** This will sometimes be overridden. */
-public void setKey(Object... key)
+/** Sets up which fields will be used to key this SQL statement --- should
+ generally be a subset of the key fields in the underlying schema.  Underlying
+ key fields that are constant should be set up in setWhereClause().
+ @param keyFieldNames  If null, just use key fields from schema.
+ */
+public void setSelectKeyFields(String... keyFieldNames)
 {
-	this.key = key;
-	if (key == null || key.length == 0) return;
-	
 	Schema schema = sbuf.getSchema();
-	StringBuffer sb = new StringBuffer("1=1");
-	int j = 0;
-	for (int i=0; i<schema.getColCount(); ++i) {
-		SqlCol c = (SqlCol)schema.getCol(i);
-		if (!c.isKey()) continue;
-//System.out.println("SchemaBufDbModel.setKey found key col " + j + ": " + c.getName());
-		sb.append(" and " + selectTable + "." + c.getName() +
-			"=" + c.toSql(key[j]));
-		++j;
+	if (keyFieldNames == null) {
+		// Use names from schema
+		int nkey = 0;
+		for (int i=0; i<schema.getColCount(); ++i) {
+			SqlCol col = (SqlCol)schema.getCol(i);
+			if (col.isKey()) ++nkey;
+		}
+		keyFields = new int[nkey];
+		int j=0;
+		for (int i=0; i<schema.getColCount(); ++i) {
+			SqlCol col = (SqlCol)schema.getCol(i);
+			if (col.isKey()) keyFields[j++] = i;
+		}
+	} else {
+		keyFields = new int[keyFieldNames.length];
+		for (int i=0; i<keyFieldNames.length; ++i) {
+			keyFields[i] = schema.findCol(keyFieldNames[i]);
+		}
 	}
-	setWhereClause(sb.toString());
+	// Get inverse of key fields map
+//	invKeyFields = new int[schema.getColCount()];
+	for (int i=0; i<schema.getColCount(); ++i) invKeyFields[i] = -1;
+	for (int i=0; i<keyFields.length; ++i) invKeyFields[keyFields[i]] = i;
+		
+	keys = new Object[keyFields.length];
 }
 
-/** Common convenience function, to override. */
-public void setKey(int key) {intKey = key;}
-/** Common convenience function, to override. */
-public void setKey(String key) {stringKey = key;}
+///** Sets all key fields at once */
+//public void setKeys(Object... keys)
+//	{ this.keys = keys; }
+//
+///** Sets just the first key field (most common case) */
+//public void setKey(Object key)
+//	{ keys[0] = key; }
+//
+//public void setKey(int ix, Object key)
+//	{ keys[ix] = key; }
+
+public void setKey(String name, Object key)
+{
+	int col = sbuf.getSchema().findCol(name);
+	int keycol = invKeyFields[col];
+	setKey(keycol, key);
+}
+public Object getKey(String name)
+{
+	int col = sbuf.getSchema().findCol(name);
+	int keycol = invKeyFields[col];
+	return getKey(keycol);
+}
+// -----------------------------------------------------------
+//
+//
+//	if (key == null || key.length == 0) return;
+//	
+//	Schema schema = sbuf.getSchema();
+//	StringBuffer sb = new StringBuffer("1=1");
+//	int j = 0;
+//	for (int i=0; i<schema.getColCount(); ++i) {
+//		SqlCol c = (SqlCol)schema.getCol(i);
+//		if (!c.isKey()) continue;
+////System.out.println("SchemaBufDbModel.setKey found key col " + j + ": " + c.getName());
+//		sb.append(" and " + selectTable + "." + c.getName() +
+//			"=" + c.toSql(key[j]));
+//		++j;
+//	}
+//	setWhereClause(sb.toString());
+//}
+
+///** Common convenience function, to override. */
+//public void setKey(int key) {intKey = key;}
+///** Common convenience function, to override. */
+//public void setKey(String key) {stringKey = key;}
 
 public void setWhereClause(String whereClause)
 {
@@ -134,14 +209,64 @@ will involve setting the key fields (same as setSelectWhere()),
 which are usually the same for all the same for all records
 in the SqlGenDbModel.  This method is called AFTER the rest of
 the insert query has been constructed. */
-public void setInsertKeys(int row, ConsSqlQuery sql) {}
+public void setInsertKeys(int row, ConsSqlQuery q)
+{
+	if (doInsertKeys) {
+		Schema schema = sbuf.getSchema();
+		for (int i=0; i<keyFields.length; ++i) {
+			SqlCol col = (SqlCol)schema.getCol(keyFields[i]);
+			q.addColumn(col.getName(), col.toSql(getKey(i)));
+		}
+	}	
+}
 
-/** Set the where clause for the select statement, based on current key... */
+/** Set the where clause for the select statement, based on current key
+ and current value of setWhere() and setOrder()... */
 public void setSelectWhere(ConsSqlQuery q)
 {
+	Schema schema = sbuf.getSchema();
+	StringBuffer sb = new StringBuffer("1=1");
+	for (int i=0; i<keyFields.length; ++i) {
+		Object val = getKey(i);
+		SqlCol col = (SqlCol)schema.getCol(keyFields[i]);
+		if (val == null) {
+			if (!selectAllOnNull) sb.append(
+				" and " + selectTable + "." + col.getName() + " is null");
+		} else {
+			sb.append(" and " + selectTable + "." + col.getName() +
+				"=" + col.toSql(val));
+		}
+	}
+	q.addWhereClause(sb.toString());
 	q.addWhereClause(whereClause);
 	q.addOrderClause(orderClause);
 }
+
+//
+//public void setSelectWhere(ConsSqlQuery q)
+//{
+//	super.setSelectWhere(q);
+//	if (idValue >= 0 || !prm.selectAllOnNull) q.addWhereClause(keyField + " = " + idValue);
+//}
+//public void setInsertKeys(int row, ConsSqlQuery q)
+//{
+//	super.setInsertKeys(row, q);
+//	if (prm.doInsertKeys) q.addColumn(keyField, SqlInteger.sql(idValue));
+////	q.addColumn("lastupdated", "now()");
+//}
+//
+
+
+
+
+
+
+
+
+
+
+
+
 // ===========================================================
 
 /** This should NOT be used by subclasses.  In general, instant update is a property

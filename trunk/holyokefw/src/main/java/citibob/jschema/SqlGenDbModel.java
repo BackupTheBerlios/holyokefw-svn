@@ -22,7 +22,7 @@ import citibob.sql.ConsSqlQuery;
 import javax.swing.event.*;
 import citibob.sql.*;
 
-public abstract class SqlGenDbModel implements DbModel, RowStatusConst
+public abstract class SqlGenDbModel extends BaseDbModel implements RowStatusConst
 {
 
 boolean insertBlankRow = false;

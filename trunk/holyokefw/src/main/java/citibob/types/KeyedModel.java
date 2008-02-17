@@ -92,6 +92,16 @@ public KeyedModel.Item getInv(Object val)
 {
 	return (KeyedModel.Item)invMap.get(val);
 }
+/** Given val, returns the corresponding key. */
+public Object getKey(Object val)
+{
+	return getInv(val).key;
+}
+/** Convenience method */
+public Integer getIntKey(Object val)
+{
+	return (Integer)getKey(val);
+}
 protected void clear()
 {
 	itemMap.clear();

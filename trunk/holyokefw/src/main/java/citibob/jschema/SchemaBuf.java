@@ -456,7 +456,7 @@ throws KeyViolationException
 // --------------------------------------------------
 public int findColumn(String colName)
 {
-System.out.println("this = " + this);
+//System.out.println("this = " + this);
 	for (int i=0; i<xtraColNames.length; ++i)
 		if (xtraColNames[i].equals(colName)) return getSchemaColumnCount()+i;
 	return schema.findCol(colName);

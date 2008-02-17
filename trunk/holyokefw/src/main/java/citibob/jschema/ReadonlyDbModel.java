@@ -63,5 +63,24 @@ public void doInsert(SqlRunner str) {}
 /** Get Sql query to delete current record. */
 public void doDelete(SqlRunner str) {}
 
-	
+// --------------------------------------------------------
+// No querying done, don't need to worry about key fields.
+
+public void setSelectKeyFields(String... keyFields) {}
+
+public void setKeys(Object... keys) {}
+
+/** Sets just the first key field (most common case) */
+public void setKey(Object key) {}
+
+/** Sets a given key field */
+public void setKey(int ix, Object key) {}
+
+/** Sets a given key field */
+public void setKey(String name, Object key) {}
+
+public Object getKey(int ix) { return null; }
+public Object getKey() { return null; }
+public Object getKey(String name) { return null; }
+
 }

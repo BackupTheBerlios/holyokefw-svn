@@ -26,7 +26,7 @@ import citibob.sql.*;
 public class MultiDbModel implements DbModel
 {
 
-ArrayList models = new ArrayList();
+ArrayList<DbModel> models = new ArrayList();
 
 public MultiDbModel() {}
 public MultiDbModel(DbModel[] mm) {init(mm); }
@@ -126,22 +126,55 @@ public void setKey(Object[] key)
 	}	
 }
 // ---------------------------------------------------
-protected int intKey;
-/** This method will only work if all our sub-models are IntKeyedDbModel. */
-public void setKey(Integer ID)
+//protected int intKey;
+///** This method will only work if all our sub-models are IntKeyedDbModel. */
+//public void setKey(Integer ID)
+//{
+//	intKey = (ID == null ? -1 : ID);
+////	if (ID != null) intKey = ID;
+//	setKey(new Integer[] {ID});
+//}
+///** This method will only work if all our sub-models are IntKeyedDbModel. */
+//public void setKey(int id)
+//{
+//	intKey = id;
+//	setKey(new Integer[] {id});
+//}
+//public int getIntKey()
+//{ return intKey; }
+
+
+public void setSelectKeyFields(String... keyFields)
 {
-	intKey = (ID == null ? -1 : ID);
-//	if (ID != null) intKey = ID;
-	setKey(new Integer[] {ID});
+	for (DbModel m : models) m.setSelectKeyFields(keyFields);
 }
-/** This method will only work if all our sub-models are IntKeyedDbModel. */
-public void setKey(int id)
+public void setKeys(Object... keys)
 {
-	intKey = id;
-	setKey(new Integer[] {id});
+	for (DbModel m : models) m.setKeys(keys);	
 }
-public int getIntKey()
-{ return intKey; }
+
+/** Sets just the first key field (most common case) */
+public void setKey(Object key)
+{
+	for (DbModel m : models) m.setKey(key);	
+}
+
+/** Sets a given key field */
+public void setKey(int ix, Object key)
+{
+	for (DbModel m : models) m.setKey(ix, key);
+}
+
+/** Sets a given key field */
+public void setKey(String name, Object key)
+{
+	for (DbModel m : models) m.setKey(name, key);
+}
+
+// ---------------------------------------------------
+public Object getKey(int ix) { return models.get(0).getKey(ix); }
+public Object getKey() { return models.get(0).getKey(); }
+public Object getKey(String name) { return models.get(0).getKey(name); }
 
 // ---------------------------------------------------
 /** Convenience method */

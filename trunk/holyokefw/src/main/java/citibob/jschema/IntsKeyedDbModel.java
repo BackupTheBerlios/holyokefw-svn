@@ -26,38 +26,51 @@ import citibob.sql.*;
 public class IntsKeyedDbModel extends SchemaBufDbModel
 {
 
-/** Key fields to control who gets displayed. */
-int[] idValue;
-String[] keyField;
-int[] keyCol;
+///** Key fields to control who gets displayed. */
+//int[] idValue;
+//String[] keyField;
+//int[] keyCol;
 
-/** Should we add the key field to the SQL statement when we insert records?  Generally,
-this will be false for main tables (because they have auto-insert), and
-true for subsidiary tables. Defaults to true. */
-boolean doInsertKeys;
+///** Should we add the key field to the SQL statement when we insert records?  Generally,
+//this will be false for main tables (because they have auto-insert), and
+//true for subsidiary tables. Defaults to true. */
+//boolean doInsertKeys;
 
-public void setKey(int[] idValue)
+public void setKey(int... idValue)
 {
-	for (int i=0; i<idValue.length; ++i) this.idValue[i] = idValue[i];
+	for (int i=0; i<idValue.length; ++i) setKey(i, idValue[i]);
 }
-public void setKey(Object[] key)
+public void setKey(int ix, Object value)
 {
-	for (int i=0; i<idValue.length; ++i) this.idValue[i] = (Integer)key[i];
+	if (value == null) super.setKey(ix, null);
+	else super.setKey(ix, ((Integer)value).intValue() < 0 ? null : value);
 }
 
-
-public int[] getIntsKey() { return idValue; }
+public Integer getIntKey(int ix)
+{
+	Object val = getKey(ix);
+	return (Integer)val;
+//	return (val == null ? -1 : ((Integer)val).intValue());
+}
+//public void setKey(Object[] key)
+//{
+//	for (int i=0; i<idValue.length; ++i) this.idValue[i] = (Integer)key[i];
+//}
+//
+//
+//public int[] getIntsKey() { return idValue; }
 // --------------------------------------------------------------
 public IntsKeyedDbModel(SchemaBuf buf, String[] keyField, boolean doInsertKeys)
 { this(buf, keyField, doInsertKeys, null); }
 
-public IntsKeyedDbModel(SchemaBuf sbuf, String[] keyField, boolean doInsertKeys, DbChangeModel dbChange)
+public IntsKeyedDbModel(SchemaBuf sbuf, String[] keyFields, boolean doInsertKeys, DbChangeModel dbChange)
 {
 	super(sbuf, sbuf.getDefaultTable(), dbChange);
-	this.keyField = keyField;
-	keyCol = new int[keyField.length];
-	idValue = new int[keyField.length];
-	for (int i=0; i<idValue.length; ++i) keyCol[i] = sbuf.findColumn(keyField[i]);
+	super.setSelectKeyFields(keyFields);
+////	this.keyField = keyField;
+////	keyCol = new int[keyField.length];
+////	idValue = new int[keyField.length];
+//	for (int i=0; i<idValue.length; ++i) keyCol[i] = sbuf.findColumn(keyField[i]);
 	this.doInsertKeys = doInsertKeys;	
 }
 public IntsKeyedDbModel(SqlSchema schema, String[] keyField, boolean doInsertKeys)
@@ -73,20 +86,20 @@ public IntsKeyedDbModel(SqlSchema schema, String[] keyField)
 	{ this(schema, keyField, null); }
 // --------------------------------------------------------------
 
-public void setSelectWhere(ConsSqlQuery q)
-{
-	super.setSelectWhere(q);
-	for (int i=0; i<keyField.length; ++i) {
-		q.addWhereClause(keyField[i] + " = " + idValue[i]);
-	}
-}
-public void setInsertKeys(int row, ConsSqlQuery q)
-{
-	super.setInsertKeys(row, q);
-	if (doInsertKeys) for (int i=0; i<keyField.length; ++i) {
-		q.addColumn(keyField[i], citibob.sql.ansi.SqlInteger.sql(idValue[i]));
-	}
-}
+//public void setSelectWhere(ConsSqlQuery q)
+//{
+//	super.setSelectWhere(q);
+//	for (int i=0; i<keyField.length; ++i) {
+//		q.addWhereClause(keyField[i] + " = " + idValue[i]);
+//	}
+//}
+//public void setInsertKeys(int row, ConsSqlQuery q)
+//{
+//	super.setInsertKeys(row, q);
+//	if (doInsertKeys) for (int i=0; i<keyField.length; ++i) {
+//		q.addColumn(keyField[i], citibob.sql.ansi.SqlInteger.sql(idValue[i]));
+//	}
+//}
 // -----------------------------------------------------------
 
 }
