@@ -35,7 +35,7 @@ import java.sql.*;
  *
  * @author citibob
  */
-public class Version implements Comparable
+public class Version implements Comparable<Version>
 {
 
 
@@ -80,9 +80,9 @@ public Version(int major, int minor, int rev)
 	this.rev = rev;
 }
 // ----------------------------------------------------------
-public int compareTo(Object o)
+public int compareTo(Version v)
 {
-	Version v = (Version)o;
+//	Version v = (Version)o;
 	if (major == v.major) {
 		if (minor == v.minor) {
 			return rev - v.rev;
@@ -93,10 +93,11 @@ public int compareTo(Object o)
 }
 public boolean equals(Object o)
 {
-	return (compareTo(o) == 0);
+	return (compareTo((Version)o) == 0);
 }
 // --------------------------------------------------------------
 // --------------------------------------------------------------
+/** Returns versions sorted from low to high. */
 public static Version[] getAvailablePrefVersions(Preferences prefs)
 throws BackingStoreException
 {
@@ -114,6 +115,7 @@ throws BackingStoreException
 		Version v = (Version)ii.next();
 		ret[n++] = v;
 	}
+	Arrays.sort(ret);
 	return ret;
 }
 

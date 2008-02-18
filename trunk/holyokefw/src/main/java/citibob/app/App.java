@@ -23,6 +23,7 @@ import citibob.task.*;
 import citibob.mail.*;
 import citibob.jschema.*;
 import citibob.swing.prefs.*;
+import citibob.version.Version;
 
 public abstract class App
 {
@@ -94,5 +95,11 @@ public citibob.reports.Reports getReports() { return null; }
 public TimeZone getTimeZone() { return null; }
 
 // =======================================================================
+/** Major number change indicates change in database schema.  Medium numbers
+ indicate change in GUI preferences.
+ @return
+ */
+public Version getVersion() { return null; }
+
 
 }

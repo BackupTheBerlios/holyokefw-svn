@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.mail;
 
+import citibob.app.App;
 import citibob.task.*;
 import java.io.*;
 import javax.mail.*;
@@ -40,16 +41,18 @@ import javax.swing.text.*;
  */
 public class MailExpHandler implements ExpHandler
 {
-	MailSender sender;
+//	MailSender sender;
 	InternetAddress bugRecipient;
 	String programName;
 	Document stdoutDoc;
+	App app;
 	
-	public MailExpHandler(MailSender sender, InternetAddress bugRecipient,
+	public MailExpHandler(App app, InternetAddress bugRecipient,
 	String programName, Document stdoutDoc)
 	{
 		this.stdoutDoc = stdoutDoc;
-		this.sender = sender;
+		this.app = app;
+//		this.sender = sender;
 		this.bugRecipient = bugRecipient;
 		this.programName = programName;
 	}
@@ -72,12 +75,26 @@ public class MailExpHandler implements ExpHandler
 		StringWriter ss = new StringWriter();
 		PrintWriter pw = new PrintWriter(ss);
 		e.printStackTrace(pw);
-		String msgText = outMsg + "\n\n" + ss.getBuffer().toString();
+		String msgText = 
+			"Bug in: " + programName + " " + app.getVersion() + "\n" +
+			"Version: " + app.getVersion() + "\n" +
+			"User: " + System.getProperty("user.name") + "\n" +
+			"Config Dir: " + app.getConfigDir() + "\n\n" +
+//			e.toString() + "\n" +
+			ss.getBuffer().toString() + "\n" +
+			"=================================================\n" +
+			outMsg + "\n";
 		System.out.println(pw);
 		System.err.println(msgText);
 		
+		// Get other info
+		String userName = System.getProperty("user.name");
+		
+		
 		// Let user fiddle with the stack trace
-		final MailExpDialog dialog = new MailExpDialog(null, sender, msgText,"citibob/mail");
+		final MailExpDialog dialog = new MailExpDialog(null, programName,
+			e, msgText,
+			app.userRoot().node("MailExpDialog"));
 		dialog.setVisible(true);
 		if (!dialog.getOK()) return;
 		
@@ -86,13 +103,13 @@ public class MailExpHandler implements ExpHandler
 		public void run() {
 			try {
 				// Define message
-				MimeMessage msg = new MimeMessage(sender.getSession());
+				MimeMessage msg = new MimeMessage(app.getMailSender().getSession());
 				//msg.setFrom(new InternetAddress("citibob@earthlink.net"));
 				msg.setSubject("Bug in " + programName);
 				msg.setText(dialog.getMsg());
 				msg.addRecipient(Message.RecipientType.TO, bugRecipient);
 				
-				sender.sendMessage(msg);
+				app.getMailSender().sendMessage(msg);
 			} catch(Exception ee) {
 				System.out.println("Could not send bug report!!!");
 				ee.printStackTrace(System.out);

@@ -100,7 +100,8 @@ public class JTypedFileName extends JTypedPanel
 		
 		JFileChooser fc = new JFileChooser(dir);
 		fc.addChoosableFileFilter(jType.getFilter());
-			
+		fc.setFileSelectionMode(jType.isDir() ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
+		
 		// Show open dialog; this method does not return until the dialog is closed
 		int result = fc.showOpenDialog(this);
 		if (result != JFileChooser.APPROVE_OPTION) return;

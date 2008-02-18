@@ -20,7 +20,7 @@ package citibob.sql;
 import java.sql.*;
 import java.util.*;
 
-public abstract class RealConnPool extends SimpleConnPool
+public class RealConnPool extends SimpleConnPool
 {
 
 static class DbbDate
@@ -35,6 +35,10 @@ static class DbbDate
 }
 	
 LinkedList<DbbDate> reserves = new LinkedList();	// Our reserve connections, not being used for now
+
+
+public RealConnPool(String url, Properties props)
+{ super(url, props); }
 
 //ExceptionHandler ehandler;
 //

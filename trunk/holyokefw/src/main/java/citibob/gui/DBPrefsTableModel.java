@@ -104,6 +104,8 @@ String url;
 public DBConnPool(Preferences prefs, String password)
 throws SQLException, ClassNotFoundException
 {
+	super(null, null);
+	
 	Class.forName(prefs.get(DRIVERCLASS, null));
 	props.setProperty("user", prefs.get(USER, null));
 //	props.setProperty("ssl", prefs.get(SSL, null));

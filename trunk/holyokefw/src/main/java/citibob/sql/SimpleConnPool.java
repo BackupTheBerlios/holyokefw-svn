@@ -18,9 +18,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.sql;
 
 import java.sql.*;
+import java.util.Properties;
 
 public abstract class SimpleConnPool implements ConnPool
 {
+
+String url;
+Properties props;
+
+public SimpleConnPool() {}
+
+public SimpleConnPool(String url, Properties props)
+{
+	this.url = url;
+	this.props = props;
+}
 
 //ExceptionHandler ehandler;
 //
@@ -31,7 +43,10 @@ public abstract class SimpleConnPool implements ConnPool
 
 /** Create an actual connection --- used by pool implementations, should not
  * be called by user. */
-protected abstract Connection create() throws SQLException;
+protected Connection create() throws SQLException
+{
+	return DriverManager.getConnection(url, props);
+}
 
 /** Get a connection from the pool. */
 public Connection checkout() throws SQLException

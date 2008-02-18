@@ -26,16 +26,26 @@ public class JFile implements JType
 	boolean nullable;
 	protected javax.swing.filechooser.FileFilter filter;
 	protected File defaultDir;		// Default place we'll chose from
+	boolean chooseDirs;				// true if we're selecting directories.
 	
 	public javax.swing.filechooser.FileFilter getFilter() { return filter; }
 	public File getDefaultDir() { return defaultDir; }
 	
+	public boolean isDir() { return chooseDirs; }
+	
 	/** nullText = string to use for null value, or else <null> if this is not nullable. */
-	public JFile(javax.swing.filechooser.FileFilter filter, File defaultDir, boolean nullable)
+	public JFile(javax.swing.filechooser.FileFilter filter, File defaultDir, boolean nullable,
+	boolean chooseDirs)
 	{
 		this.nullable = nullable;
 		this.filter = filter;
 		this.defaultDir = defaultDir;
+		this.chooseDirs = chooseDirs;
+	}
+	/** nullText = string to use for null value, or else <null> if this is not nullable. */
+	public JFile(javax.swing.filechooser.FileFilter filter, File defaultDir, boolean nullable)
+	{
+		this(filter, defaultDir, nullable, false);
 	}
 	
 	/** Java class used to represent this type */
