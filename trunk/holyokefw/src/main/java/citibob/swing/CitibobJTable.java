@@ -115,11 +115,21 @@ protected void setSelectedRow(Object val, int col, TableModel model)
 		return;
 	}
 	int row = rowOfValue(val, col, model);
-	if (row >= 0) {
-		this.getSelectionModel().setSelectionInterval(row,row);
-		return;
+	setSelectedRow(row);
+//	if (row >= 0) {
+//		this.getSelectionModel().setSelectionInterval(row,row);
+//		return;
+//	} else {
+//		getSelectionModel().clearSelection();
+//	}
+}
+
+public void setSelectedRow(int row)
+{
+	if (row >= 0 && row < getRowCount()) {
+		this.getSelectionModel().setSelectionInterval(row,row);		
 	} else {
-		getSelectionModel().clearSelection();
+		getSelectionModel().clearSelection();		
 	}
 }
 
