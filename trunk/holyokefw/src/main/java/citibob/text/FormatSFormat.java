@@ -47,6 +47,7 @@ public class FormatSFormat implements SFormat
 	public FormatSFormat(Format fmt, String nullText)
 	{
 		this.fmt = fmt;
+		if (nullText == null) nullText = "";
 		this.nullText = nullText;
 	}
 	public Object stringToValue(String text)  throws java.text.ParseException
