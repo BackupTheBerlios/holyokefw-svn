@@ -51,6 +51,11 @@ void init(RowModel rm, String[] colNames, int[] colMap)
 	this.rm = rm;
 	this.colNames = colNames;
 	this.colMap = colMap;
+	
+	rm.addColListener(0, new RowModel.ColAdapter() {
+	public void curRowChanged(int col) {
+		fireTableDataChanged();
+	}});
 }
 
 public RowModelTableModel(RowModel rm, String[] colNames, String[] sColMap)
