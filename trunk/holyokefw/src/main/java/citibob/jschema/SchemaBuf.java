@@ -359,6 +359,7 @@ public void undeleteAllRows()
 /** Physically remove a row from this buffer. */
 public void removeRow(int row)
 {
+	if (row < 0) return;
 	rows.remove(row);
 	fireTableRowsDeleted(row, row);
 }
