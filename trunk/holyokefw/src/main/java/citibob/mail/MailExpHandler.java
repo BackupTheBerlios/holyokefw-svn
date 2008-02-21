@@ -84,19 +84,20 @@ public class MailExpHandler implements ExpHandler
 			ss.getBuffer().toString() + "\n" +
 			"=================================================\n" +
 			outMsg + "\n";
-		System.out.println(pw);
-		System.err.println(msgText);
+		System.out.println(ss.toString());
+//		System.err.println(msgText);
 		
 		// Get other info
 		String userName = System.getProperty("user.name");
 		
 		
 		// Let user fiddle with the stack trace
+		boolean askUser = app.getProps().getProperty("mail.bugs.askuser").toLowerCase().equals("true");
 		final MailExpDialog dialog = new MailExpDialog(null, programName,
-			e, msgText,
+			e, msgText, askUser,
 			app.userRoot().node("MailExpDialog"));
 		dialog.setVisible(true);
-		if (!dialog.getOK()) return;
+		if (askUser && !dialog.isReportError()) return;
 		
 
 		new Thread() {

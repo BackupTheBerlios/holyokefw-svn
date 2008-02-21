@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.mail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.prefs.*;
 
 /**
@@ -31,35 +33,70 @@ import java.util.prefs.*;
  */
 public class MailExpDialog extends javax.swing.JDialog {
 
-boolean okPressed = false;
+boolean reportErrorPressed = false;
 
-public boolean getOK() { return okPressed; }
+public boolean isReportError() { return reportErrorPressed; }
 public String getMsg() { return taMessage.getText(); }
 
     /** Creates new form AuthenticatorDialog */
-    public MailExpDialog(java.awt.Frame parent, String progName, Throwable exp, String expText, Preferences prefNode)
+    public MailExpDialog(java.awt.Frame parent, String progName,
+	Throwable exp, String expText, boolean askUser, Preferences prefNode)
 	{
         super(parent, true);
         initComponents();
+		
+		if (!askUser) this.bReportError.setVisible(false);
+		
+		summary.setBackground(jPanel4.getBackground());
 		taMessage.setText(expText);
 		
 		summary.setText(
-			"<b>" + exp.getClass().getSimpleName() + "</b>: " + exp.getMessage() + "<br>" +
-			"<p>" + progName + " has encountered an error.  Please press \"Report Error\"" +
-			" below to help improve this application.</p>" +
+			"<p>" + progName + " has encountered an error.  " +
+			(askUser ? "Please press \"Report Error\"" +
+			" below to help improve this application." :
+			"Details will be reported, to help improve this application.") +
+			"</p><br>" +
+			"<b>" + exp.getClass().getSimpleName() + "</b>: " + exp.getMessage() +
 			"<br>");
-		
-		
-		summary.setBackground(jPanel4.getBackground());
 		pack();
 		
 		// Mess with preferences
 		this.setName("dialog");
-//		Preferences guiPrefs = Preferences.userRoot();
-//		guiPrefs = guiPrefs.node(guiNodePath);
-		new citibob.swing.prefs.SwingPrefs().setPrefs(this, prefNode);
+		if (prefNode != null) new citibob.swing.prefs.SwingPrefs().setPrefs(this, prefNode);
     }
-    
+
+	/** Really primitive version, for before we're fully initialized. */
+    public MailExpDialog(java.awt.Frame parent, String progName, Throwable exp)
+	{
+        super(parent, true);
+        initComponents();
+		summary.setBackground(jPanel4.getBackground());
+
+		bReportError.setVisible(false);
+		
+		StringWriter ss = new StringWriter();
+		PrintWriter pw = new PrintWriter(ss);
+		exp.printStackTrace(pw);
+		String expText = 
+			"User: " + System.getProperty("user.name") + "\n" +
+			ss.getBuffer().toString() + "\n";
+//		System.out.println(ss.toString());
+		taMessage.setText(expText);
+
+		
+		
+		
+		
+		summary.setText(
+			"<p>" + progName + " has encountered a fatal error.  Please notify your" +
+			" System Administrator.  You may wish to cut-and-paste the error text" +
+			" from the \"Details\" tab.</p>" +
+			"<br>" +
+			"<b>" + exp.getClass().getSimpleName() + "</b>: " + exp.getMessage() +
+			"<br>");
+		pack();
+    }
+	
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -71,8 +108,8 @@ public String getMsg() { return taMessage.getText(); }
 
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
+        bReportError = new javax.swing.JButton();
         bOK = new javax.swing.JButton();
-        bCancel = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -97,7 +134,17 @@ public String getMsg() { return taMessage.getText(); }
         jPanel2.setLayout(new java.awt.BorderLayout());
         getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
 
-        bOK.setText("Report Error");
+        bReportError.setText("Report Error");
+        bReportError.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                bReportErrorActionPerformed(evt);
+            }
+        });
+        jPanel1.add(bReportError);
+
+        bOK.setText("OK");
         bOK.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -106,16 +153,6 @@ public String getMsg() { return taMessage.getText(); }
             }
         });
         jPanel1.add(bOK);
-
-        bCancel.setText("Cancel");
-        bCancel.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                bCancelActionPerformed(evt);
-            }
-        });
-        jPanel1.add(bCancel);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
@@ -142,24 +179,26 @@ public String getMsg() { return taMessage.getText(); }
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        okPressed=false;
+        reportErrorPressed=false;
         hide();
     }//GEN-LAST:event_formWindowClosing
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        okPressed=false;
+        reportErrorPressed=false;
         hide();
     }//GEN-LAST:event_formWindowClosed
 
-    private void bCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCancelActionPerformed
-        okPressed=false;
+	private void bOKActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_bOKActionPerformed
+	{//GEN-HEADEREND:event_bOKActionPerformed
+        reportErrorPressed=false;
         hide();
-    }//GEN-LAST:event_bCancelActionPerformed
+}//GEN-LAST:event_bOKActionPerformed
 
-    private void bOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bOKActionPerformed
-        okPressed=true;
+	private void bReportErrorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_bReportErrorActionPerformed
+	{//GEN-HEADEREND:event_bReportErrorActionPerformed
+        reportErrorPressed=true;
         hide();
-    }//GEN-LAST:event_bOKActionPerformed
+}//GEN-LAST:event_bReportErrorActionPerformed
     
     /**
      * @param args the command line arguments
@@ -169,8 +208,8 @@ public String getMsg() { return taMessage.getText(); }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bCancel;
     private javax.swing.JButton bOK;
+    private javax.swing.JButton bReportError;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;

@@ -38,16 +38,17 @@ import java.sql.*;
 public class Version implements Comparable<Version>
 {
 
+int[] vers;
 
- int major;
- int minor;
- int rev;
+int getVers(int ix) { return vers[ix]; }
 
-public int getMajor() { return major; }
-public int getMinor() { return minor; }
-public int getRev() { return rev; }
-
-public String toString() { return ""+major+"."+minor+"."+rev; }
+public String toString() { return toString(size()); }
+public String toString(int level)
+{
+	StringBuffer sb = new StringBuffer(""+vers[0]);
+	for (int i=1; i<level; ++i) sb.append("."+vers[i]);
+	return sb.toString();
+}
 
 /** Gets version number out of a database table. */
 public Version(java.sql.Statement st, String sqlTable)
@@ -55,41 +56,41 @@ throws SQLException
 {
 	ResultSet rs = st.executeQuery("select major,minor,rev from " + sqlTable);
 	rs.next();
-	major = rs.getInt("major");
-	minor = rs.getInt("minor");
-	rev = rs.getInt("rev");
+	vers = new int[3];
+	vers[0] = rs.getInt("major");
+	vers[1] = rs.getInt("minor");
+	vers[2] = rs.getInt("rev");
 	rs.close();
 }
 /** Creates a new instance of VersionNo */
 public Version(String s) throws java.text.ParseException
 {
 	String[] parts = s.split("[.]");
-	if (parts.length != 3) throw new java.text.ParseException("Bad version number: " + s, 0);
+	vers = new int[parts.length];
 	try {
-		major = Integer.parseInt(parts[0]);
-		minor = Integer.parseInt(parts[1]);
-		rev = Integer.parseInt(parts[2]);
+		for (int i=0; i<vers.length; ++i) vers[i] = Integer.parseInt(parts[i]);
 	} catch(NumberFormatException e) {
 		throw new java.text.ParseException("Bad version number: " + s, 0);
 	}
 }
-public Version(int major, int minor, int rev)
+public Version(int... vers)
 {
-	this.major = major;
-	this.minor = minor;
-	this.rev = rev;
+	this.vers = vers;
 }
+public int size() { return vers.length; }
 // ----------------------------------------------------------
 public int compareTo(Version v)
 {
-//	Version v = (Version)o;
-	if (major == v.major) {
-		if (minor == v.minor) {
-			return rev - v.rev;
-		}
-		return minor - v.minor;
+	return compareTo(v, Math.min(this.vers.length, v.vers.length));
+}
+
+public int compareTo(Version v, int level)
+{
+	for (int i=0; i<level; ++i) {
+		int diff = vers[i] - v.vers[i];
+		if (diff != 0) return diff;
 	}
-	return major - v.major;
+	return 0;
 }
 public boolean equals(Object o)
 {
