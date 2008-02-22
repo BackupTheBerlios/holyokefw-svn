@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.sql;
 
+import citibob.jschema.Schema;
 import java.util.*;
 
 public class ConsSqlQuery implements SqlQuery
@@ -93,6 +94,13 @@ public void addColumn(String name)
 { addColumn(name, null); }
 //	columns.add(new NVPair(name, null));
 //}
+
+public void addColumns(Schema schema)
+{
+	for (int i=0; i<schema.getColCount(); ++i) {
+		addColumn(schema.getCol(i).getName());
+	}
+}
 
 /** Adds to the list of tables being joined in this query */
 public void addTable(String t)
