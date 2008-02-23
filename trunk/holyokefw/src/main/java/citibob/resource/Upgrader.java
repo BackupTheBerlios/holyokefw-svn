@@ -5,9 +5,8 @@
 
 package citibob.resource;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import citibob.sql.ConnPool;
+import citibob.sql.SqlRunner;
 
 /**
  * Encapsulates a procedure to upgrade one resource to the next version.
@@ -23,7 +22,6 @@ public int version0();
 public int version1();
 
 /** Does the actual upgrade! */
-//public byte[] upgrade(byte[] val);
-public void upgrade(Connection dbb, byte[] oldVal) throws SQLException, IOException;
+public void upgrade(SqlRunner str, final ConnPool pool, int uversionid);
 
 }

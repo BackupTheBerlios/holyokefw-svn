@@ -40,27 +40,27 @@ public DbRawRunner(App app)
 	this.app = app;
 }
 
-public static Throwable run(ERunnable r)
+public static Exception run(ERunnable r)
 {
 	try {
 		r.run();		
-	} catch(Throwable e) {
+	} catch(Exception e) {
 		return e;
 //		eh.consume(e);
 	}
 	return null;
 }
 
-public static Throwable run(StRunnable r, ConnPool pool)
+public static Exception run(StRunnable r, ConnPool pool)
 {
-	Throwable ret = null;
+	Exception ret = null;
 	Statement st = null;
 	Connection dbb = null;
 	try {
 		dbb = pool.checkout();
 		st = dbb.createStatement();
 		r.run(st);
-	} catch(Throwable e) {
+	} catch(Exception e) {
 		ret = e;
 //		eh.consume(e);
 	} finally {
@@ -74,18 +74,18 @@ public static Throwable run(StRunnable r, ConnPool pool)
 	return ret;
 }
 	
-//public static Throwable run(BatchRunnable r, ConnPool pool)
+//public static Exception run(BatchRunnable r, ConnPool pool)
 //{
 //	SqlBatchSet batch = new SqlBatchSet();
 //	try {
 //		r.run(batch);
 //		batch.runBatches(pool);
-//	} catch(Throwable e) {
+//	} catch(Exception e) {
 //		return e;
 //	}
 //	return null;
 //}
-public Throwable run(BatchRunnable r)
+public Exception run(BatchRunnable r)
 {
 //	SqlBatchSet batch = new SqlBatchSet();
 	SqlBatchSet batchSet = app.getBatchSet();
@@ -93,7 +93,7 @@ public Throwable run(BatchRunnable r)
 		batchSet.enterRecursion();
 		r.run(batchSet);
 		if (batchSet.getRecursionDepth() == 1) batchSet.runBatches();
-	} catch(Throwable e) {
+	} catch(Exception e) {
 		return e;
 	} finally {
 		batchSet.exitRecursion();
@@ -101,9 +101,9 @@ public Throwable run(BatchRunnable r)
 	return null;
 }
 
-//public static Throwable run(BatchRunnable r, ConnPool pool)
+//public static Exception run(BatchRunnable r, ConnPool pool)
 //{
-//	Throwable ret = null;
+//	Exception ret = null;
 //	Statement st = null;
 //	Connection dbb = null;
 //	try {
@@ -112,7 +112,7 @@ public Throwable run(BatchRunnable r)
 //		dbb = pool.checkout();
 //		st = dbb.createStatement();
 //		batch.exec(st);
-//	} catch(Throwable e) {
+//	} catch(Exception e) {
 //		ret = e;
 ////		eh.consume(e);
 //	} finally {
@@ -126,14 +126,14 @@ public Throwable run(BatchRunnable r)
 //	return ret;
 //}
 
-public static Throwable run(DbRunnable r, ConnPool pool)
+public static Exception run(DbRunnable r, ConnPool pool)
 {
 	Connection dbb = null;
-	Throwable ret = null;
+	Exception ret = null;
 	try {
 		dbb = pool.checkout();
 		r.run(dbb);
-	} catch(Throwable e) {
+	} catch(Exception e) {
 		ret = e;
 	} finally {
 		try {
@@ -143,9 +143,9 @@ public static Throwable run(DbRunnable r, ConnPool pool)
 	return ret;
 }
 
-public Throwable doRun(CBRunnable rr)
+public Exception doRun(CBRunnable rr)
 {
-	Throwable ret;
+	Exception ret;
 	SqlBatchSet batchSet = app.getBatchSet();
 	if (rr instanceof BatchRunnable) {
 		BatchRunnable r = (BatchRunnable)rr;

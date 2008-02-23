@@ -5,9 +5,8 @@
 
 package citibob.resource;
 
-import java.sql.Connection;
 import citibob.sql.pgsql.*;
-import java.sql.SQLException;
+import java.sql.Connection;
 
 /**
  *
@@ -16,17 +15,18 @@ import java.sql.SQLException;
 public abstract class DataUpgrader extends BaseUpgrader
 {
 
-public DataUpgrader(String name, int fromVersion, int toVersion)
-	{ super(name, fromVersion, toVersion); }
+public DataUpgrader(Resource resource, int version0, int version1)
+	{ super(resource, version0, version1); }
 
 /** Does the semantic work of the actual upgrade! */
-public abstract byte[] upgrade(byte[] val);
+public abstract byte[] upgrade(byte[] val) throws Exception;
 
-public void upgrade(Connection dbb, int uversionid, byte[] oldVal)
-throws SQLException
+
+public void upgrade(Connection dbb, ResResult rr) throws Exception
 {
-	ResUtil.setResource(dbb, name, uversionid, toVersion,
-		upgrade(oldVal));
+	byte[] newBytes = upgrade(rr.bytes);
+	ResUtil.setResource(dbb, resource.getName(), rr.uversionid, version1, newBytes);
 }
+
 
 }

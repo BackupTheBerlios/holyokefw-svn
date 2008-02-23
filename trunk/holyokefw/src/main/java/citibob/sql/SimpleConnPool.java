@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.sql;
 
+import citibob.task.DbRawRunner;
+import citibob.task.DbRunnable;
 import java.sql.*;
 import java.util.Properties;
 
@@ -61,6 +63,9 @@ public void checkin(Connection c) throws SQLException
 	c.close();
 }
 public void dispose() {}
+
+public Exception exec(DbRunnable r)
+	{ return DbRawRunner.run(r, this); }
 
 //public void doRun(StRunnable r)
 //	{ DbRawRunner.run(r, this); }

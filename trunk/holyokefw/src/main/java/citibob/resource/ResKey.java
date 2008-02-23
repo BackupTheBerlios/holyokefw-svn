@@ -10,11 +10,18 @@ package citibob.resource;
  * current version of.
  * @author citibob
  */
-public class ResKey {
+public class ResKey implements Comparable<ResKey> {
 	public Resource res;
 	public int uversionid;
-	public ResKey(Resource res, int uversionid) {
+	public String uversionName;		// For display: name corresponding to uversionid.  Or null.
+	public ResKey(Resource res, int uversionid, String uversionName) {
 		this.res = res;
 		this.uversionid = uversionid;
+		this.uversionName = uversionName;
+	}
+	public int compareTo(ResKey rk) {
+		int cmp = res.getName().compareTo(rk.res.getName());
+		if (cmp != 0) return cmp;
+		return uversionid - rk.uversionid;
 	}
 }

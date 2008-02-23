@@ -5,7 +5,11 @@
 
 package citibob.resource;
 
+import citibob.sql.ConnPool;
 import citibob.sql.SqlRunner;
+import citibob.sql.UpdRunnable;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  *
@@ -14,19 +18,35 @@ import citibob.sql.SqlRunner;
 public abstract class BaseUpgrader implements Upgrader
 {
 
-int version0, version1;
-Resource res;
+protected int version0, version1;
+protected Resource resource;
 
 public BaseUpgrader(Resource resource, int version0, int version1)
 {
-	this.res = resource;
+	this.resource = resource;
 	this.version0 = version0;
 	this.version1 = version1;
 }
 //public String getName() { return resource; }
-public Resource getResource() { return res; }
+public Resource getResource() { return resource; }
 public int version0() { return version0; }
 
 public int version1() { return version1; }
+
+public abstract void upgrade(Connection dbb, ResResult rr) throws Exception;
+
+public void upgrade(SqlRunner str, final ConnPool pool, int uversionid)
+{
+	final ResResult rr = resource.load(str, uversionid, version0);
+	str.execUpdate(new UpdRunnable() {
+	public void run(SqlRunner str) throws Exception {
+		Exception e = pool.exec(new citibob.task.DbRunnable() {
+		public void run(java.sql.Connection dbb) throws Exception {
+			upgrade(dbb, rr);
+		}});
+		if (e != null) throw e;
+	}});
+}
+
 
 }

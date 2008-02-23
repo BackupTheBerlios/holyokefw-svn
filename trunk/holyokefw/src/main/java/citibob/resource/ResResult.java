@@ -12,6 +12,7 @@ package citibob.resource;
 public class ResResult {
 	public String name;
 	public int uversionid;
-	public int iversion;
-	public byte[] val;
+	public int version;
+	public byte[] bytes;
+	public Object val;
 }

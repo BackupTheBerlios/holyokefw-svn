@@ -27,22 +27,33 @@ public class ResUtil
 ConnPool pool;
 
 /** Loads resource with largest value < iversion */
-public static ResResult getResources(SqlRunner str, String name, int uversionid, int iversion)
+public static ResResult getResource(SqlRunner str, String name, int uversionid, int version)
 {
 	final ResResult res = new ResResult();
+	if (version < 0) {
+		res.name = name;
+		res.version = -1;
+		res.uversionid = uversionid;
+		res.bytes = null;
+		return res;
+	}
+	
 	String sql =
-		" select * from resources" +
-		" where name = " + SqlString.sql(name) +
-		(uversionid <= 0 ? "" : " and uversionid = " + uversionid) +
-		" and iversionid = " +
-			" (select max(iversionid) from resources where name = " + SqlString.sql(name) +
-			(uversionid <= 0 ? "" : " and uversionid = " + uversionid) + ")";
+		" select rid.name,r.* from resources r, resourceids rid" +
+		" where rid.resourceid = r.resourceid" +
+		" and rid.name = " + SqlString.sql(name) +
+		" and uversionid = " + uversionid +
+		" and version = " +
+			" (select max(version) from resources r, resourceids rid" +
+			" where rid.resourceid = r.resourceid" +
+			" and name = " + SqlString.sql(name) +
+			" and uversionid = " + uversionid + ")";
 	str.execSql(sql, new RsRunnable() {
 	public void run(SqlRunner str, ResultSet rs) throws Exception {
 		res.name = rs.getString("name");
-		res.iversion = rs.getInt("iversion");
+		res.version = rs.getInt("iversion");
 		res.uversionid = rs.getInt("uversionid");
-		res.val = rs.getBytes("val");
+		res.bytes = rs.getBytes("val");
 	}});
 	return res;
 }
@@ -77,7 +88,7 @@ throws SQLException
 /** Looks in database for available versions of each requested resource. */
 public static List<Set<Integer>> getAvailableVersions(SqlRunner str, List<ResKey> keys)
 {
-	
+	return null;
 }
 
 

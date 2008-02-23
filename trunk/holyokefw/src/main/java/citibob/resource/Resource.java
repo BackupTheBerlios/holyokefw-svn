@@ -5,7 +5,11 @@
 
 package citibob.resource;
 
+import citibob.sql.ConnPool;
 import citibob.sql.SqlRunner;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +24,23 @@ public abstract class Resource
 {
 
 String name;
-	
+protected boolean essential = false;
+protected ResSet rset;
+
+public ResSet getResSet() { return rset; }
+
+
+public Resource(ResSet rset, String name)
+{ this(rset, name, false); }
+
+public Resource(ResSet rset, String name, boolean essential)
+{
+	this.rset = rset;
+	this.name = name;
+	this.essential = essential;
+}
+
+
 public String getName() { return name; }
 
 
@@ -113,12 +133,14 @@ public Upgrader[] getPreferredPath(List<Upgrader[]> paths)
  */
 public List<Upgrader[]> getAvailablePaths(int uversionid, Set<Integer> availVersions)
 {
-	
+	return null;
 }
 
-public void applyPath(SqlRunner str, Resource res, Upgrader[] path)
+public void applyPath(SqlRunner str, ConnPool pool, int uversionid, Upgrader[] path)
 {
-	
+	for (Upgrader up : path) {
+		up.upgrade(str, pool, uversionid);
+	}
 }
 // =============================================
 
@@ -154,28 +176,80 @@ public void applyPath(SqlRunner str, Resource res, Upgrader[] path)
  @returns needed resource version. */
 public int getRequiredVersion(int sysVersion)
 {
-//	TreeSet<Integer> versions = getVersions();
 	return versions.headSet(sysVersion+1).last();
 	// If NullPointerException here, that means that we don't have
 	// any record of this resource, or systemVersion is just too low.
 }
 
-/** Converts from raw bytes to the actual resource */
-public abstract Object parseResource(byte[] bytes);
+///** Converts from raw bytes to the actual resource */
+//public abstract Object toVal(byte[] bytes);
+//
+///** Converts from raw bytes to the actual resource */
+//public abstract byte[] toBytes(Object val);
 
-/** Loads resource with largest value < iversion */
-public Object load(SqlRunner str, int uversionid, int sysVersion)
+
+/** Loads the resource from the Classpath (JAR File) */
+public ResResult loadJar(String name, int version) throws IOException
 {
-	// Get the bytes
-	byte[] bytes = null;
+	// Create JAR resource name (with version #)
+	String rname;
+	int dot = name.lastIndexOf('.');
+	if (dot < 0) rname = name + "-" + version;
+	else rname = name.substring(0,dot) + "-" + version + name.substring(dot);
 	
-	// Convert to resource
-	return parseResource(bytes);
+	// File doesn't exist; read from inside JAR file instead.
+	String resourceName = getResSet().getJarPrefix() + rname;
+System.out.println("Loading template as resource: " + resourceName);
+	InputStream in = rset.getJarClassLoader().getResourceAsStream(resourceName);
+	
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	byte[] buf = new byte[8192];
+	int len;
+	while ((len = in.read(buf)) > 0) baos.write(buf,0,len);
+	in.close();
+	baos.close();
+
+	ResResult ret = new ResResult();
+		ret.bytes = baos.toByteArray();
+		ret.name = name;
+		ret.uversionid = 0;
+		ret.version = version;
+	return ret;
+//	return OffstageReports.class.getClassLoader().getResourceAsStream(resourceName);	
 }
 
-/** Should we refuse to run the application if this resource-uversionid pair
- * is not up to date?  Or should we run anyway, fialing gracefully when we
+
+
+/** Loads resource with largest value < sysVersion */
+public ResResult load(SqlRunner str, int uversionid, int sysVersion)
+{
+	return ResUtil.getResource(str, getName(), uversionid, sysVersion);
+//	// Get the bytes
+//	final ResResult ret = new ResResult();
+//	String sql =
+//		" select rid.name,r.* from retources r, retourceids rid" +
+//		" where rid.retourceid = r.retourceid" +
+//		" and rid.name = " + SqlString.sql(getName()) +
+//		" and uversionid = " + uversionid +
+//		" and version = " +
+//			" (select max(version) from retources r, retourceids rid" +
+//			" where rid.retourceid = r.retourceid" +
+//			" and name = " + SqlString.sql(getName()) +
+//			" and uversionid = " + uversionid + ")";
+//	str.execSql(sql, new RsRunnable() {
+//	public void run(SqlRunner str, ResultSet rs) throws Exception {
+//		ret.name = rs.getString("name");
+//		ret.version = rs.getInt("version");
+//		ret.uversionid = rs.getInt("uversionid");
+//		ret.bytes = rs.getBytes("val");
+//		// ret.bytes = toVal(bytes);
+//	}});
+//	return ret;
+}
+
+/** Should we refuse to run the application if this resource
+ is not up to date?  Or should we run anyway, fialing gracefully when we
  cannot load the required resource? */
-public abstract boolean isEssential(int uversionid);
+public boolean isEssential() { return essential; }
 
 }
