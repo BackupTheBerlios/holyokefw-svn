@@ -27,9 +27,9 @@ public class ResUtil
 ConnPool pool;
 
 /** Loads resource with largest value < iversion */
-public static ResourceX getResources(SqlRunner str, String name, int uversionid, int iversion)
+public static ResResult getResources(SqlRunner str, String name, int uversionid, int iversion)
 {
-	final ResourceX res = new ResourceX();
+	final ResResult res = new ResResult();
 	String sql =
 		" select * from resources" +
 		" where name = " + SqlString.sql(name) +
