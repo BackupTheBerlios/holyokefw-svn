@@ -28,5 +28,4 @@ public void upgrade(Connection dbb, ResResult rr) throws Exception
 	ResUtil.setResource(dbb, resource.getName(), rr.uversionid, version1, newBytes);
 }
 
-
 }

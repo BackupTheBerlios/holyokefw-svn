@@ -11,9 +11,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -26,9 +29,11 @@ public abstract class Resource
 String name;
 protected boolean essential = false;
 protected ResSet rset;
+protected int resourceid;		// ID obtained from database
 
 public ResSet getResSet() { return rset; }
 
+public int getResourceID() { return resourceid; }
 
 public Resource(ResSet rset, String name)
 { this(rset, name, false); }
@@ -46,7 +51,7 @@ public String getName() { return name; }
 
 
 TreeSet<Integer> versions = new TreeSet();	// All available versions (i.e. those referenced by an Upgrader)
-Map<Integer,Node> nodes;		// Each node has a set of upgraders with same version0
+Map<Integer,Node> nodes = new TreeMap();		// Each node has a set of upgraders with same version0
 
 // =============================================================
 static class Version1Comparator implements Comparator<Upgrader> {
@@ -72,6 +77,7 @@ public void add(Upgrader up)
 {
 	versions.add(up.version0());
 	versions.add(up.version1());
+	makeNode(up.version1());
 	Node node = makeNode(up.version0());
 	node.add(up);
 }
@@ -80,15 +86,81 @@ public void add(Upgrader up)
 ///** Gets a (sorted) list of all the versions we've seen. */
 //TreeSet<Integer> getVersions() { return versions; }
 
+private static class PNode implements Comparable<PNode>
+{
+	public Integer version;	// Identity of this node
+	public Node info;
+	public int ix;			// Index of this node in our array
+	public int d;			// Best estimate of distance from source
+	public PNode pred;	// Predecessor version # in best path
+	public Upgrader predUpgrader;	// The link that gets to pred
+	public int compareTo(PNode b) {
+		return d - b.d;
+	}
+}
+
 /** Plain and simple.
  Question: should this always prefer paths staring with a higher version0
  over paths with a lower version0, even if the one with higher version0 had
  a greater length?  Probably...
  Or maybe it should just return ALL the paths that it could find, the shortest
- one from each version0*/
-private Upgrader[] getPath(int version0, int version1)
+ one from each version0.
+ See: http://renaud.waldura.com/doc/java/dijkstra/ */
+private Upgrader[] getPath(Integer ver0, Integer ver1)
 {
-	return null;
+	// Init our bookkeeping data structure
+	int n = versions.size();
+	PNode[] pnodes = new PNode[n];
+	Map<Integer,PNode> map = new TreeMap();
+	int i=0;
+	for (Integer ver : versions) {
+		PNode pn = new PNode();
+			pn.version = ver;
+			pn.ix = i;
+			pn.d = Integer.MAX_VALUE;
+			pn.info = nodes.get(ver);
+		pnodes[i] = pn;
+		map.put(ver, pn);
+		++i;
+	}
+	SortedSet<PNode> S = new TreeSet();
+	SortedSet<PNode> Q = new TreeSet();
+
+	PNode start = map.get(ver0);
+	Q.add(start);
+	start.d = 0;
+
+	while (Q.size() > 0) {
+		// Extract-minimum of Q
+		PNode u = Q.first();
+		Q.remove(u);
+		
+		// Add u to S
+		S.add(u);
+		
+		// relax-neighbors
+		for (Upgrader up : u.info) {
+			PNode v = map.get(up.version1());
+			if (S.contains(v)) continue;
+			if (v.d > u.d + 1) {
+				v.d = u.d + 1;
+				v.pred = u;
+				v.predUpgrader = up;
+				Q.add(v);
+			}
+		}
+	}
+	
+	
+	// Extract the answer
+	LinkedList<Upgrader> path = new LinkedList();
+	for (PNode v = map.get(ver1); v != start; v = v.pred) {
+		path.addFirst(v.predUpgrader);
+	}
+
+	Upgrader[] ret = new Upgrader[path.size()];
+	path.toArray(ret);
+	return ret;
 }
 
 /** @return Finds a set of upgraders to carry out a desired upgrade ---
@@ -189,7 +261,7 @@ public int getRequiredVersion(int sysVersion)
 
 
 /** Loads the resource from the Classpath (JAR File) */
-public ResResult loadJar(String name, int version) throws IOException
+public ResResult loadJar(int version) throws IOException
 {
 	// Create JAR resource name (with version #)
 	String rname;
@@ -253,3 +325,69 @@ public ResResult load(SqlRunner str, int uversionid, int sysVersion)
 public boolean isEssential() { return essential; }
 
 }
+
+
+
+
+
+
+
+
+
+//Dijkstra's algorithm is probably the best-known and thus most implemented shortest path algorithm. It is simple, easy to understand and implement, yet impressively efficient. By getting familiar with such a sharp tool, a developer can solve efficiently and elegantly problems that would be considered impossibly hard otherwise. Be my guest as I explore a possible implementation of Dijkstra's shortest path algorithm in Java.
+//What It Does
+//
+//Dijkstra's algorithm, when applied to a graph, quickly finds the shortest path from a chosen source to a given destination. (The question "how quickly" is answered later in this article.) In fact, the algorithm is so powerful that it finds all shortest paths from the source to all destinations! This is known as the single-source shortest paths problem. In the process of finding all shortest paths to all destinations, Dijkstra's algorithm will also compute, as a side-effect if you will, a spanning tree for the graph. While an interesting result in itself, the spanning tree for a graph can be found using lighter (more efficient) methods than Dijkstra's.
+//How It Works
+//
+//First let's start by defining the entities we use. The graph is made of vertices (or nodes, I'll use both words interchangeably), and edges which link vertices together. Edges are directed and have an associated distance, sometimes called the weight or the cost. The distance between the vertex u and the vertex v is noted [u, v] and is always positive.
+//
+//Dijkstra's algorithm partitions vertices in two distinct sets, the set of unsettled vertices and the set of settled vertices. Initially all vertices are unsettled, and the algorithm ends once all vertices are in the settled set. A vertex is considered settled, and moved from the unsettled set to the settled set, once its shortest distance from the source has been found.
+//
+//We all know that algorithm + data structures = programs, in the famous words of Niklaus Wirth. The following data structures are used for this algorithm:
+//
+//d 	stores the best estimate of the shortest distance from the source to each vertex
+//π 	stores the predecessor of each vertex on the shortest path from the source
+//S 	the set of settled vertices, the vertices whose shortest distances from the source have been found
+//Q 	the set of unsettled vertices
+//
+//With those definitions in place, a high-level description of the algorithm is deceptively simple. With s as the source vertex:
+//
+//// initialize d to infinity, π and Q to empty
+//d = ( ∞ )
+//π = ()
+//S = Q = ()
+//
+//add s to Q
+//d(s) = 0
+//
+//while Q is not empty
+//{
+//     u = extract-minimum(Q)
+//     add u to S
+//     relax-neighbors(u)
+//}
+//
+//Dead simple isn't it? The two procedures called from the main loop are defined below:
+//
+//relax-neighbors(u)
+//{
+//     for each vertex v adjacent to u, v not in S
+//     {
+//          if d(v) > d(u) + [u,v]    // a shorter distance exists
+//          {
+//               d(v) = d(u) + [u,v]
+//               π(v) = u
+//               add v to Q
+//          }
+//     }
+//}
+//
+//extract-minimum(Q)
+//{
+//    find the smallest (as defined by d) vertex in Q
+//    remove it from Q and return it
+//}
+//
+
+

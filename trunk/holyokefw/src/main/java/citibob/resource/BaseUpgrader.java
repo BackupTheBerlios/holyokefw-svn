@@ -48,5 +48,8 @@ public void upgrade(SqlRunner str, final ConnPool pool, int uversionid)
 	}});
 }
 
-
+public String toString()
+{
+	return getClass().getSimpleName() + "(" + version0 + " -> " + version1 + ")";
+}
 }
