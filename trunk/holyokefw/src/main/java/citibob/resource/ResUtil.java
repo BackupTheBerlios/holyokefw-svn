@@ -82,7 +82,7 @@ throws SQLException
 
 		st.setBinaryStream(4, new ByteArrayInputStream(val), val.length);
 
-		st.executeUpdate();
+		st.execute();
 		dbb.commit();
 	} finally {
 		try {

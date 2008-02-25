@@ -22,6 +22,6 @@ public int version0();
 public int version1();
 
 /** Does the actual upgrade! */
-public void upgrade(SqlRunner str, final ConnPool pool, int uversionid);
+public void upgrade(SqlRunner str, final ConnPool pool, int uversionid0, int uversionid1);
 
 }

@@ -106,7 +106,7 @@ private static class PNode implements Comparable<PNode>
  Or maybe it should just return ALL the paths that it could find, the shortest
  one from each version0.
  See: http://renaud.waldura.com/doc/java/dijkstra/ */
-private Upgrader[] getPath(Integer ver0, Integer ver1)
+public UpgradePlan getUpgradePlan(Integer ver0, Integer ver1)
 {
 	// Init our bookkeeping data structure
 	int n = versions.size();
@@ -155,12 +155,15 @@ private Upgrader[] getPath(Integer ver0, Integer ver1)
 	// Extract the answer
 	LinkedList<Upgrader> path = new LinkedList();
 	for (PNode v = map.get(ver1); v != start; v = v.pred) {
+		if (v == null) return null;		// We didn't find a path.
 		path.addFirst(v.predUpgrader);
 	}
 
 	Upgrader[] ret = new Upgrader[path.size()];
 	path.toArray(ret);
-	return ret;
+	if (ret == null) return null;
+	UpgradePlan uplan = new UpgradePlan(ret);
+	return uplan;
 }
 
 /** @return Finds a set of upgraders to carry out a desired upgrade ---
@@ -170,28 +173,28 @@ private Upgrader[] getPath(Integer ver0, Integer ver1)
  
  * @param versions0 Set of versions we wish to start from.  Includes -1 if we want
  * to consider just creating the resource.  versions0=-1 should be done in its own
- * separate getPath(), and only if no upgrader was found...
+ * separate getUpgradePlan(), and only if no upgrader was found...
  * @param version1
  * @param allowCreation if true, we will consider creator paths if we cannot find any
  * @return
  */
-public Upgrader[] getUpgradePath(int version0, int version1, boolean allowCreation)
-{
-	Upgrader[] path = getPath(version0, version1);
-	if (path != null) return path;
-	return getPath(-1, version1);
-}
+//protected UpgradePlan getUpgradePlan(int version0, int version1, boolean allowCreation)
+//{
+//	UpgradePlan uplan = getUpgradePlan(version0, version1);
+//	if (uplan != null) return uplan;
+//	return getUpgradePlan(-1, version1);
+//}
 
-public Upgrader[] getCreatorPath(int version1)
+protected UpgradePlan getCreatorPlan(int version1)
 {
-	return getPath(-1, version1);
+	return getUpgradePlan(-1, version1);
 }
 
 
 /** Auto-choose the preferred path from a bunch of shortest paths with
  * different starting points.  In GUI, this is not needed, user can
  * manually choose. */
-public Upgrader[] getPreferredPath(List<Upgrader[]> paths)
+public Upgrader[] getPreferredPlan(List<UpgradePlan> plans)
 {
 	return null;
 }
@@ -203,15 +206,17 @@ public Upgrader[] getPreferredPath(List<Upgrader[]> paths)
  * @param availVersions
  * @return
  */
-public List<Upgrader[]> getAvailablePaths(int uversionid, Set<Integer> availVersions)
+public List<UpgradePlan> getAvailablePlans(int uversionid, Set<Integer> availVersions)
 {
 	return null;
 }
 
-public void applyPath(SqlRunner str, ConnPool pool, int uversionid, Upgrader[] path)
+public void applyPlan(SqlRunner str, ConnPool pool, UpgradePlan uplan)
 {
-	for (Upgrader up : path) {
-		up.upgrade(str, pool, uversionid);
+	int uversionid = uplan.uversionid0();
+	for (Upgrader up : uplan.getPath()) {
+		up.upgrade(str, pool, uversionid, uplan.uversionid1());
+		uversionid = uplan.uversionid0();
 	}
 }
 // =============================================

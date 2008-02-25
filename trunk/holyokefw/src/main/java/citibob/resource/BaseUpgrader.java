@@ -33,16 +33,16 @@ public int version0() { return version0; }
 
 public int version1() { return version1; }
 
-public abstract void upgrade(Connection dbb, ResResult rr) throws Exception;
+public abstract void upgrade(Connection dbb, ResResult rr, int uversionid1) throws Exception;
 
-public void upgrade(SqlRunner str, final ConnPool pool, int uversionid)
+public void upgrade(SqlRunner str, final ConnPool pool, int uversionid0, final int uversionid1)
 {
-	final ResResult rr = resource.load(str, uversionid, version0);
+	final ResResult rr = resource.load(str, uversionid0, version0);
 	str.execUpdate(new UpdRunnable() {
 	public void run(SqlRunner str) throws Exception {
 		Exception e = pool.exec(new citibob.task.DbRunnable() {
 		public void run(java.sql.Connection dbb) throws Exception {
-			upgrade(dbb, rr);
+			upgrade(dbb, rr, uversionid1);
 		}});
 		if (e != null) throw e;
 	}});

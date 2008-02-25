@@ -22,10 +22,10 @@ public DataUpgrader(Resource resource, int version0, int version1)
 public abstract byte[] upgrade(byte[] val) throws Exception;
 
 
-public void upgrade(Connection dbb, ResResult rr) throws Exception
+public void upgrade(Connection dbb, ResResult rr, int uversionid1) throws Exception
 {
 	byte[] newBytes = upgrade(rr.bytes);
-	ResUtil.setResource(dbb, resource.getName(), rr.uversionid, version1, newBytes);
+	ResUtil.setResource(dbb, resource.getName(), uversionid1, version1, newBytes);
 }
 
 }

@@ -22,6 +22,7 @@ import citibob.sql.*;
 import citibob.task.*;
 import citibob.mail.*;
 import citibob.jschema.*;
+import citibob.resource.ResSet;
 import citibob.swing.prefs.*;
 import citibob.version.Version;
 
@@ -34,6 +35,8 @@ public abstract class App
 public java.io.File getConfigDir() { return null; }
 /** Gets properties loaded from an application configuration file. */
 public Properties getProps() { return null; }
+public ResSet getResSet() { return null; }
+public int getSysVersion() { return 0; }
 public SwingPrefs getSwingPrefs() { return null; }
 public void setUserPrefs(java.awt.Component c, String base)
 	{ getSwingPrefs().setPrefs(c, userRoot().node(base)); }

@@ -99,7 +99,7 @@ public Swinger newSwinger(JType t, String colName)
 	if (m != null) return m.newSwinger(t);
 
 	// No swinger found, punt...
-System.err.println("Failed to find a swinger");
+System.err.println("Failed to find a swinger for column " + colName);
 	return null;
 }
 

@@ -11,10 +11,10 @@ import citibob.sql.pgsql.*;
  * For testing!
  * @author citibob
  */
-public class NopUpgrader extends DataUpgrader
+public class CopyUpgrader extends DataUpgrader
 {
 
-public NopUpgrader(Resource resource, int version0, int version1)
+public CopyUpgrader(Resource resource, int version0, int version1)
 	{ super(resource, version0, version1); }
 
 /** Does the semantic work of the actual upgrade! */

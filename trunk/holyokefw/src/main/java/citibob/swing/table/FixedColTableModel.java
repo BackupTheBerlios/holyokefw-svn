@@ -17,127 +17,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.swing.table;
 
+import citibob.types.JType;
 import java.util.*;
 import javax.swing.table.*;
 
-public class FixedColTableModel extends AbstractTableModel
+public abstract class FixedColTableModel extends AbstractJTypeTableModel
 {
 
-ArrayList rowData = new ArrayList();	// ArrayList<Record>
-HashMap dataByIpaqID = new HashMap();	// HashMap<Integer --> Record>
+JType[] types;
+String[] colNames;
+boolean[] editable;
 
-public static final int ROWNUM = 0;
-int numCols = 1;
-public int getColumnCount() { return numCols; }
+public int getColumnCount() { return types.length; }
 
-public FixedColTableModel(int numCols, Class[] types, String[] colNames)
+public FixedColTableModel(String[] colNames, JType[] types, boolean[] editable)
 {
-	this.numCols = numCols;
 	this.types = types;
 	this.colNames = colNames;
+	this.editable = editable;
 }
-
-Class[] types;
-String[] colNames;
-
+public boolean isCellEditable(int row, int col)
+	{ return (editable == null ? false : editable[col]); }
 public String getColumnName(int col)
 	{ return colNames[col]; }
-public Class getColumnClass(int col)
+public JType getJType(int row, int col)
 	{ return types[col]; }
-public int getRowCount()
-	{ return rowData.size(); }
+public Class getColumnClass(int col)
+	{ return types[col].getObjClass(); }
 
-public Object getValueAt(int row, int column)
-{
-	if (column >= numCols) return null;
-	Object[] r = (Object[])rowData.get(row);
-	if (r == null) return null;
-	return r[column];
-}
-
-public void setValueAt(Object val, int row, int col)
-{
-	// if (col >= numCols || row >= getColumnCount) return;
-	if (!types[col].isAssignableFrom(val.getClass()))
-		throw new ClassCastException("Bad class " + val.getClass() + "(expected class " + types[col]);
-	Object[] r = (Object[])rowData.get(row);
-	if (r == null) return;
-	r[col] = val;
-	fireTableCellUpdated(row, col);
-}
-
-/** Inserts rowData from [firstRow to lastRow], inclusive.  Fires tableRowsInserted. */
-public void insertRowsNoFire(int firstRow, int lastRowI)
-{
-	int lastRow = lastRowI + 1;
-	int oldSize = rowData.size();
-	int sizeDiff = lastRow - firstRow;
-	int numMoved = oldSize - firstRow;
-	int newSize = oldSize + sizeDiff;
-	rowData.ensureCapacity(newSize);
-	for (int i = numMoved-1; i >= 0; --i) {
-		int oldPlace = firstRow + i;
-		int newPlace = oldPlace + sizeDiff;
-		Object[] row = (Object[])rowData.get(oldPlace);
-		row[ROWNUM] = new Integer(newPlace);
-		rowData.set(newPlace, row);
-	}
-	for (int i = firstRow; i < lastRow; ++i) {
-		Object[] row = new Object[numCols];
-		row[ROWNUM] = new Integer(i);
-		rowData.set(i, row);
-	}
-}
-public void insertRows(int firstRow, int lastRowI)
-{
-	insertRowsNoFire(firstRow, lastRowI);
-	fireTableRowsInserted(firstRow, lastRowI);
-}
-
-/** Returns row # of added row. */
-public int appendRow()
-{
-	int newr = getRowCount();
-	insertRows(newr, newr);
-	return newr;
-}
-
-public int addRowNoFire(Object[] row)
-{
-	int r = rowData.size();
-	row[ROWNUM] = new Integer(r);
-	rowData.add(row);
-	return r;
-}
-public int addRow(Object[] row)
-{
-	int r = addRowNoFire(row);
-	fireTableRowsInserted(r, r);
-	return r;
-}
-
-/** Removes rows from [firstRow to lastRow], inclusive.  Fires tableRowsDeleted. */
-public void deleteRowsNoFire(int firstRow, int lastRowI)
-{
-	int lastRow = lastRowI + 1;
-	int sizeDiff = lastRow - firstRow;
-	int oldSize = rowData.size();
-	for (int i = firstRow; i < oldSize - sizeDiff; ++i) {
-		int oldPlace = i + sizeDiff;
-		int newPlace = i;
-		Object[] row = (Object[])rowData.get(oldPlace);
-		row[ROWNUM] = new Integer(newPlace);
-		rowData.set(newPlace, row);
-	}
-}
-public void deleteRows(int firstRow, int lastRowI)
-{
-	deleteRowsNoFire(firstRow, lastRowI);
-	fireTableRowsDeleted(firstRow, lastRowI);
-}
-
-
-public Object[] getRow(int r)
-	{ return (Object[])rowData.get(r); }
 
 }
