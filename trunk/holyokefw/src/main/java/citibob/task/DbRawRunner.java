@@ -51,7 +51,7 @@ public static Exception run(ERunnable r)
 	return null;
 }
 
-public static Exception run(StRunnable r, ConnPool pool)
+public static Throwable run( ConnPool pool,StRunnable r)
 {
 	Exception ret = null;
 	Statement st = null;
@@ -155,10 +155,10 @@ public Exception doRun(CBRunnable rr)
 		ret = run(r);
 	} else if (rr instanceof StRunnable) {
 		StRunnable r = (StRunnable)rr;
-		ret = run(r, app.getPool());
+		ret = run( app.getPool(),r);
 	} else if (rr instanceof DbRunnable) {
 		DbRunnable r = (DbRunnable)rr;
-		ret = run(r, app.getPool());
+		ret = run( app.getPool(),r);
 	} else {
 		ret = new ClassCastException("CBRunnable of class " + rr.getClass() + " is not one of ERunnable, StRunnable or DbRunnable");
 	}
