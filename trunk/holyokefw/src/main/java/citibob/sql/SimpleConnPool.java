@@ -65,7 +65,7 @@ public void checkin(Connection c) throws SQLException
 public void dispose() {}
 
 public Exception exec(DbRunnable r)
-	{ return DbRawRunner.run(r, this); }
+	{ return DbRawRunner.run(this, r); }
 
 //public void doRun(StRunnable r)
 //	{ DbRawRunner.run(r, this); }

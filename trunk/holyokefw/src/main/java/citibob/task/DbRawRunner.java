@@ -51,7 +51,7 @@ public static Exception run(ERunnable r)
 	return null;
 }
 
-public static Throwable run( ConnPool pool,StRunnable r)
+public static Exception run( ConnPool pool,StRunnable r)
 {
 	Exception ret = null;
 	Statement st = null;
@@ -126,7 +126,7 @@ public Exception run(BatchRunnable r)
 //	return ret;
 //}
 
-public static Exception run(DbRunnable r, ConnPool pool)
+public static Exception run(ConnPool pool, DbRunnable r)
 {
 	Connection dbb = null;
 	Exception ret = null;

@@ -108,7 +108,11 @@ System.err.println("Failed to find a swinger for column " + colName);
 // ==================================================================
 // SFormatMap
 public SFormat newSFormat(JType t, String colName)
-	{ return newSwinger(t, colName).getSFormat(); }
+{
+	Swinger swinger = newSwinger(t, colName);
+	if (swinger == null) return null;
+	return swinger.getSFormat();
+}
 
 
 
