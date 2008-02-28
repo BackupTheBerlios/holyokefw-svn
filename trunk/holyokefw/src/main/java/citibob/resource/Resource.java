@@ -27,10 +27,13 @@ public abstract class Resource
 {
 
 String name;
-protected boolean essential = false;
+protected boolean optional = false;
 protected ResSet rset;
 protected int resourceid;		// ID obtained from database
 protected boolean editable = false;
+String uversionType;		// Table or whatnot where uversionids are loaded from
+
+public String getUversionType() { return uversionType; }
 
 /** Can the user edit this resoure and save a new version? */
 public boolean isEditable() { return editable; }
@@ -39,14 +42,15 @@ public ResSet getResSet() { return rset; }
 
 public int getResourceID() { return resourceid; }
 
-public Resource(ResSet rset, String name)
-{ this(rset, name, false); }
+public Resource(ResSet rset, String uversionType, String name)
+{ this(rset, uversionType, name, false); }
 
-public Resource(ResSet rset, String name, boolean essential)
+public Resource(ResSet rset, String uversionType, String name, boolean essential)
 {
 	this.rset = rset;
+	this.uversionType = uversionType;
 	this.name = name;
-	this.essential = essential;
+	this.optional = essential;
 }
 
 
@@ -337,7 +341,7 @@ public ResResult loadRequiredVersion(SqlRunner str, int uversionid, int sysVersi
 /** Should we refuse to run the application if this resource
  is not up to date?  Or should we run anyway, fialing gracefully when we
  cannot load the required resource? */
-public boolean isEssential() { return essential; }
+public boolean isOptional() { return optional; }
 
 }
 

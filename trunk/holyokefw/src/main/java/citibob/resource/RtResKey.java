@@ -5,26 +5,31 @@
 
 package citibob.resource;
 
-import java.util.SortedSet;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Key fields for a resource.  Used to identify which resources we need
  * current version of.
  * @author citibob
  */
-public class ResKey implements Comparable<ResKey> {
+public class RtResKey implements Comparable<RtResKey> {
 	public Resource res;
 	public int uversionid;
 	public String uversionName;		// For display: name corresponding to uversionid.  Or null.
-	static final int[] noVersions = new int[0];
-	public int[] availVersions = noVersions;	// (from DB): available versions of this resource.
-	public ResKey(Resource res, int uversionid, String uversionName) {
+//	static final int[] noVersions = new int[0];
+//	public int[] availVersions = noVersions;	// (from DB): available versions of this resource.
+
+	public ArrayList<RtVers> availVersions = new ArrayList();
+	
+	
+	public RtResKey(Resource res, int uversionid, String uversionName) {
 		this.res = res;
 		this.uversionid = uversionid;
 		this.uversionName = uversionName;
 	}
-	public ResKey(Resource res) { this(res, 0, "<Regular>"); }
-	public int compareTo(ResKey rk) {
+	public RtResKey(Resource res) { this(res, 0, "<Regular>"); }
+	public int compareTo(RtResKey rk) {
 		int cmp = res.getName().compareTo(rk.res.getName());
 //		int cmp = res.resourceid = rk.res.resourceid; //getName().compareTo(rk.res.getName());
 		if (cmp != 0) return cmp;

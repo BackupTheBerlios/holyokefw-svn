@@ -35,7 +35,8 @@ public int getRowCount()
 	{ return data.size(); }
 
 public void clear() {
-	data.clear();
+//	data.clear();
+	data = new ArrayList();
 	super.fireTableDataChanged();
 }
 

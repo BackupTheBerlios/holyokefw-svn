@@ -26,7 +26,7 @@ public class UpgradePlan {
 	public String uversionName1() { return uversionName1; }
 	public void setUversionid0(int v, String name) {
 		uversionid0 = v;
-		if (v < 0) uversionName0 = "<Default>";
+		if (version0() < 0) uversionName0 = "<Default>";
 		else uversionName0 = name;
 	}
 	public void setUversionid1(int v, String name) {
@@ -49,12 +49,12 @@ public class UpgradePlan {
 	{
 		StringBuffer sbuf = new StringBuffer();
 		if (version0() >= 0) {
-			sbuf.append("Start with " + uversionName0 + " version " + version0() + "<br>\n");
+			sbuf.append("Start &lt; with &gt; " + encodeHTML(uversionName0) + " version " + version0() + "<br>\n");
 		}
 		for (Upgrader up : path) {
 			sbuf.append(encodeHTML(up.getDescription()) + "<br>\n");
 		}
-		sbuf.append("Store in " + uversionName1 + " version " + version1() + "<br>\n");
+		sbuf.append("Store in " + encodeHTML(uversionName1) + " version " + version1() + "<br>\n");
 		return sbuf.toString();
 	}
 

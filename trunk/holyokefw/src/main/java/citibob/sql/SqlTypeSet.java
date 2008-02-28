@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
- * SqlTypeFactory.java
+ * BaseSqlTypeFactory.java
  *
- * Created on January 28, 2007, 9:23 PM
+ * Created on January 28, 2007, 9:25 PM
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -27,21 +27,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.sql;
 
 import java.sql.*;
-
+import static java.sql.Types.*;
 
 /**
  *
  * @author citibob
  */
-public interface SqlTypeSet
+public abstract class SqlTypeSet
 {
-	
-public SqlType getSqlType(ResultSet rs, int col) throws SQLException;
-public SqlType getSqlType(ResultSetMetaData md, int col) throws java.sql.SQLException;
-
+// ------------------------------------------------------
 /** @param col the first column is 1, the second is 2, ...
  @returns an SqlType, given one of the basic types in java.sql.Types.  If N/A,
  or not yet implemented as an SqlType, returns null. */
-public SqlType getSqlType(int type, int precision, int scale, boolean nullable);
+public abstract SqlType getSqlType(int type, int precision, int scale, boolean nullable);
+// ------------------------------------------------------
+protected boolean msDates;
+public SqlTypeSet(boolean msDates)
+{
+	this.msDates = msDates;
+}
+	
+public SqlType getSqlType(ResultSet rs, int col) throws SQLException
+{
+	return getSqlType(rs.getMetaData(), col);
+}
+public SqlType getSqlType(ResultSetMetaData md, int col) throws SQLException
+{
+	boolean nullable = (md.isNullable(col) != ResultSetMetaData.columnNoNulls);
+//System.out.println("col = " + col);
+	return getSqlType(md.getColumnType(col), md.getPrecision(col), md.getScale(col), nullable);
+}
 
+public SqlDateType newTimestamp(boolean nullable)
+	{ return (SqlDateType)getSqlType(TIMESTAMP,0,0, nullable); }
+public SqlDateType newDate(boolean nullable)
+	{ return (SqlDateType)getSqlType(DATE, 0,0, nullable); }
 }

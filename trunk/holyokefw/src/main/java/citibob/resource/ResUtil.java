@@ -7,19 +7,21 @@ package citibob.resource;
 
 import citibob.sql.ConnPool;
 import citibob.sql.RsRunnable;
+import citibob.sql.SqlDateType;
 import citibob.sql.SqlRunner;
+import citibob.sql.SqlTypeSet;
 import citibob.sql.pgsql.*;
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  *
@@ -103,50 +105,6 @@ throws SQLException
 	}
 
 }
-
-/** Looks in database for available versions of each requested resource. */
-public static void fetchAvailableVersions(SqlRunner str, final SortedSet<ResKey> keys)
-{
-	StringBuffer sql = new StringBuffer(
-		" create temporary table _keys (serial serial, resourceid int, uversionid int);\n");
-	for (ResKey key : keys) {
-		sql.append(" insert into _keys (resourceid, uversionid) values (" + key.res.resourceid + ", " + key.uversionid + ");\n");
-	}
-	sql.append(
-		" select rid.name,k.serial,r.*" +
-		" from resources r, resourceids rid, _keys k" +
-		" where k.resourceid = r.resourceid" +
-		" and k.uversionid = r.uversionid" +
-		" and r.resourceid = rid.resourceid\n" +
-		" order by k.serial;\n" +
-		" drop table _keys;");
-	final List<Set<Integer>> list = new LinkedList();
-	str.execSql(sql.toString(), new RsRunnable() {
-	public void run(citibob.sql.SqlRunner str, java.sql.ResultSet rs) throws Exception {
-		SortedSet<Integer> set = null;
-		int lastSerial = -1;
-		Iterator<ResKey> ii = keys.iterator();
-		while (rs.next()) {
-			int serial = rs.getByte("serial");
-			// Handle change...
-			if (serial != lastSerial) {
-				if (lastSerial != -1) { //list.add(set);
-					ResKey rk = ii.next();
-					rk.availVersions = new int[set.size()];
-					int i=0; for (Integer ver : set) rk.availVersions[i++] = ver;
-				}
-				set = new TreeSet();
-				lastSerial = serial;
-			}
-			
-			// Add this item to the set
-			set.add(rs.getInt("version"));
-		}
-	}});
-//	return list;
-}
-
-
 
 
 /* Startup procedure (check all required resources are there):

@@ -35,7 +35,7 @@ import citibob.sql.*;
  * TODO: Could reduce a lot of short-lifed memory allocation here...
  * @author citibob
  */
-public class AnsiTypeSet extends BaseSqlTypeSet
+public class AnsiTypeSet extends SqlTypeSet
 {
 	
 TimeZone tz;

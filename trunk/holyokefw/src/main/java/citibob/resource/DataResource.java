@@ -16,8 +16,8 @@ import citibob.sql.UpdRunnable;
 public class DataResource extends Resource
 {
 
-public DataResource(ResSet rset, String name) {
-	super(rset, name);
+public DataResource(ResSet rset, String uversionType, String name) {
+	super(rset, uversionType, name);
 	editable = true;
 }
 

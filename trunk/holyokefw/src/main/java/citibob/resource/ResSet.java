@@ -9,6 +9,7 @@ import citibob.sql.RssRunnable;
 import citibob.sql.SqlRunner;
 import citibob.sql.pgsql.SqlString;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -54,18 +55,20 @@ public ResResult load(SqlRunner str, String name, int uversionid)
 
 
 /* List of resource-uversionid pairs required by this app at this time. */
-//public abstract List<ResKey> getRequired();
+//public abstract List<RtResKey> getRequired();
 /** Set of resource-uversionid pairs relevant to the app at this time.  By default,
  base it on the Resources registered with this class. */
-public SortedSet<ResKey> newRelevant()
+public SortedSet<RtResKey> newRelevant()
 {
-	SortedSet<ResKey> ret = new TreeSet();
+	SortedSet<RtResKey> ret = new TreeSet();
 
 	for (Resource res : resources.values()) {
-		ret.add(new ResKey(res));
+		ret.add(new RtResKey(res));
 	}
 	return ret;
 }
+
+
 
 public void createAllResourceIDs(SqlRunner str)
 {

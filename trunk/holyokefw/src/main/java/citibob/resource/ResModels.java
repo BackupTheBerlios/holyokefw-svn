@@ -6,24 +6,12 @@
 package citibob.resource;
 
 import citibob.app.App;
-import citibob.resource.ResKey;
-import citibob.resource.ResSet;
-import citibob.resource.ResUtil;
-import citibob.resource.Resource;
-import citibob.resource.UpgradePlan;
-import citibob.resource.Upgrader;
-import citibob.sql.SqlRunner;
 import citibob.swing.table.BaseJTypeTableModel;
 import citibob.text.AbstractSFormat;
 import citibob.types.JType;
 import citibob.types.JavaJType;
 import citibob.types.JavaJType;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import citibob.resource.ResModels.ResRow;
-import citibob.sql.UpdRunnable;
 
 /**
  *
@@ -34,73 +22,22 @@ public class ResModels
 
 App app;
 int sysVersion;
-static class ResRow {
-	Resource res;
-	ArrayList<ResKey> keys = new ArrayList();
-}
-Map<Resource,ResRow> rowMap = new HashMap();
-ArrayList<ResRow> rows = new ArrayList();
-SortedSet<ResKey> allKeys;
+ResData rdata;
 
 public ResModels.ResModel resMod;
 public ResModels.ResKeyModel rkMod;
 public ResModels.AvailModel availMod;
 public ResModels.UPlanModel uplanMod;
 
-public void refreshVersions(SqlRunner str)
-{
-	ResUtil.fetchAvailableVersions(str, allKeys);		// Puts into rel...	
-}
-
-public void readData(SqlRunner str)
-{
-	ResSet rset = app.getResSet();
-	
-	// Read <ResKey> pairs and convert it to rows...
-	rows.clear();
-	rowMap.clear();
-	
-	ResUtil.fetchAvailableVersions(str, allKeys);		// Puts into rel...
-	Resource lastRes = null;
-	ResRow cur = null;
-	for (ResKey rk : allKeys) {
-		if (lastRes != rk.res) {
-			if (lastRes != null) {
-				rows.add(cur);
-				rowMap.put(cur.res, cur);
-			}
-			cur = new ResRow();
-			cur.res = rk.res;
-		}
-		cur.keys.add(rk);
-		lastRes = rk.res;
-	}
-	if (cur != null) {
-		rows.add(cur);
-		rowMap.put(cur.res, cur);
-	}
-}
-//public void refreshData(SqlRunner str)
-//{
-//	readData(str);
-//	resMod.clear();
-//	rkMod.clear();
-//	availMod.clear();
-//	uplanMod.clear();
-//	str.execUpdate(new UpdRunnable() {
-//	public void run(SqlRunner str) {
-//		resMod.setData(rows);
-//	}});
-//}
-public ResModels(SqlRunner str, App xapp, int sysVersion)
+public ResModels(ResData rdata, App xapp, int sysVersion)
 {
 	this.app = xapp;
 	ResSet rset = app.getResSet();
-	allKeys = rset.newRelevant();
+	this.rdata = rdata;
 	this.sysVersion = sysVersion;
 
-	availNames = new String[] {"version", "lastmodified"};
-	availTypes = new JType[] {JavaJType.jtInteger,
+	availNames = new String[] {"RtVers", "version", "lastmodified"};
+	availTypes = new JType[] {new JavaJType(RtVers.class), JavaJType.jtInteger,
 			app.getSqlTypeSet().getSqlType(java.sql.Types.TIMESTAMP, 0, 0, true)};
 
 	
@@ -108,9 +45,8 @@ public ResModels(SqlRunner str, App xapp, int sysVersion)
 	rkMod = new ResKeyModel();
 	availMod = new AvailModel();
 	uplanMod = new UPlanModel();
-
-	readData(str);
-	resMod.setData(rows);
+	
+	resMod.setData(rdata);
 }
 
 public ResModel newResModel()
@@ -119,36 +55,36 @@ public ResModel newResModel()
 public ResKeyModel newResKeyModel(Resource res)
 	{ return new ResKeyModel(); }
 //	ResRow row = rowMap.get(res);
-//	return new ResKeyModel(row.keys);
+//	return new ResKeyModel(row.relevant);
 //}
-public AvailModel newAvailModel(ResKey rk)
+public AvailModel newAvailModel(RtResKey rk)
 	{ return new AvailModel(); }
 //	return new AvailModel(rk.availVersions);
 //}
-//public UpgradePlansModel newUpgradePlansModel(ResKey rk, int reqVersion)
+//public UpgradePlansModel newUpgradePlansModel(RtResKey rk, int reqVersion)
 //{
 //	// Scope out upgrade plans first
 //	
 //	return new UPlanModel()
 //}
 // =======================================================================
-static final String[] resNames = {"Resource", "name", "reqversion"};
-static final JType[] resTypes = {new JavaJType(Resource.class), JavaJType.jtString, JavaJType.jtInteger};
-public class ResModel extends BaseJTypeTableModel<ResRow>
+static final String[] resNames = {"RtRes", "name", "reqversion"};
+static final JType[] resTypes = {new JavaJType(RtRes.class), JavaJType.jtString, JavaJType.jtInteger};
+public class ResModel extends BaseJTypeTableModel<RtRes>
 {
 	public ResModel()
 	{
 		super(resNames, resTypes, null);
 	}
-	public void setData(ArrayList<ResRow> rows) {
-		data = rows;
+	public void setData(ResData rdata) {
+		data = rdata.rtres;
 		fireTableDataChanged();
 	}
 	public Object getValueAt(int irow, int icol)
 	{
-		ResRow r = data.get(irow);
+		RtRes r = data.get(irow);
 		switch(icol) {
-			case 0 : return r.res;
+			case 0 : return r;
 			case 1 : return r.res.getName();
 			case 2 : return r.res.getRequiredVersion(sysVersion);
 		}
@@ -156,26 +92,21 @@ public class ResModel extends BaseJTypeTableModel<ResRow>
 	}
 }
 // =======================================================================
-public ArrayList<ResKey> getKeys(Resource res)
-{
-	ResRow row = rowMap.get(res);
-	return row.keys;
-}
 static final String[] rkNames = {"ResKey", "name"};
-static final JType[] rkTypes = {new JavaJType(ResKey.class), JavaJType.jtString};
-public class ResKeyModel extends BaseJTypeTableModel<ResKey>
+static final JType[] rkTypes = {new JavaJType(RtResKey.class), JavaJType.jtString};
+public class ResKeyModel extends BaseJTypeTableModel<RtResKey>
 {
 	public ResKeyModel() {
 		super(rkNames, rkTypes, null);		
 	}
-	public void setData(Resource res)
+	public void setData(RtRes res)
 	{
-		this.data = getKeys(res);
+		this.data = res.relevant;
 		fireTableDataChanged();
 	}
 	public Object getValueAt(int irow, int icol)
 	{
-		ResKey rk = data.get(irow);
+		RtResKey rk = data.get(irow);
 		switch(icol) {
 			case 0 : return rk;
 			case 1 : return rk.uversionName;
@@ -186,26 +117,26 @@ public class ResKeyModel extends BaseJTypeTableModel<ResKey>
 // =======================================================================
 String[] availNames;		// Set above in constructor
 JType[] availTypes;
-public class AvailModel extends BaseJTypeTableModel<Integer>
+public class AvailModel extends BaseJTypeTableModel<RtVers>
 {
 	public AvailModel() {
 		super(availNames, availTypes, null);
 	}
-	public void setData(int[] vers)
+	public void setData(RtResKey rk)
 	{
-		data = new ArrayList();
-		for (int v : vers) data.add(v);
-		fireTableDataChanged();
-	}
-	public void setData(ArrayList<Integer> versions) {
-		this.data = versions;
-		fireTableDataChanged();
+		if (rk == null || rk.availVersions == null) clear();
+		else {
+			this.data = rk.availVersions;
+			fireTableDataChanged();
+		}
 	}
 	public Object getValueAt(int irow, int icol)
 	{
-		Integer version = data.get(irow);
+		RtVers version = data.get(irow);
 		switch(icol) {
 			case 0 : return version;
+			case 1 : return version.version;
+			case 2 : return version.lastmodified;
 		}
 		return null;
 	}

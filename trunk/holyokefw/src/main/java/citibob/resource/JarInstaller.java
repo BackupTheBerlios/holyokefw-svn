@@ -17,7 +17,8 @@ public class JarInstaller extends DataUpgrader
 	}
 public String getDescription()
 {
-	return "Start with version " + version1() + " from JAR file.";
+	return "Start with default version " + version1();
 }
-	
+public boolean isReversible() { return true; }
+
 }
