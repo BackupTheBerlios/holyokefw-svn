@@ -16,13 +16,14 @@ public class ResKey implements Comparable<ResKey> {
 	public Resource res;
 	public int uversionid;
 	public String uversionName;		// For display: name corresponding to uversionid.  Or null.
-	public int[] availVersions;	// (from DB): available versions of this resource.
+	static final int[] noVersions = new int[0];
+	public int[] availVersions = noVersions;	// (from DB): available versions of this resource.
 	public ResKey(Resource res, int uversionid, String uversionName) {
 		this.res = res;
 		this.uversionid = uversionid;
 		this.uversionName = uversionName;
 	}
-	public ResKey(Resource res) { this(res, 0, "<Base>"); }
+	public ResKey(Resource res) { this(res, 0, "<Regular>"); }
 	public int compareTo(ResKey rk) {
 		int cmp = res.getName().compareTo(rk.res.getName());
 //		int cmp = res.resourceid = rk.res.resourceid; //getName().compareTo(rk.res.getName());

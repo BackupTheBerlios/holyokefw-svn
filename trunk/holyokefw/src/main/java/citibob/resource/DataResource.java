@@ -16,7 +16,10 @@ import citibob.sql.UpdRunnable;
 public class DataResource extends Resource
 {
 
-public DataResource(ResSet rset, String name) { super(rset, name); }
+public DataResource(ResSet rset, String name) {
+	super(rset, name);
+	editable = true;
+}
 
 public void applyPlan(SqlRunner str, final ConnPool pool, final UpgradePlan uplan)
 {

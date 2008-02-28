@@ -47,7 +47,7 @@ Resource get(String name)
 public ResResult load(SqlRunner str, String name, int uversionid)
 {
 	Resource res = get(name);
-	return res.load(str, uversionid, sysVersion);
+	return res.loadRequiredVersion(str, uversionid, sysVersion);
 }
 
 
@@ -57,7 +57,7 @@ public ResResult load(SqlRunner str, String name, int uversionid)
 //public abstract List<ResKey> getRequired();
 /** Set of resource-uversionid pairs relevant to the app at this time.  By default,
  base it on the Resources registered with this class. */
-public SortedSet<ResKey> getRelevant()
+public SortedSet<ResKey> newRelevant()
 {
 	SortedSet<ResKey> ret = new TreeSet();
 

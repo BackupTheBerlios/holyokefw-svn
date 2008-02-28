@@ -30,34 +30,46 @@ public class ResUtil
 
 ConnPool pool;
 
-/** Loads resource with largest value < iversion */
+public static void delResource(SqlRunner str, String name, int uversionid, int version)
+{
+	String sql =
+		" delete from resources" +
+		" using resourceids rid" +
+		" where resources.resourceid = rid.resourceid" +
+		" and rid.name = " + SqlString.sql(name) +
+		" and uversionid = " + uversionid +
+		" and version = " + version;
+	str.execSql(sql);
+}
+/** Loads resource with largest value < version */
 public static ResResult getResource(SqlRunner str, String name, int uversionid, int version)
 {
 	final ResResult res = new ResResult();
-	if (version < 0) {
-		res.name = name;
-		res.version = -1;
-		res.uversionid = uversionid;
-		res.bytes = null;
-		return res;
-	}
+	res.name = name;
+	res.version = -1;
+	res.uversionid = uversionid;
+	res.bytes = null;
+	if (version < 0) return res;
 	
 	String sql =
 		" select rid.name,r.* from resources r, resourceids rid" +
 		" where rid.resourceid = r.resourceid" +
 		" and rid.name = " + SqlString.sql(name) +
 		" and uversionid = " + uversionid +
-		" and version = " +
-			" (select max(version) from resources r, resourceids rid" +
-			" where rid.resourceid = r.resourceid" +
-			" and name = " + SqlString.sql(name) +
-			" and uversionid = " + uversionid + ")";
+		" and version = " + version;
+//			" (select max(version) from resources r, resourceids rid" +
+//			" where rid.resourceid = r.resourceid" +
+//			" and name = " + SqlString.sql(name) +
+//			" and uversionid = " + uversionid +
+//			" and version <= " + version + )";
 	str.execSql(sql, new RsRunnable() {
 	public void run(SqlRunner str, ResultSet rs) throws Exception {
-		res.name = rs.getString("name");
-		res.version = rs.getInt("iversion");
-		res.uversionid = rs.getInt("uversionid");
-		res.bytes = rs.getBytes("val");
+		if (rs.next()) {
+			res.name = rs.getString("name");
+			res.version = rs.getInt("version");
+			res.uversionid = rs.getInt("uversionid");
+			res.bytes = rs.getBytes("val");
+		}
 	}});
 	return res;
 }

@@ -21,6 +21,9 @@ public DataUpgrader(Resource resource, int version0, int version1)
 /** Does the semantic work of the actual upgrade! */
 public abstract byte[] upgrade(byte[] val) throws Exception;
 
+/** Can the effect of this upgrader be reversed?  Or does it overwrite old versions? */
+public boolean reversible() { return true; }
+
 
 public void upgrade(Connection dbb, ResResult rr, int uversionid1) throws Exception
 {

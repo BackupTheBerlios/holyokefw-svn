@@ -57,7 +57,11 @@ public JKeyedComboBox()
 		Object o = getSelectedItem();
 		setValue(o == NULL ? null : o);
 //		// No need for setValue(), since value === getSelectedItem()
-//		this.firePropertyChange("value", null, getValue());
+		
+		// For some reason, this line was commented out.  Probably had to do
+		// with debugging the School screen in OffstageArts.  But commenting
+		// it out is clearly wrong.
+		firePropertyChange("value", null, getValue());
 	}});
 }
 public JKeyedComboBox(KeyedModel kmodel)

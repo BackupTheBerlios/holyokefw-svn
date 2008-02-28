@@ -30,6 +30,10 @@ String name;
 protected boolean essential = false;
 protected ResSet rset;
 protected int resourceid;		// ID obtained from database
+protected boolean editable = false;
+
+/** Can the user edit this resoure and save a new version? */
+public boolean isEditable() { return editable; }
 
 public ResSet getResSet() { return rset; }
 
@@ -52,6 +56,8 @@ public String getName() { return name; }
 
 TreeSet<Integer> versions = new TreeSet();	// All available versions (i.e. those referenced by an Upgrader)
 Map<Integer,Node> nodes = new TreeMap();		// Each node has a set of upgraders with same version0
+
+public SortedSet<Integer> getAllPossibleVersions() { return versions; }
 
 // =============================================================
 static class Version1Comparator implements Comparator<Upgrader> {
@@ -126,6 +132,7 @@ public UpgradePlan getUpgradePlan(Integer ver0, Integer ver1)
 	SortedSet<PNode> S = new TreeSet();
 	SortedSet<PNode> Q = new TreeSet();
 
+System.out.println("start: ver0 = " + ver0);
 	PNode start = map.get(ver0);
 	Q.add(start);
 	start.d = 0;
@@ -297,10 +304,14 @@ System.out.println("Loading template as resource: " + resourceName);
 
 
 
-/** Loads resource with largest value < sysVersion */
-public ResResult load(SqlRunner str, int uversionid, int sysVersion)
+public ResResult load(SqlRunner str, int uversionid, int version)
 {
-	return ResUtil.getResource(str, getName(), uversionid, sysVersion);
+	return ResUtil.getResource(str, getName(), uversionid, version);
+}
+public ResResult loadRequiredVersion(SqlRunner str, int uversionid, int sysVersion)
+{
+	return load(str, uversionid, getRequiredVersion(sysVersion));
+}
 //	// Get the bytes
 //	final ResResult ret = new ResResult();
 //	String sql =
@@ -322,7 +333,6 @@ public ResResult load(SqlRunner str, int uversionid, int sysVersion)
 //		// ret.bytes = toVal(bytes);
 //	}});
 //	return ret;
-}
 
 /** Should we refuse to run the application if this resource
  is not up to date?  Or should we run anyway, fialing gracefully when we

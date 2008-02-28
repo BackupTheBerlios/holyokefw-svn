@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import citibob.resource.ResModels.ResRow;
+import citibob.sql.UpdRunnable;
 
 /**
  *
@@ -39,30 +40,30 @@ static class ResRow {
 }
 Map<Resource,ResRow> rowMap = new HashMap();
 ArrayList<ResRow> rows = new ArrayList();
+SortedSet<ResKey> allKeys;
 
 public ResModels.ResModel resMod;
 public ResModels.ResKeyModel rkMod;
 public ResModels.AvailModel availMod;
 public ResModels.UPlanModel uplanMod;
 
-public ResModels(SqlRunner str, App xapp, int sysVersion)
+public void refreshVersions(SqlRunner str)
 {
-	this.app = xapp;
+	ResUtil.fetchAvailableVersions(str, allKeys);		// Puts into rel...	
+}
+
+public void readData(SqlRunner str)
+{
 	ResSet rset = app.getResSet();
-	this.sysVersion = sysVersion;
-
-	availNames = new String[] {"version", "lastmodified"};
-	availTypes = new JType[] {JavaJType.jtInteger,
-			app.getSqlTypeSet().getSqlType(java.sql.Types.TIMESTAMP, 0, 0, true)};
-
-	
 	
 	// Read <ResKey> pairs and convert it to rows...
-	SortedSet<ResKey> relKey = rset.getRelevant();
-	ResUtil.fetchAvailableVersions(str, relKey);		// Puts into rel...
+	rows.clear();
+	rowMap.clear();
+	
+	ResUtil.fetchAvailableVersions(str, allKeys);		// Puts into rel...
 	Resource lastRes = null;
 	ResRow cur = null;
-	for (ResKey rk : relKey) {
+	for (ResKey rk : allKeys) {
 		if (lastRes != rk.res) {
 			if (lastRes != null) {
 				rows.add(cur);
@@ -78,11 +79,38 @@ public ResModels(SqlRunner str, App xapp, int sysVersion)
 		rows.add(cur);
 		rowMap.put(cur.res, cur);
 	}
+}
+//public void refreshData(SqlRunner str)
+//{
+//	readData(str);
+//	resMod.clear();
+//	rkMod.clear();
+//	availMod.clear();
+//	uplanMod.clear();
+//	str.execUpdate(new UpdRunnable() {
+//	public void run(SqlRunner str) {
+//		resMod.setData(rows);
+//	}});
+//}
+public ResModels(SqlRunner str, App xapp, int sysVersion)
+{
+	this.app = xapp;
+	ResSet rset = app.getResSet();
+	allKeys = rset.newRelevant();
+	this.sysVersion = sysVersion;
+
+	availNames = new String[] {"version", "lastmodified"};
+	availTypes = new JType[] {JavaJType.jtInteger,
+			app.getSqlTypeSet().getSqlType(java.sql.Types.TIMESTAMP, 0, 0, true)};
+
 	
 	resMod = new ResModel();
 	rkMod = new ResKeyModel();
 	availMod = new AvailModel();
 	uplanMod = new UPlanModel();
+
+	readData(str);
+	resMod.setData(rows);
 }
 
 public ResModel newResModel()
@@ -111,7 +139,10 @@ public class ResModel extends BaseJTypeTableModel<ResRow>
 	public ResModel()
 	{
 		super(resNames, resTypes, null);
+	}
+	public void setData(ArrayList<ResRow> rows) {
 		data = rows;
+		fireTableDataChanged();
 	}
 	public Object getValueAt(int irow, int icol)
 	{
@@ -125,6 +156,11 @@ public class ResModel extends BaseJTypeTableModel<ResRow>
 	}
 }
 // =======================================================================
+public ArrayList<ResKey> getKeys(Resource res)
+{
+	ResRow row = rowMap.get(res);
+	return row.keys;
+}
 static final String[] rkNames = {"ResKey", "name"};
 static final JType[] rkTypes = {new JavaJType(ResKey.class), JavaJType.jtString};
 public class ResKeyModel extends BaseJTypeTableModel<ResKey>
@@ -134,8 +170,7 @@ public class ResKeyModel extends BaseJTypeTableModel<ResKey>
 	}
 	public void setData(Resource res)
 	{
-		ResRow row = rowMap.get(res);
-		this.data = row.keys;
+		this.data = getKeys(res);
 		fireTableDataChanged();
 	}
 	public Object getValueAt(int irow, int icol)

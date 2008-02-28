@@ -15,5 +15,9 @@ public class JarInstaller extends DataUpgrader
 		ResResult rr = getResource().loadJar(version1);
 		return rr.bytes;
 	}
+public String getDescription()
+{
+	return "Start with version " + version1() + " from JAR file.";
+}
 	
 }
