@@ -27,7 +27,7 @@ public abstract class Resource
 {
 
 String name;
-protected boolean optional = false;
+protected boolean required = false;
 protected ResSet rset;
 protected int resourceid;		// ID obtained from database
 protected boolean editable = false;
@@ -50,7 +50,7 @@ public Resource(ResSet rset, String uversionType, String name, boolean essential
 	this.rset = rset;
 	this.uversionType = uversionType;
 	this.name = name;
-	this.optional = essential;
+	this.required = essential;
 }
 
 
@@ -138,6 +138,7 @@ public UpgradePlan getUpgradePlan(Integer ver0, Integer ver1)
 
 System.out.println("start: ver0 = " + ver0);
 	PNode start = map.get(ver0);
+	if (start == null) return null;		// ver0 just doesn't exist, cannot make an upgrade plan starting from it.
 	Q.add(start);
 	start.d = 0;
 
@@ -223,6 +224,7 @@ public List<UpgradePlan> getAvailablePlans(int uversionid, Set<Integer> availVer
 }
 
 public void applyPlan(SqlRunner str, ConnPool pool, UpgradePlan uplan)
+	throws Exception
 {
 	int uversionid = uplan.uversionid0();
 	for (Upgrader up : uplan.getPath()) {
@@ -341,7 +343,7 @@ public ResResult loadRequiredVersion(SqlRunner str, int uversionid, int sysVersi
 /** Should we refuse to run the application if this resource
  is not up to date?  Or should we run anyway, fialing gracefully when we
  cannot load the required resource? */
-public boolean isOptional() { return optional; }
+public boolean isRequired() { return required; }
 
 }
 

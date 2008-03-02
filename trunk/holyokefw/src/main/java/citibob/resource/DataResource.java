@@ -19,6 +19,7 @@ public class DataResource extends Resource
 public DataResource(ResSet rset, String uversionType, String name) {
 	super(rset, uversionType, name);
 	editable = true;
+	super.required = false;
 }
 
 public void applyPlan(SqlRunner str, final ConnPool pool, final UpgradePlan uplan)

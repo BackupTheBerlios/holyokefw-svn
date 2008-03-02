@@ -5,11 +5,12 @@
 
 package citibob.resource;
 
+import citibob.sql.RsRunnable;
 import citibob.sql.RssRunnable;
 import citibob.sql.SqlRunner;
 import citibob.sql.pgsql.SqlString;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -20,6 +21,8 @@ import java.util.TreeSet;
  */
 public abstract class ResSet
 {
+protected boolean dbbExists = false;		// true if the database has been verified to exist.
+public boolean dbbExists() { return dbbExists; }
 
 protected ClassLoader jarClassLoader;	// Used to read resources from JAR file.
 protected String jarPrefix;
@@ -30,10 +33,33 @@ protected TreeMap<String,Resource> resources = new TreeMap();
 
 protected int sysVersion;
 
-public ResSet(int sysVersion, ClassLoader jarClassLoader, String jarPrefix) {
+public ResSet(SqlRunner str, int sysVersion, ClassLoader jarClassLoader, String jarPrefix)
+throws SQLException
+{
 	this.jarClassLoader = jarClassLoader;
 	this.jarPrefix = jarPrefix;
 	this.sysVersion = sysVersion;
+
+	// Make sure the database exists at all!
+	// We could be starting from a blank database.
+	String sql =
+		" select count(*) from  information_schema.tables" +
+		" where table_name in ('resources', 'resourceids');";
+	str.execSql(sql, new RsRunnable() {
+	public void run(SqlRunner str, ResultSet rs) throws Exception {
+		rs.next();
+		int count = rs.getInt(1);
+		switch(count) {
+			case 2 : dbbExists = true;
+				break;
+			case 1 : // Error: one table exists, not the other!
+				throw new SQLException("Corrupt database.  Only one of resources and resourceids exists.");
+			case 0 : // New database; fake our available versions!
+				dbbExists = false;
+			break;
+		}
+	}});
+
 }
 
 public ClassLoader getJarClassLoader() { return jarClassLoader; }
@@ -57,7 +83,8 @@ public ResResult load(SqlRunner str, String name, int uversionid)
 /* List of resource-uversionid pairs required by this app at this time. */
 //public abstract List<RtResKey> getRequired();
 /** Set of resource-uversionid pairs relevant to the app at this time.  By default,
- base it on the Resources registered with this class. */
+ base it on the Resources registered with this class.
+ @param useDbb if false, DO NOT try to read the database (it doesn't exist)*/
 public SortedSet<RtResKey> newRelevant()
 {
 	SortedSet<RtResKey> ret = new TreeSet();
@@ -72,6 +99,8 @@ public SortedSet<RtResKey> newRelevant()
 
 public void createAllResourceIDs(SqlRunner str)
 {
+	if (!dbbExists) return;
+
 	StringBuffer sql = new StringBuffer();
 	for (Resource res : resources.values()) {
 		sql.append("select w_resourceid_create(" +

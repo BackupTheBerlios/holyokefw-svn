@@ -32,7 +32,7 @@ public class ResUtil
 
 ConnPool pool;
 
-public static void delResource(SqlRunner str, String name, int uversionid, int version)
+public static String delResourceSql(String name, int uversionid, int version)
 {
 	String sql =
 		" delete from resources" +
@@ -41,7 +41,8 @@ public static void delResource(SqlRunner str, String name, int uversionid, int v
 		" and rid.name = " + SqlString.sql(name) +
 		" and uversionid = " + uversionid +
 		" and version = " + version;
-	str.execSql(sql);
+	return sql;
+//	str.execSql(sql);
 }
 /** Loads resource with largest value < version */
 public static ResResult getResource(SqlRunner str, String name, int uversionid, int version)

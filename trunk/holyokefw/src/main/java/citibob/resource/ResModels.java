@@ -144,10 +144,12 @@ public class AvailModel extends BaseJTypeTableModel<RtVers>
 // =======================================================================
 static final String[] uplanNames = {"UpgradePlan",
 	"uversionid0", "uversionName0",
-	"uversionid1", "uversionName1"};
+	"uversionid1", "uversionName1",
+	"required", "backcompatible", "resourceName"};
 static final JType[] uplanTypes = {new JavaJType(UpgradePlan.class),
 	JavaJType.jtInteger, JavaJType.jtString,
-	JavaJType.jtInteger, JavaJType.jtString};
+	JavaJType.jtInteger, JavaJType.jtString,
+	JavaJType.jtBoolean, JavaJType.jtBoolean, JavaJType.jtString};
 public static class UPlanModel extends BaseJTypeTableModel<UpgradePlan>
 {
 	public UPlanModel() {
@@ -166,6 +168,12 @@ public static class UPlanModel extends BaseJTypeTableModel<UpgradePlan>
 			case 2 : return up.uversionName0();
 			case 3 : return up.uversionid1();
 			case 4 : return up.uversionName1();
+			case 5 : return up.getLast().getResource().isRequired();
+			case 6 : return up.isBackCompatible();
+			case 7 : {
+				Upgrader uu = up.path[up.path.length-1];
+				return uu.getResource().getName();
+			}
 		}
 		return null;
 	}

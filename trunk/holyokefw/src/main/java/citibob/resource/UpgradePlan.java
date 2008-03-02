@@ -5,6 +5,9 @@
 
 package citibob.resource;
 
+import citibob.sql.ConnPool;
+import citibob.sql.SqlRunner;
+
 /**
  *
  * @author citibob
@@ -13,6 +16,15 @@ public class UpgradePlan {
 	Upgrader[] path;
 	private int uversionid0, uversionid1;
 	private String uversionName0, uversionName1;
+	
+	public Upgrader getLast() { return path[path.length-1]; }
+	public Resource getResource() { return getLast().getResource(); }
+	
+	public void applyPlan(SqlRunner str, ConnPool pool)
+	throws Exception
+	{
+		getResource().applyPlan(str, pool, this);
+	}
 	
 	public UpgradePlan(Upgrader[] path)
 		{ this.path = path; }
@@ -33,12 +45,18 @@ public class UpgradePlan {
 		uversionid1 = v;
 		uversionName1 = name;
 	}
+	public boolean isBackCompatible()
+	{
+		for (int i=0; i<path.length; ++i) if (!path[i].isBackCompatible()) return false;
+		return true;
+	}
 	public String toString() {
 		StringBuffer sbuf = new StringBuffer("UpgradePlan(");
 		if (path == null || path.length < 1) sbuf.append(")");
 		else {
+			sbuf.append(path[0].getResource().getName() + "-" + uversionName1 + ": ");
 			sbuf.append(path[0].version0());
-			for (int i=1; i<path.length; ++i) {
+			for (int i=(path.length == 1 ? 0 : 1); i<path.length; ++i) {
 				sbuf.append(" -> " + path[i].version1());
 			}
 			sbuf.append(")");

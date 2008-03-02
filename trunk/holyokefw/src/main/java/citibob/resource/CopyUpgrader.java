@@ -28,6 +28,4 @@ public String getDescription()
 	return "Copy version " + version0() + " to version " + version1(); 
 }
 
-public boolean isReversible() { return true; }
-
 }

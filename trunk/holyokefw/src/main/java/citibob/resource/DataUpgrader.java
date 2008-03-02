@@ -5,6 +5,9 @@
 
 package citibob.resource;
 
+import citibob.sql.ConnPool;
+import citibob.sql.SqlRunner;
+import citibob.sql.UpdRunnable;
 import citibob.sql.pgsql.*;
 import java.sql.Connection;
 
@@ -16,13 +19,12 @@ public abstract class DataUpgrader extends BaseUpgrader
 {
 
 public DataUpgrader(Resource resource, int version0, int version1)
-	{ super(resource, version0, version1); }
+	{ super(resource, version0, version1, true); }
 
 /** Does the semantic work of the actual upgrade! */
 public abstract byte[] upgrade(byte[] val) throws Exception;
 
-/** Can the effect of this upgrader be reversed?  Or does it overwrite old versions? */
-public boolean reversible() { return true; }
+//public abstract void upgrade(Connection dbb, ResResult rr, int uversionid1) throws Exception;
 
 
 public void upgrade(Connection dbb, ResResult rr, int uversionid1) throws Exception
@@ -30,5 +32,20 @@ public void upgrade(Connection dbb, ResResult rr, int uversionid1) throws Except
 	byte[] newBytes = upgrade(rr.bytes);
 	ResUtil.setResource(dbb, resource.getName(), uversionid1, version1, newBytes);
 }
+
+public void upgrade(SqlRunner str, final ConnPool pool, int uversionid0, final int uversionid1)
+throws Exception
+{
+	final ResResult rr = resource.load(str, uversionid0, version0);
+	str.execUpdate(new UpdRunnable() {
+	public void run(SqlRunner str) throws Exception {
+		Exception e = pool.exec(new citibob.task.DbRunnable() {
+		public void run(java.sql.Connection dbb) throws Exception {
+			upgrade(dbb, rr, uversionid1);
+		}});
+		if (e != null) throw e;
+	}});
+}
+
 
 }

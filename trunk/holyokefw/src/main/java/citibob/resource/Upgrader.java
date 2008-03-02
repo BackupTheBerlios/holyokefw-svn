@@ -21,11 +21,12 @@ public int version0();
 
 public int version1();
 
-/** Can the effect of this upgrader be reversed? */
-public boolean isReversible();
+/** Is this upgrader backwards compatible with the previous version of the app? */
+public boolean isBackCompatible();
 
 /** Does the actual upgrade! */
-public void upgrade(SqlRunner str, final ConnPool pool, int uversionid0, int uversionid1);
+public void upgrade(SqlRunner str, final ConnPool pool, int uversionid0, int uversionid1)
+	throws Exception;
 
 /** Describes the action of this upgrader in plain English */
 public String getDescription();

@@ -19,6 +19,6 @@ public String getDescription()
 {
 	return "Start with default version " + version1();
 }
-public boolean isReversible() { return true; }
+public boolean isBackCompatible() { return true; }
 
 }
