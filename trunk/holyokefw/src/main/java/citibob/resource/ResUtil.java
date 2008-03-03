@@ -5,23 +5,26 @@
 
 package citibob.resource;
 
+import citibob.gui.BareBonesOpen;
 import citibob.sql.ConnPool;
 import citibob.sql.RsRunnable;
-import citibob.sql.SqlDateType;
 import citibob.sql.SqlRunner;
-import citibob.sql.SqlTypeSet;
+import citibob.sql.UpdRunnable;
 import citibob.sql.pgsql.*;
+import java.awt.Component;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -105,6 +108,76 @@ throws SQLException
 		} catch(Exception e) {}
 	}
 
+}
+
+public static void uploadResource(ConnPool pool,
+final RtResKey curResKey, final int version, File inFile)
+throws SQLException, IOException
+{
+	// Read resource back from temporary file
+	byte[] bytes = new byte[(int)inFile.length()];
+	InputStream in = new FileInputStream(inFile);
+	in.read(bytes);
+	in.close();
+
+	// Store back in database
+	Connection dbb = pool.checkout();
+	try {
+		ResUtil.setResource(dbb,
+			curResKey.res.getName(), curResKey.uversionid, version,
+			bytes);
+	} finally {
+		pool.checkin(dbb);
+	}
+}
+
+public static void saveResource(SqlRunner str,
+final RtResKey curResKey, final int version, final File outFile)
+{
+	// Fetch the resource from the database
+	final ResResult rr = ResUtil.getResource(str,
+		curResKey.res.getName(), curResKey.uversionid, version);
+	str.execUpdate(new UpdRunnable() {
+	public void run(SqlRunner str) throws Exception {
+		// Copy resource to the temporary file.
+		OutputStream out = new FileOutputStream(outFile);
+		out.write(rr.bytes);
+		out.close();
+	}});	
+}
+	
+//	final RtVers ver = (RtVers)tAvailVersions.getValue();
+//	int version = ver.version;
+//	ResourcePanel.this
+
+public static void editResource(SqlRunner str, final ConnPool pool,
+final Component parentComponent,
+final RtResKey curResKey, final int version)
+throws IOException
+{
+	// Get a temporary file
+	String name = curResKey.res.getName();
+	int dot = name.lastIndexOf('.');
+	String suffix = (dot < 0 ? "" : name.substring(dot));
+	String prefix = (dot < 0 ? name : name.substring(0,dot));
+	final File tmpFile = File.createTempFile(prefix, suffix);
+	tmpFile.deleteOnExit();
+	saveResource(str, curResKey, version, tmpFile);
+
+	str.execUpdate(new UpdRunnable() {
+	public void run(SqlRunner str) throws Exception {
+		// Open the resource
+		BareBonesOpen.open(tmpFile);
+
+		// Wait for user to edit and save
+		int option = JOptionPane.showConfirmDialog(parentComponent,
+			"Please press OK after you finish" +
+			"editing and saving the resource.",
+			"Edit Resource", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION) {
+			uploadResource(pool, curResKey, version, tmpFile);
+		}
+	}});
 }
 
 

@@ -30,6 +30,8 @@ import javax.swing.*;
 import java.awt.*;
 import citibob.app.*;
 import citibob.swing.*;
+import java.io.File;
+import java.util.prefs.Preferences;
 
 /**
  *
@@ -51,5 +53,54 @@ public static void showJPanel(Component c, JPanel panel, App app, String title, 
 	if (dialogName != null) app.setUserPrefs(frame, dialogName);
 	frame.setVisible(true);
 }
+
+/** @param suffix with the dot. */
+public static JFileChooser newChooser(final String suffix)
+{
+	JFileChooser chooser = new JFileChooser();
+	chooser.addChoosableFileFilter(
+		new javax.swing.filechooser.FileFilter() {
+		public boolean accept(File file) {
+			String filename = file.getName();
+			return filename.endsWith(suffix);
+		}
+		public String getDescription() {
+			return "*" + suffix;
+		}
+	});
+	return chooser;
+}
+
+
+/** @param prefs Preferences node in which current directory is stored. */
+public static File chooseSaveFileCheckOverwrite(Component parent,
+JFileChooser chooser, final String suffix,
+Preferences prefs, String prefsKey)
+{
+	String path = null;
+	String fname = null;
+	if (prefs != null) {
+		String sdir = prefs.get(prefsKey, null);
+		if (sdir != null) chooser.setCurrentDirectory(new File(sdir));
+	}
+	for (;;) {
+		chooser.showSaveDialog(parent);
+
+		path = chooser.getCurrentDirectory().getAbsolutePath();
+		prefs.put(prefsKey, path);
+		if (chooser.getSelectedFile() == null) return null;
+		fname = chooser.getSelectedFile().getPath();
+		if (!fname.endsWith(suffix)) fname = fname + suffix;
+		File f = new File(fname);
+		if (!f.exists()) return f;
+		if (JOptionPane.showConfirmDialog(parent,
+			"The file " + f.getName() + " already exists.\nWould you like to ovewrite it?",
+			"Overwrite File?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) break;
+	}
+	return null;
+//	return chooser.getSelectedFile();
+}
+
+
 
 }

@@ -55,7 +55,18 @@ public Resource(ResSet rset, String uversionType, String name, boolean essential
 
 
 public String getName() { return name; }
-
+public String getSuffix()
+{
+	int dot = name.lastIndexOf('.');
+	if (dot < 0) return "";
+	return name.substring(dot);
+}
+public String getPrefix()
+{
+	int dot = name.lastIndexOf('.');
+	if (dot < 0) return name;
+	return name.substring(0,dot);	
+}
 
 
 TreeSet<Integer> versions = new TreeSet();	// All available versions (i.e. those referenced by an Upgrader)
