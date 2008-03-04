@@ -79,8 +79,15 @@ throws Exception
 		" and uversionid = " + uversionid1 +
 		" and version = " + version1 + ";\n");
 	if (!backCompatible && version0 != -1) {
-		// Delete previous version if this upgrade is not backwards compatible.
-		sql.append(ResUtil.delResourceSql(resource.getName(), uversionid1, version0));
+		// Delete all previous version if this upgrade is not backwards compatible.
+		sql.append(//ResUtil.delResourceSql(resource.getName(), uversionid1, version0));
+			" delete from resources" +
+			" using resourceids rid" +
+			" where resources.resourceid = rid.resourceid" +
+			" and rid.name = " + SqlString.sql(name) +
+			" and uversionid = " + uversionid1 +
+			" and version < " + version1);
+
 	}
 	sql.append("COMMIT;\n");
 	str.execSql(sql.toString());
