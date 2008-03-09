@@ -61,6 +61,7 @@ public static JFileChooser newChooser(final String suffix)
 	chooser.addChoosableFileFilter(
 		new javax.swing.filechooser.FileFilter() {
 		public boolean accept(File file) {
+			if (file.isDirectory()) return true;
 			String filename = file.getName();
 			return filename.endsWith(suffix);
 		}
