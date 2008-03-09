@@ -5,6 +5,9 @@
 
 package citibob.text;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -16,6 +19,7 @@ import java.util.TimeZone;
 public class DayConv {
 Calendar cal;
 long ms1970;
+DateFormat dfmt;
 
 // Used to speed up conversion
 long lastDayStartMS;		// Start of day for last toDay()
@@ -29,6 +33,8 @@ public DayConv(TimeZone tz)
 	cal.clear();
 	cal.set(1970,0,1);
 	ms1970 = cal.getTimeInMillis();
+	dfmt = new SimpleDateFormat("yyyyMMdd");
+	dfmt.setTimeZone(tz);
 }
 
 /** @param ms This must already be truncated to midnight in Market's time zone. */
@@ -55,7 +61,10 @@ public int toDay(java.util.Date dt)
 {
 	return toDay(dt.getTime());
 }
-
+public int toDay(String sdt) throws ParseException
+{
+	return toDay(dfmt.parse(sdt));
+}
 public long toMS(int day)
 {
 	cal.setTimeInMillis(ms1970);
@@ -68,6 +77,5 @@ public Date toDate(int day)
 	cal.add(Calendar.DATE, day);
 	return cal.getTime();
 }
-
 
 }
