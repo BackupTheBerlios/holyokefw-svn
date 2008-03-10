@@ -39,6 +39,7 @@ public class JavaJType implements JType
 		{ return (klass.isInstance(o) || (nullable && o == null)); }
 // =================================================================
 public static final JavaJType jtInteger = new JavaJType(Integer.class);
+public static final JavaJType jtLong = new JavaJType(Long.class);
 public static final JavaJType jtBoolean= new JavaJType(Boolean.class);
 public static final JavaJType jtDouble= new JavaJType(Double.class);
 public static final JavaJType jtString= new JavaJType(String.class);

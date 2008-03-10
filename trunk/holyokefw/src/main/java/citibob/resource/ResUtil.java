@@ -11,6 +11,7 @@ import citibob.sql.RsRunnable;
 import citibob.sql.SqlRunner;
 import citibob.sql.UpdRunnable;
 import citibob.sql.pgsql.*;
+import com.sun.java_cup.internal.version;
 import java.awt.Component;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -23,7 +24,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
@@ -99,7 +99,7 @@ throws SQLException
 		st.setInt(7, version);
 
 		st.setBinaryStream(4, new ByteArrayInputStream(val), val.length);
-
+		
 		st.execute();
 		dbb.commit();
 	} finally {
@@ -111,7 +111,7 @@ throws SQLException
 }
 
 public static void uploadResource(ConnPool pool,
-final RtResKey curResKey, final int version, File inFile)
+final RtResKey curResKey, final RtVers ver, File inFile)
 throws SQLException, IOException
 {
 	// Read resource back from temporary file
@@ -124,8 +124,9 @@ throws SQLException, IOException
 	Connection dbb = pool.checkout();
 	try {
 		ResUtil.setResource(dbb,
-			curResKey.res.getName(), curResKey.uversionid, version,
+			curResKey.res.getName(), curResKey.uversionid, ver.version,
 			bytes);
+		ver.size = (long)bytes.length;
 	} finally {
 		pool.checkin(dbb);
 	}
@@ -134,9 +135,25 @@ throws SQLException, IOException
 public static void saveResource(SqlRunner str,
 final RtResKey curResKey, final int version, final File outFile)
 {
+	saveResource(str, curResKey.res.getName(), curResKey.uversionid, version, outFile);
+//	// Fetch the resource from the database
+//	final ResResult rr = ResUtil.getResource(str,
+//		curResKey.res.getName(), curResKey.uversionid, version);
+//	str.execUpdate(new UpdRunnable() {
+//	public void run(SqlRunner str) throws Exception {
+//		// Copy resource to the temporary file.
+//		OutputStream out = new FileOutputStream(outFile);
+//		out.write(rr.bytes);
+//		out.close();
+//	}});	
+}
+
+public static void saveResource(SqlRunner str,
+String resName, int uversionid, final int version, final File outFile)
+{
 	// Fetch the resource from the database
 	final ResResult rr = ResUtil.getResource(str,
-		curResKey.res.getName(), curResKey.uversionid, version);
+		resName, uversionid, version);
 	str.execUpdate(new UpdRunnable() {
 	public void run(SqlRunner str) throws Exception {
 		// Copy resource to the temporary file.
@@ -152,7 +169,7 @@ final RtResKey curResKey, final int version, final File outFile)
 
 public static void editResource(SqlRunner str, final ConnPool pool,
 final Component parentComponent,
-final RtResKey curResKey, final int version)
+final RtResKey curResKey, final RtVers ver) //int version)
 throws IOException
 {
 	// Get a temporary file
@@ -162,7 +179,7 @@ throws IOException
 	String prefix = (dot < 0 ? name : name.substring(0,dot));
 	final File tmpFile = File.createTempFile(prefix, suffix);
 	tmpFile.deleteOnExit();
-	saveResource(str, curResKey, version, tmpFile);
+	saveResource(str, curResKey, ver.version, tmpFile);
 
 	str.execUpdate(new UpdRunnable() {
 	public void run(SqlRunner str) throws Exception {
@@ -175,7 +192,7 @@ throws IOException
 			"editing and saving the resource.",
 			"Edit Resource", JOptionPane.OK_CANCEL_OPTION);
 		if (option == JOptionPane.OK_OPTION) {
-			uploadResource(pool, curResKey, version, tmpFile);
+			uploadResource(pool, curResKey, ver, tmpFile);
 		}
 	}});
 }

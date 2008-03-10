@@ -27,13 +27,17 @@ public class MultiDbModel implements DbModel
 {
 
 ArrayList<DbModel> models = new ArrayList();
+protected boolean inSelect;
+
+public boolean inSelect() { return inSelect; }
 
 public MultiDbModel() {}
-public MultiDbModel(DbModel[] mm) {init(mm); }
+public MultiDbModel(DbModel... mm) {init(mm); }
 public void init(DbModel[] mm)
 {
 	for (DbModel m : mm) add(m);
 }
+public DbModel getModel(int ix) { return models.get(ix); }
 // ---------------------------------------------------
 public void add(DbModel m)
 	{ models.add(m); }
@@ -90,10 +94,12 @@ public void doDelete(SqlRunner str)
 public void doSelect(SqlRunner str)
 //throws java.sql.SQLException
 {
+	inSelect = true;
 	for (Iterator ii = models.iterator(); ii.hasNext(); ) {
 		DbModel m = (DbModel)ii.next();
 		m.doSelect(str);
 	}
+	inSelect = false;
 }
 public void doInsert(SqlRunner str)
 //throws java.sql.SQLException
@@ -118,13 +124,13 @@ public void doClear()
 		m.doClear();
 	}
 }
-public void setKey(Object[] key)
-{
-	for (Iterator ii = models.iterator(); ii.hasNext(); ) {
-		DbModel m = (DbModel)ii.next();
-		m.setKey(key);
-	}	
-}
+//public void setKey(Object[] key)
+//{
+//	for (Iterator ii = models.iterator(); ii.hasNext(); ) {
+//		DbModel m = (DbModel)ii.next();
+//		m.setKey(key);
+//	}	
+//}
 // ---------------------------------------------------
 //protected int intKey;
 ///** This method will only work if all our sub-models are IntKeyedDbModel. */

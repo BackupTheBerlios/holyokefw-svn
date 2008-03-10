@@ -13,11 +13,13 @@ import java.util.Date;
  */
 public class RtVers {
 	public int version;
+	public Long size;				// # bytes in the resource stored in dbb
 	public Date lastmodified;
 	
-	public RtVers(int version, Date lastmodified)
+	public RtVers(int version, Long size, Date lastmodified)
 	{
 		this.version = version;
+		this.size = size;
 		this.lastmodified = lastmodified;
 	}
 }

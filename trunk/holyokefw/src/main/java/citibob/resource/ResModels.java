@@ -36,9 +36,10 @@ public ResModels(ResData rdata, App xapp, int sysVersion)
 	this.rdata = rdata;
 	this.sysVersion = sysVersion;
 
-	availNames = new String[] {"RtVers", "version", "lastmodified"};
+	availNames = new String[] {"RtVers", "version", "lastmodified", "size"};
 	availTypes = new JType[] {new JavaJType(RtVers.class), JavaJType.jtInteger,
-			app.getSqlTypeSet().getSqlType(java.sql.Types.TIMESTAMP, 0, 0, true)};
+			app.getSqlTypeSet().getSqlType(java.sql.Types.TIMESTAMP, 0, 0, true),
+			JavaJType.jtLong};
 
 	
 	resMod = new ResModel();
@@ -137,6 +138,7 @@ public class AvailModel extends BaseJTypeTableModel<RtVers>
 			case 0 : return version;
 			case 1 : return version.version;
 			case 2 : return version.lastmodified;
+			case 3 : return version.size;
 		}
 		return null;
 	}

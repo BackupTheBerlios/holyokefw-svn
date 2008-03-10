@@ -107,7 +107,8 @@ final SqlTypeSet tset, final SortedSet<RtResKey> keys)
 		sql.append(" insert into _keys (resourceid, uversionid) values (" + key.res.resourceid + ", " + key.uversionid + ");\n");
 	}
 	sql.append(
-		" select rid.name,k.serial,r.resourceid,r.uversionid,r.version,r.lastmodified" +
+		" select rid.name,k.serial,r.resourceid,r.uversionid," +
+		" r.version,r.lastmodified,length(r.val) as size" +
 		" from resources r, resourceids rid, _keys k" +
 		" where k.resourceid = r.resourceid" +
 		" and k.uversionid = r.uversionid" +
@@ -143,7 +144,7 @@ final SqlTypeSet tset, final SortedSet<RtResKey> keys)
 //			}
 System.out.println("rk = " + rk);
 System.out.println("avail = " + rk.availVersions);
-			rk.availVersions.add(new RtVers(rs.getInt("version"),
+			rk.availVersions.add(new RtVers(rs.getInt("version"), rs.getLong("size"),
 				(Date)tstamp.get(rs, "lastmodified")));
 		}
 	}});

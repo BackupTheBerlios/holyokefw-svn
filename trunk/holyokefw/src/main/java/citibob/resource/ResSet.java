@@ -9,6 +9,7 @@ import citibob.sql.RsRunnable;
 import citibob.sql.RssRunnable;
 import citibob.sql.SqlRunner;
 import citibob.sql.pgsql.SqlString;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.SortedSet;
@@ -74,10 +75,17 @@ Resource get(String name)
 public ResResult load(SqlRunner str, String name, int uversionid)
 {
 	Resource res = get(name);
-	return res.loadRequiredVersion(str, uversionid, sysVersion);
+	int reqVersion = res.getRequiredVersion(sysVersion);
+	return res.load(str, uversionid, reqVersion);
 }
 
-
+public void saveResource(SqlRunner str, String name, int uversionid,
+final File outFile)
+{
+	Resource res = get(name);
+	int reqVersion = res.getRequiredVersion(sysVersion);
+	ResUtil.saveResource(str, res.getName(), uversionid, reqVersion, outFile);
+}
 
 
 /* List of resource-uversionid pairs required by this app at this time. */
