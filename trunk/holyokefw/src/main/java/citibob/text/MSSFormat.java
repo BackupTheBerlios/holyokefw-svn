@@ -6,6 +6,7 @@
 package citibob.text;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  *
@@ -19,6 +20,15 @@ DateSFormat sub;
 public MSSFormat(DateSFormat sub)
 {
 	this.sub = sub;
+}
+
+public MSSFormat(String sfmt, TimeZone tz)
+{
+	this(new DateSFormat(sfmt, "", tz));
+}
+public MSSFormat(String sfmt, String nullText, TimeZone tz)
+{
+	this(new DateSFormat(sfmt, nullText, tz));
 }
 
 public Object stringToValue(String text) throws java.text.ParseException
