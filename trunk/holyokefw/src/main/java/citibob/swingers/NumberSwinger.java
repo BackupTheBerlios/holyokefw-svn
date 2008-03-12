@@ -33,6 +33,8 @@ public class NumberSwinger extends TypedTextSwinger
 
 public NumberSwinger(JType jType, NumberFormat nf)
 	{ super(jType, nf); }
+public NumberSwinger(JType jType, SFormat fmt)
+	{ super(jType, fmt); }
 
 
 public javax.swing.JFormattedTextField.AbstractFormatter newAbsFormatter()

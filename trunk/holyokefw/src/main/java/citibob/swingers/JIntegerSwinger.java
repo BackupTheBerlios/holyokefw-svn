@@ -35,15 +35,16 @@ public class JIntegerSwinger extends NumberSwinger
 {
 
 static NumberFormat nfmt = new DecimalFormat("#");
+static SFormat sfmt = new IntegerSFormat(nfmt);
 //static nfmt = NumberFormat.getIntegerInstance();
 	
 public JIntegerSwinger(JType jType)
 	{ this(jType, nfmt); }
 public JIntegerSwinger(JType jType, NumberFormat nf)
-	{ super(jType, nf); }
+	{ super(jType, new IntegerSFormat(nf)); }
 
 public JIntegerSwinger(boolean nullable, NumberFormat nf)
-	{super(new JavaJType(Integer.class, nullable), nf); }
+	{super(new JavaJType(Integer.class, nullable), new IntegerSFormat(nf)); }
 public JIntegerSwinger(boolean nullable)
 	{ this(nullable, nfmt); }
 public JIntegerSwinger()
