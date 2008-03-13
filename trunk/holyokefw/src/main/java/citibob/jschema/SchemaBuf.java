@@ -224,7 +224,7 @@ throws SQLException
 public void getUpdateCols(int row, ConsSqlQuery q, boolean updateUnchanged, SqlSchemaInfo qs)
 {
 	SqlRow2 r = (SqlRow2)rows.get(row);
-	for (int qcol = 0; qcol < qs.schema.getColCount(); ++qcol) {
+	for (int qcol = 0; qcol < qs.schema.size(); ++qcol) {
 		int col = qs.schemaMap[qcol];
 		if (col < 0) continue;		// Query wants to write a column not in our data set
 		SqlCol qc = (SqlCol)qs.schema.getCol(qcol);
@@ -241,7 +241,7 @@ public void getUpdateCols(int row, ConsSqlQuery q, boolean updateUnchanged, SqlS
 public void getInsertCols(int row, ConsSqlQuery q, boolean insertUnchanged, SqlSchemaInfo qs)
 {
 	SqlRow2 r = (SqlRow2)rows.get(row);
-	for (int qcol = 0; qcol < qs.schema.getColCount(); ++qcol) {
+	for (int qcol = 0; qcol < qs.schema.size(); ++qcol) {
 		int col = qs.schemaMap[qcol];
 		if (col < 0) continue;		// Query wants to write a column not in our data set
 		SqlCol qc = (SqlCol)qs.schema.getCol(qcol);
@@ -264,7 +264,7 @@ System.out.println("   getInsertCols(" + row + ", " + col + "): " + !unchanged +
 public void getWhereKey(int row, ConsSqlQuery q, SqlSchemaInfo qs)
 {
 	SqlRow2 r = (SqlRow2)rows.get(row);
-	for (int qcol = 0; qcol < qs.schema.getColCount(); ++qcol) {
+	for (int qcol = 0; qcol < qs.schema.size(); ++qcol) {
 		int col = qs.schemaMap[qcol];
 		if (col < 0) continue;		// Query wants to write a column not in our data set
 		SqlCol qc = (SqlCol)qs.schema.getCol(qcol);
@@ -289,7 +289,7 @@ public void getWhereKey(int row, ConsSqlQuery q, SqlSchemaInfo qs)
 /** For auto-generating SELECT queries, we use our own schema. */
 public void getSelectCols(ConsSqlQuery q, String asName)
 {
-	for (int qcol = 0; qcol < schema.getColCount(); ++qcol) {
+	for (int qcol = 0; qcol < schema.size(); ++qcol) {
 		int col = qcol;
 		if (col < 0) continue;		// Query wants to write a column not in our data set
 		SqlCol qc = (SqlCol)schema.getCol(qcol);
@@ -318,7 +318,7 @@ public void setStatus(int row, int status)
 }
 public void fireStatusChanged(int row)
 {
-	super.fireTableCellUpdated(row, schema.getColCount()+C_STATUS);
+	super.fireTableCellUpdated(row, schema.size()+C_STATUS);
 }
 // ---------------------------------------------------
 /** Mark a row for deletion. */
@@ -529,9 +529,9 @@ public void setValueAt(Object val, int row, int col)
 // --------------------------------------------------
 /** # columns in the table, including extra columns */
 public int getColumnCount()
-	{ return schema.getColCount() + C_COUNT; }
+	{ return schema.size() + C_COUNT; }
 public int getSchemaColumnCount()
-	{ return schema.getColCount(); }
+	{ return schema.size(); }
 
 public int getRowCount()
 	{ return rows.size(); }

@@ -79,7 +79,7 @@ public QueryLogRec(ConsSqlQuery query, SqlSchema schema, int[] schemaMap, Schema
 	TreeMap<String,NVPair> inserted = new TreeMap();
 	for (NVPair nv : query.getColumns()) inserted.put(nv.name, nv);
 	
-	for (int qi=0; qi<schema.getColCount(); ++qi) {
+	for (int qi=0; qi<schema.size(); ++qi) {
 		int sbi = (schemaMap == null ? qi : schemaMap[qi]);
 		if (sbi < 0) continue;
 

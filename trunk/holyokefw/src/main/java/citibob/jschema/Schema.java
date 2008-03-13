@@ -22,7 +22,7 @@ import java.util.*;
 public interface Schema
 {
 	/** Number of cols in this SqlSchema */
-	int getColCount();
+	int size();
 
 	/** Retrieve info on a column by number. */
 	Column getCol(int colNo);

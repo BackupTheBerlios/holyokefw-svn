@@ -29,7 +29,7 @@ public class SchemaHelper
 /** @deprecated */
 public static void getSelectCols(Schema schema, ConsSqlQuery q, String table, String colPrefix)
 {
-	for (int col = 0; col < schema.getColCount(); ++col) {
+	for (int col = 0; col < schema.size(); ++col) {
 		SqlCol c = (SqlCol)schema.getCol(col);
 		q.addColumn(table + "." + c.getName() +
 			(colPrefix == null ? "" : " as " + colPrefix + "_" + c.getName()));
@@ -43,7 +43,7 @@ public static void getSelectCols(Schema schema, ConsSqlQuery q, String table, St
 /** @deprecated */
 public static void getWhereKey(Schema schema, ConsSqlQuery q, String table, Object[] whereKey)
 {
-	for (int col = 0; col < schema.getColCount(); ++col) {
+	for (int col = 0; col < schema.size(); ++col) {
 		SqlCol c = (SqlCol)schema.getCol(col);
 		if (c.isKey()) {
 			q.addWhereClause(table + "." + c.getName() + " = " +
@@ -55,8 +55,8 @@ public static void getWhereKey(Schema schema, ConsSqlQuery q, String table, Obje
 /** @returns map[] such that column i in a is column map[i] i b */
 public static int[] newSchemaMap(Schema a, Schema b)
 {
-	int[] map = new int[a.getColCount()];
-	for (int i=0; i<a.getColCount(); ++i)
+	int[] map = new int[a.size()];
+	for (int i=0; i<a.size(); ++i)
 		map[i] = b.findCol(a.getCol(i).getName());
 	return map;
 }
@@ -74,8 +74,8 @@ throws SQLException
 public static int[] newSchemaMap(Schema a, ResultSet rs)
 throws SQLException
 {
-	int[] map = new int[a.getColCount()];
-	for (int i=0; i<a.getColCount(); ++i)
+	int[] map = new int[a.size()];
+	for (int i=0; i<a.size(); ++i)
 		map[i] = rs.findColumn(a.getCol(i).getName());
 	return map;
 }

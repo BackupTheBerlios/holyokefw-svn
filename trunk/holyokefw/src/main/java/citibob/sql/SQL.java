@@ -173,7 +173,7 @@ public static String readString(Statement st, String sql) throws SQLException
  making INSERT queries from Wizard data. */
 public static void addColumns(ConsSqlQuery sql, HashMap v, SqlSchema schema)
 {
-	int ncol = schema.getColCount();
+	int ncol = schema.size();
 	for (int i=0; i<ncol; ++i) {
 		SqlCol col = (SqlCol)schema.getCol(i);
 		Object val = v.get(col.getName());

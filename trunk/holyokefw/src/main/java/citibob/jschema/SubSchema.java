@@ -42,7 +42,7 @@ public SubSchema(SqlSchema schema, String[] scols)
 {
 	this.schema = schema;
 	cols = new int[scols.length];
-	icols = new int[schema.getColCount()];
+	icols = new int[schema.size()];
 	for (int i=0; i<scols.length; ++i) {
 		cols[i] = schema.findCol(scols[i]);
 		icols[cols[i]] = i;
@@ -53,7 +53,7 @@ public SubSchema(SqlSchema schema, String[] scols)
 public String getDefaultTable() { return schema.getDefaultTable(); }
 
 /** Number of cols in this SqlSchema */
-public int getColCount() { return cols.length; }
+public int size() { return cols.length; }
 
 /** Retrieve info on a column by number. */
 public Column getCol(int colNo) { return schema.getCol(cols[colNo]); }

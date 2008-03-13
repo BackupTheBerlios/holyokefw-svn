@@ -72,8 +72,8 @@ protected void init(SchemaBuf sbuf, String selectTable, SqlSchemaInfo[] updateSc
 	// Set the select key fields
 	Schema schema = sbuf.getSchema();
 	this.keyFields = new int[0];
-	invKeyFields = new int[schema.getColCount()];
-	for (int i=0; i<schema.getColCount(); ++i) invKeyFields[i] = -1;
+	invKeyFields = new int[schema.size()];
+	for (int i=0; i<schema.size(); ++i) invKeyFields[i] = -1;
 	
 	for (int i=0; i<updateSchemas.length; ++i) {
 		updateSchemas[i].schemaMap = SchemaHelper.newSchemaMap(updateSchemas[i].schema, sbuf.getSchema());
@@ -124,13 +124,13 @@ public void setSelectKeyFields(String... keyFieldNames)
 	if (keyFieldNames == null) {
 		// Use names from schema
 		int nkey = 0;
-		for (int i=0; i<schema.getColCount(); ++i) {
+		for (int i=0; i<schema.size(); ++i) {
 			SqlCol col = (SqlCol)schema.getCol(i);
 			if (col.isKey()) ++nkey;
 		}
 		keyFields = new int[nkey];
 		int j=0;
-		for (int i=0; i<schema.getColCount(); ++i) {
+		for (int i=0; i<schema.size(); ++i) {
 			SqlCol col = (SqlCol)schema.getCol(i);
 			if (col.isKey()) keyFields[j++] = i;
 		}
@@ -142,7 +142,7 @@ public void setSelectKeyFields(String... keyFieldNames)
 	}
 	// Get inverse of key fields map
 //	invKeyFields = new int[schema.getColCount()];
-	for (int i=0; i<schema.getColCount(); ++i) invKeyFields[i] = -1;
+	for (int i=0; i<schema.size(); ++i) invKeyFields[i] = -1;
 	for (int i=0; i<keyFields.length; ++i) invKeyFields[keyFields[i]] = i;
 		
 	keys = new Object[keyFields.length];
@@ -314,7 +314,7 @@ protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SqlSchemaInf
 	for (ConsSqlQuery.NVPair nv : q.getColumns()) inserted.put(nv.name, nv);
 	
 	if (updateBufOnUpdate) {
-		for (int i=0; i<schema.getColCount(); ++i) {
+		for (int i=0; i<schema.size(); ++i) {
 			SqlCol col = (SqlCol)schema.getCol(i);
 			if ((col.jType instanceof SqlSequence) && inserted.get(col.name)==null) {
 				// Update this in the SchemaBuf if it wasn't inserted...

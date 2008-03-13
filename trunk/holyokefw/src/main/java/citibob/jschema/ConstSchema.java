@@ -30,6 +30,9 @@ public ConstSchema(Column[] cols)
 	this.cols = cols;
 }
 
+public int size()
+	{ return cols.length; }
+/** @Deprecated */
 public int getColCount()
 	{ return cols.length; }
 
@@ -82,7 +85,7 @@ public void copyFrom(Schema[] typeSchemas)
  as same-named columns in schema. */
 public void copyFrom(Schema schema)
 {
-	for (int i=0; i<schema.getColCount(); ++i) {
+	for (int i=0; i<schema.size(); ++i) {
 		SqlCol scol = (SqlCol)schema.getCol(i);
 		int j = findCol(scol.getName());
 		if (j < 0) continue;

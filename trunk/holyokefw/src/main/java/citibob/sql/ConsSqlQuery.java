@@ -97,7 +97,7 @@ public void addColumn(String name)
 
 public void addColumns(Schema schema)
 {
-	for (int i=0; i<schema.getColCount(); ++i) {
+	for (int i=0; i<schema.size(); ++i) {
 		addColumn(schema.getCol(i).getName());
 	}
 }
