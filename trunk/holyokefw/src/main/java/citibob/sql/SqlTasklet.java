@@ -15,25 +15,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package citibob.multithread;
+/*
+ * SqlRunnable.java
+ *
+ * Created on September 2, 2007, 12:03 AM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
 
-import java.util.*;
-import java.io.*;
+package citibob.sql;
 
-listeners TaskQueueMVC extends TaskRunner implements Runnable
+/**
+ * This interface should NOT be implemented directly!
+ * @author citibob
+ */
+public interface SqlTasklet extends citibob.task.CBTask
 {
-    /** Task added to queue. */
-    taskAdded(CBTask t);
-
-    /** Task removed from the queue */
-    taskRemoved(CBTask t);
-
-    /** Task being executed */
-    taskStarting(CBTask t);
-
-    /** Task finished running --- exception (if any) is passed along */
-    taskFinished(CBTask t, Throwable e);
-
-    /** Queue cleared (usually, the running task will be finished here as well.) */
-    queueCleared();
+	
 }

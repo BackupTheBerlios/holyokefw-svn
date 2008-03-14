@@ -32,13 +32,13 @@ public ResModels.UPlanModel uplanMod;
 public ResModels(ResData rdata, App xapp, int sysVersion)
 {
 	this.app = xapp;
-	ResSet rset = app.getResSet();
+	ResSet rset = app.resSet();
 	this.rdata = rdata;
 	this.sysVersion = sysVersion;
 
 	availNames = new String[] {"RtVers", "version", "lastmodified", "size"};
 	availTypes = new JType[] {new JavaJType(RtVers.class), JavaJType.jtInteger,
-			app.getSqlTypeSet().getSqlType(java.sql.Types.TIMESTAMP, 0, 0, true),
+			app.sqlTypeSet().getSqlType(java.sql.Types.TIMESTAMP, 0, 0, true),
 			JavaJType.jtLong};
 
 	

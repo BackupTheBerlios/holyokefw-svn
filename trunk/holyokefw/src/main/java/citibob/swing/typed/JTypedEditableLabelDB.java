@@ -172,7 +172,7 @@ public void setJType(JType jt, citibob.text.SFormat sformat)
 	ckNull.setEnabled(jt.isInstance(null));	
 }
 // Must override stuff in TextTypedWidget
-public void setJType(JType jt, SqlRunner str, citibob.text.DBFormat dbformat)
+public void setJType(JType jt, SqlRun str, citibob.text.DBFormat dbformat)
 {
 	label.setJType(str, dbformat);
 	ckNull.setEnabled(jt.isInstance(null));	

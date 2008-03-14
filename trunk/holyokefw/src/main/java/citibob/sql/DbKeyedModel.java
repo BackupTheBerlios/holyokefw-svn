@@ -50,7 +50,7 @@ String sql;
 /** @param change model that will tell us when we need to requery.
  @param idTableName Name of table on which a change should trigger a requery.
  @parm sql Query to generate key/value pairs; ID must be in column 1, Name in column 2. */
-public DbKeyedModel(SqlRunner str, DbChangeModel change,
+public DbKeyedModel(SqlRun str, DbChangeModel change,
 String idTableName, String sql)
 //throws SQLException
 {
@@ -61,7 +61,7 @@ String idTableName, String sql)
 	requery(str);
 	if (change != null) change.addListener(idTableName, this);
 }
-public DbKeyedModel(SqlRunner str, DbChangeModel change,
+public DbKeyedModel(SqlRun str, DbChangeModel change,
 String idTableName, String idFieldName,
 String nameFieldName, String orderFieldName)
 throws SQLException
@@ -72,18 +72,18 @@ throws SQLException
 }
 
 /** Re-load keyed model from database... */
-public void requery(SqlRunner str)
+public void requery(SqlRun str)
 {
 //	clear();
 	addAllItems(str, sql, 1, 2);
-	str.execUpdate(new UpdRunnable() {
-	public void run(SqlRunner str) {
+	str.execUpdate(new UpdTasklet() {
+	public void run() {
 		fireKeyedModelChanged();
 	}});
 }
 
 /** Called when the data potentially changes in the database. */
-public void tableWillChange(SqlRunner str, String table)
+public void tableWillChange(SqlRun str, String table)
 //throws SQLException
 {
 	if (!idTableName.equals(table)) return;

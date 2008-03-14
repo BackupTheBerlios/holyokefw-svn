@@ -14,23 +14,24 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*
- * SqlRunnable.java
+*//*
+ * ERunnable.java
  *
- * Created on September 2, 2007, 12:03 AM
+ * Created on January 29, 2006, 7:50 PM
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * To change this template, choose Tools | Options and locate the template under
+ * the Source Creation and Management node. Right-click the template and choose
+ * Open. You can then make changes to the template in the Source Editor.
  */
 
-package citibob.sql;
+package citibob.task;
 
 /**
- * This interface should NOT be implemented directly!
+ *
  * @author citibob
  */
-public interface SqlRunnable extends citibob.task.CBRunnable
-{
+public interface DbRun extends CBTask {
+
+public void run(java.sql.Connection dbb) throws Exception;
 	
 }

@@ -60,7 +60,7 @@ App app;
 		this.dbm = dbm;
 		this.schemaBuf = dbm.getSchemaBuf();
 		this.app = app;
-		table.setModelU(schemaBuf, xColNames, xSColMap, editable, app.getSwingerMap());
+		table.setModelU(schemaBuf, xColNames, xSColMap, editable, app.swingerMap());
 //		table.setRowSelectionAllowed(false);
 	}
 
@@ -150,7 +150,8 @@ App app;
 
 public void doSave()
 {
-		app.runGui(StatusPNC.this, new BatchRunnable() { public void run(SqlRunner str) throws Exception {
+		app.guiRun().run(StatusPNC.this, new SqlTask() {
+		public void run(SqlRun str) throws Exception {
 			if (dbm.valueChanged()) {
 				dbm.doUpdate(str);
 				dbm.doSelect(str);
@@ -165,14 +166,14 @@ private void bSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:e
 }//GEN-LAST:event_bSaveActionPerformed
 
 	private void bRestoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRestoreActionPerformed
-		app.runGui(StatusPNC.this, new BatchRunnable() { public void run(SqlRunner str) throws Exception {
+		app.guiRun().run(StatusPNC.this, new SqlTask() { public void run(SqlRun str) throws Exception {
 			dbm.doSelect(str);
 		}});
 // TODO add your handling code here:
 	}//GEN-LAST:event_bRestoreActionPerformed
 
 	private void bDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDelActionPerformed
-		app.runGui(StatusPNC.this, new ERunnable() { public void run() throws Exception {
+		app.guiRun().run(StatusPNC.this, new ETask() { public void run() throws Exception {
 			int selected = table.getSelectedRow();
 			if (selected != -1) {
 //	System.out.println("Deleting row: " + selected);
@@ -182,7 +183,7 @@ private void bSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:e
 	}//GEN-LAST:event_bDelActionPerformed
 
 	private void bAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAddActionPerformed
-		app.runGui(StatusPNC.this, new ERunnable() { public void run() throws Exception {
+		app.guiRun().run(StatusPNC.this, new ETask() { public void run() throws Exception {
 			schemaBuf.insertRow(-1);
 		}});
 // TODO add your handling code here:

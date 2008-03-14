@@ -76,10 +76,10 @@ public class MailExpHandler implements ExpHandler
 		PrintWriter pw = new PrintWriter(ss);
 		e.printStackTrace(pw);
 		String msgText = 
-			"Bug in: " + programName + " " + app.getVersion() + "\n" +
-			"Version: " + app.getVersion() + "\n" +
+			"Bug in: " + programName + " " + app.version() + "\n" +
+			"Version: " + app.version() + "\n" +
 			"User: " + System.getProperty("user.name") + "\n" +
-			"Config Dir: " + app.getConfigDir() + "\n\n" +
+			"Config Dir: " + app.configDir() + "\n\n" +
 //			e.toString() + "\n" +
 			ss.getBuffer().toString() + "\n" +
 			"=================================================\n" +
@@ -92,7 +92,7 @@ public class MailExpHandler implements ExpHandler
 		
 		
 		// Let user fiddle with the stack trace
-		boolean askUser = app.getProps().getProperty("mail.bugs.askuser").toLowerCase().equals("true");
+		boolean askUser = app.props().getProperty("mail.bugs.askuser").toLowerCase().equals("true");
 		final MailExpDialog dialog = new MailExpDialog(null, programName,
 			e, msgText, askUser,
 			app.userRoot().node("MailExpDialog"));
@@ -104,13 +104,13 @@ public class MailExpHandler implements ExpHandler
 		public void run() {
 			try {
 				// Define message
-				MimeMessage msg = new MimeMessage(app.getMailSender().getSession());
+				MimeMessage msg = new MimeMessage(app.mailSender().getSession());
 				//msg.setFrom(new InternetAddress("citibob@earthlink.net"));
 				msg.setSubject("Bug in " + programName);
 				msg.setText(dialog.getMsg());
 				msg.addRecipient(Message.RecipientType.TO, bugRecipient);
 				
-				app.getMailSender().sendMessage(msg);
+				app.mailSender().sendMessage(msg);
 			} catch(Exception ee) {
 				System.out.println("Could not send bug report!!!");
 				ee.printStackTrace(System.out);

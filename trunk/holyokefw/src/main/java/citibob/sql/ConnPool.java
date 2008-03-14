@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.sql;
 
-import citibob.task.DbRawRunner;
-import citibob.task.DbRunnable;
+import citibob.task.DbRawRun;
+import citibob.task.DbRun;
 import java.sql.*;
 
 public interface ConnPool {
@@ -34,6 +34,6 @@ public void dispose();
 
 //public void doRun(StRunnable r);
 ////	{ DefaultRawRunner.run(r, this); }
-public Exception exec(DbRunnable r);
+public Exception exec(DbRun r);
 
 }

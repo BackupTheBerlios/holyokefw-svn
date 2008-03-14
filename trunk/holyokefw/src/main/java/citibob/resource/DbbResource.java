@@ -6,8 +6,7 @@
 package citibob.resource;
 
 import citibob.sql.ConnPool;
-import citibob.sql.SqlRunner;
-import citibob.sql.UpdRunnable;
+import citibob.sql.SqlRun;
 
 /**
  *
@@ -22,7 +21,7 @@ public DbbResource(ResSet rset, String uversionType, String name) {
 	super.required = true;
 }
 
-public void applyPlan(SqlRunner str, final ConnPool pool, final UpgradePlan uplan)
+public void applyPlan(SqlRun str, final ConnPool pool, final UpgradePlan uplan)
 throws Exception
 {
 	int uversionid = uplan.uversionid0();

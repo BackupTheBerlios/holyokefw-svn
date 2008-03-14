@@ -6,8 +6,8 @@
 package citibob.resource;
 
 import citibob.sql.ConnPool;
-import citibob.sql.SqlRunner;
-import citibob.sql.UpdRunnable;
+import citibob.sql.SqlRun;
+import citibob.sql.UpdTasklet;
 import citibob.sql.pgsql.*;
 import java.sql.Connection;
 
@@ -33,13 +33,13 @@ public void upgrade(Connection dbb, ResResult rr, int uversionid1) throws Except
 	ResUtil.setResource(dbb, resource.getName(), uversionid1, version1, newBytes);
 }
 
-public void upgrade(SqlRunner str, final ConnPool pool, int uversionid0, final int uversionid1)
+public void upgrade(SqlRun str, final ConnPool pool, int uversionid0, final int uversionid1)
 throws Exception
 {
 	final ResResult rr = resource.load(str, uversionid0, version0);
-	str.execUpdate(new UpdRunnable() {
-	public void run(SqlRunner str) throws Exception {
-		Exception e = pool.exec(new citibob.task.DbRunnable() {
+	str.execUpdate(new UpdTasklet() {
+	public void run() throws Exception {
+		Exception e = pool.exec(new citibob.task.DbRun() {
 		public void run(java.sql.Connection dbb) throws Exception {
 			upgrade(dbb, rr, uversionid1);
 		}});

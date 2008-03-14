@@ -31,7 +31,7 @@ package citibob.task;
  *
  * @author citibob
  */
-public interface ERunnable extends CBRunnable {
+public interface ETask extends CBTask {
 
 public void run() throws Exception;
 	

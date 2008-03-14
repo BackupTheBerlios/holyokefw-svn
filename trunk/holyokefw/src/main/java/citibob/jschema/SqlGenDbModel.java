@@ -56,7 +56,7 @@ public SqlGen getSqlGen()
 // in every implementation.
 // void setKey()
 // -----------------------------------------------------------
-public void doInit(SqlRunner str)
+public void doInit(SqlRun str)
 {
 //	this.st = st;
 }
@@ -76,22 +76,22 @@ public void setInsertKeys(int row, ConsSqlQuery sql) {}
 * from database.  When combined with an actual
 * database and the SqlDisplay.setSqlValue(), this
 * has the result of refreshing the current display. */
-public void doSelect(SqlRunner str)
+public void doSelect(SqlRun str)
 {
 	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.SELECT);
 	gen.getSelectCols(q, table);
 	q.addTable(table);
 	setSelectWhere(q);
 System.out.println("doSelect: " + q.getSql());
-	str.execSql(q.getSql(),new RsRunnable() {
-	public void run(SqlRunner str, ResultSet rs) throws SQLException {
+	str.execSql(q.getSql(),new RsTasklet() {
+	public void run(ResultSet rs) throws SQLException {
 		gen.addAllRows(rs);
 	}});
 }
 // -----------------------------------------------------------
 /** Get Sql query to insert record into database,
 * assuming it isn't already there. */
-public void doInsert(SqlRunner str)
+public void doInsert(SqlRun str)
 {
 	for (int row = 0; row < gen.getRowCount(); ++row) {
 System.out.println("doSimpleInsert on row " + row + " of " + gen.getRowCount());
@@ -112,7 +112,7 @@ public boolean valueChanged()
 /** Get Sql query to flush updates to database.
 * Only updates records that have changed.
  @returns true if the row was deleted from the model. */
-public boolean doUpdate(SqlRunner str, int row)
+public boolean doUpdate(SqlRun str, int row)
 {
 	boolean deleted = false;
 //System.out.println("doUpdate.status(" + row + ") = " + gen.getStatus(row));
@@ -144,7 +144,7 @@ public boolean doUpdate(SqlRunner str, int row)
 /** Get Sql query to flush updates to database.
 * Only updates records that have changed; returns null
 * if nothing has changed. */
-public void doUpdate(SqlRunner str)
+public void doUpdate(SqlRun str)
 {
 	for (int row = 0; row < gen.getRowCount(); ++row) {
 		if (doUpdate(str, row)) --row;		// Row was deleted, adjust our counting
@@ -155,7 +155,7 @@ public void doUpdate(SqlRunner str)
 }
 // -----------------------------------------------------------
 /** Get Sql query to delete current record. */
-public void doDelete(SqlRunner str)
+public void doDelete(SqlRun str)
 {
 	for (int row = 0; row < gen.getRowCount(); ++row) {
 		// Only delete if this is a real record in the DB.
@@ -171,7 +171,7 @@ public void doDelete(SqlRunner str)
 /** Get Sql query to flush updates to database.
 * Only updates records that have changed; returns null
 * if nothing has changed. */
-protected ConsSqlQuery doSimpleUpdate(final int row, SqlRunner str)
+protected ConsSqlQuery doSimpleUpdate(final int row, SqlRun str)
 {
 	if (gen.valueChanged(row)) {
 		ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.UPDATE);
@@ -203,7 +203,7 @@ System.out.println("doSimpleUpdate: " + sql);
 // -----------------------------------------------------------
 
 /** Get Sql query to delete current record. */
-protected ConsSqlQuery doSimpleDeleteNoRemoveRow(int row, SqlRunner str)
+protected ConsSqlQuery doSimpleDeleteNoRemoveRow(int row, SqlRun str)
 {
 	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.DELETE);
 	q.setMainTable(table);
@@ -218,7 +218,7 @@ System.out.println("doSimpleDelete: " + sql);
 	str.execSql(sql);
 	return q;
 }
-protected ConsSqlQuery doSimpleDelete(int row, SqlRunner str)
+protected ConsSqlQuery doSimpleDelete(int row, SqlRun str)
 {
 	ConsSqlQuery q = doSimpleDeleteNoRemoveRow(row, str);
 	gen.removeRow(row);
@@ -227,7 +227,7 @@ protected ConsSqlQuery doSimpleDelete(int row, SqlRunner str)
 // -----------------------------------------------------------
 /** Get Sql query to insert record into database,
 * assuming it isn't already there. */
-protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str)
+protected ConsSqlQuery doSimpleInsert(final int row, SqlRun str)
 {
 	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.INSERT);
 	q.setMainTable(table);
@@ -236,8 +236,8 @@ System.out.println("doSimpleInsert: ");
 	setInsertKeys(row, q);
 	String sql = q.getSql();
 System.out.println("   sql = " + sql);
-	str.execSql(sql, new UpdRunnable() {
-	public void run(SqlRunner str) {
+	str.execSql(sql, new UpdTasklet() {
+	public void run() {
 		gen.setStatus(row, 0);
 	}});
 	return q;

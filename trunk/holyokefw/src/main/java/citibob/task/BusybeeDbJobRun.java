@@ -26,30 +26,30 @@ import java.awt.*;
  * Just run the CBRunnables in the current thread.  Route exceptions to the ExpHandler.
  * @author citibob
  */
-public class BusybeeDbTaskRunner extends SwingTaskRunner
+public class BusybeeDbJobRun extends SwingJobRun
 {
 
-DbRawRunner raw;
+DbRawRun raw;
 ExpHandler eh;
 int recursionDepth;
 
 //public ConnPool getPool() { return raw.getPool(); }
 
-public BusybeeDbTaskRunner(DbRawRunner raw, ExpHandler eh)
+public BusybeeDbJobRun(DbRawRun raw, ExpHandler eh)
 {
 	this.raw = raw;
 	this.eh = eh;
 }
-public BusybeeDbTaskRunner(App app, ExpHandler eh)
+public BusybeeDbJobRun(App app, ExpHandler eh)
 {
-	this(new DbRawRunner(app), eh);
+	this(new DbRawRun(app), eh);
 }
-public BusybeeDbTaskRunner(App app)
+public BusybeeDbJobRun(App app)
 {
-	this(new DbRawRunner(app), new SimpleExpHandler());
+	this(new DbRawRun(app), new SimpleExpHandler());
 }
 
-public void doRun(Component component, CBRunnable rr)
+public void run(Component component, CBTask rr)
 {
 	++recursionDepth;
 	if (recursionDepth == 1) SwingUtil.setCursor(component, Cursor.WAIT_CURSOR);

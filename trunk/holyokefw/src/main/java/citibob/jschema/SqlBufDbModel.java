@@ -26,9 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.jschema;
 
-import citibob.sql.SqlRunner;
-import citibob.sql.UpdRunnable;
+import citibob.sql.SqlRun;
 import citibob.app.App;
+import citibob.sql.UpdTasklet;
 
 /**
  *
@@ -45,13 +45,13 @@ public abstract String getSelectSql(boolean proto);
 @param typeSchemas Schemas used to determine type of each column (beyond that from the SQL query)
 @param updateKeyFields Which columns are update-key fields (beyond that as determined by typeSchemas).
 @param sinfos Schemas/Tables used to send updates back to database */
-protected void init(SqlRunner str, final App app,
+protected void init(SqlRun str, final App app,
 SqlSchema[] typeSchemas, String[] updateKeyFields, final SqlSchemaInfo[] updateSchemas)
 {
-	final SchemaBuf sb = new SchemaBuf(str, getSelectSql(true), typeSchemas, updateKeyFields, app.getSqlTypeSet());
-	str.execUpdate(new UpdRunnable() {
-	public void run(SqlRunner str) {
-		init(sb, null, updateSchemas, app.getDbChange());
+	final SchemaBuf sb = new SchemaBuf(str, getSelectSql(true), typeSchemas, updateKeyFields, app.sqlTypeSet());
+	str.execUpdate(new UpdTasklet() {
+	public void run() {
+		init(sb, null, updateSchemas, app.dbChange());
 	}});
 }
 
@@ -59,13 +59,13 @@ SqlSchema[] typeSchemas, String[] updateKeyFields, final SqlSchemaInfo[] updateS
 @param typeSchemas Schemas used to determine type of each column (beyond that from the SQL query)
 @param updateKeyFields Which columns are key fields (beyond that as determined by typeSchemas).
 @param sinfos Schemas/Tables used to send updates back to database */
-public SqlBufDbModel(SqlRunner str, final App app,
+public SqlBufDbModel(SqlRun str, final App app,
 SqlSchema[] typeSchemas, String[] updateKeyFields, final SqlSchemaInfo[] updateSchemas)
 	{ init(str,app,typeSchemas,updateKeyFields,updateSchemas); }
 
 
 /** Convenience method.  Takes schemas as strings, looks them up in App */
-public SqlBufDbModel(SqlRunner str, App app,
+public SqlBufDbModel(SqlRun str, App app,
 String[] sTypeSchemas, String[] updateKeyFields, String[] sUpdateSchemas)
 {
 	SqlSchema[] typeSchemas = null;
@@ -96,7 +96,7 @@ public void setKey(int ix, Object val) {}
 * from database.  When combined with an actual
 * database and the SqlDisplay.setSqlValue(), this
 * has the result of refreshing the current display. */
-public void doSelect(SqlRunner str)
+public void doSelect(SqlRun str)
 {
 	sbuf.setRows(str, getSelectSql(false));
 }

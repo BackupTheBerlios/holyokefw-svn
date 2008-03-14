@@ -14,7 +14,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*//*
+*/
+/*
  * ERunnable.java
  *
  * Created on January 29, 2006, 7:50 PM
@@ -24,14 +25,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Open. You can then make changes to the template in the Source Editor.
  */
 
-package citibob.task;
+package citibob.sql;
+
 
 /**
  *
  * @author citibob
  */
-public interface DbRunnable extends CBRunnable {
+public interface RsTasklet2 extends SqlTasklet {
 
-public void run(java.sql.Connection dbb) throws Exception;
+public void run(citibob.sql.SqlRun str, java.sql.ResultSet rs) throws Exception;
 	
 }

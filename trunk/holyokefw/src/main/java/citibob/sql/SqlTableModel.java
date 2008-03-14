@@ -50,7 +50,7 @@ public SqlTableModel(SqlTypeSet tset, String sql)
 	this.sql = sql;
 }
 
-public void executeQuery(SqlRunner str)
+public void executeQuery(SqlRun str)
 {
 	executeQuery(str, sql);
 }

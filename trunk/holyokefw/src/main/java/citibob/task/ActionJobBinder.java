@@ -14,14 +14,14 @@ import javax.swing.AbstractButton;
  *
  * @author citibob
  */
-public class ActionTaskBinder
+public class ActionJobBinder
 {
-TaskMap map;
-SwingTaskRunner runner;
+JobMap map;
+SwingJobRun runner;
 Component component;			// Parent component
 
 
-public ActionTaskBinder(Component component, SwingTaskRunner runner, TaskMap map)
+public ActionJobBinder(Component component, SwingJobRun runner, JobMap map)
 {
 	this.component = component;
 	this.runner = runner;
@@ -29,12 +29,12 @@ public ActionTaskBinder(Component component, SwingTaskRunner runner, TaskMap map
 }
 
 /** Binds a Swing component to a previously registered runnable. */
-public ActionListener newListener(final Task task)
+public ActionListener newListener(final Job task)
 {
 //	final Task task = map.get(key);
 	ActionListener listener = new ActionListener() {
 	public void actionPerformed(java.awt.event.ActionEvent evt) {
-		runner.doRun(component, task);
+		runner.run(component, task);
 	}};
 	return listener;
 }

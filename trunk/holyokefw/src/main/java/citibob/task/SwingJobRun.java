@@ -31,28 +31,23 @@ package citibob.task;
  *
  * @author citibob
  */
-public abstract class TaskRunner {
+public abstract class SwingJobRun extends JobRun
+{
 
 /** This call must be reentrant.  In other words, actionRunner.doRun() can be called recursively.  The recursive
  call to doRun() must execute and finish BEFORE the outer call.  It is incorrect for duRun() to simply put
  the runnable on a queue without checking first, as this would cause deadlock. */
-public abstract void doRun(CBRunnable r);
+public abstract void run(java.awt.Component component, CBTask r);
 
-public boolean checkPermissions(String[] permissions) { return true; }
-//	if (loginGroups.contains(group)) {
-//		runGui(c,r);
-//	} else {
-//		javax.swing.JOptionPane.showMessageDialog(c, "You are not authorized for that action.");
-//	}
+public void run(CBTask r) { run(null, r); }
 
-public boolean doRun(Task t)
+public boolean run(java.awt.Component component, Job task)
 {
-	if (checkPermissions(t.getPermissions())) {
-		doRun(t.getCBRunnable());
+	if (checkPermissions(task.getPermissions())) {
+		run(component, task.getCBRunnable());
 		return true;
 	} else {
 		return false;
 	}
 }
-
 }

@@ -14,11 +14,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*
- * ActionRunner.java
+*//*
+ * ERunnable.java
  *
- * Created on January 29, 2006, 7:49 PM
+ * Created on January 29, 2006, 7:50 PM
  *
  * To change this template, choose Tools | Options and locate the template under
  * the Source Creation and Management node. Right-click the template and choose
@@ -28,26 +27,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.task;
 
 /**
- *
- * @author citibob
+ * A runnable with addiontal stuff..
  */
-public abstract class SwingTaskRunner extends TaskRunner
+public class Job
 {
+//String name;				// Name used to bind this task
+CBTask task;
+//java.util.Date dTime;
+String[] permissions;		// Describes who can and cannot run this task.
 
-/** This call must be reentrant.  In other words, actionRunner.doRun() can be called recursively.  The recursive
- call to doRun() must execute and finish BEFORE the outer call.  It is incorrect for duRun() to simply put
- the runnable on a queue without checking first, as this would cause deadlock. */
-public abstract void doRun(java.awt.Component component, CBRunnable r);
-
-public void doRun(CBRunnable r) { doRun(null, r); }
-
-public boolean doRun(java.awt.Component component, Task task)
+public Job(String[] permissions, CBTask runnable)
 {
-	if (checkPermissions(task.getPermissions())) {
-		doRun(component, task.getCBRunnable());
-		return true;
-	} else {
-		return false;
-	}
+//	this.name = name;
+	this.task = runnable;
+//	this.dTime = new java.util.Date();	
+	this.permissions = permissions;
 }
+public Job(CBTask runnable)
+{
+	this((String[])null, runnable);
+}	
+
+/** @param permissions Comma-separated list of permissions */
+public Job(String permissions, CBTask runnable)
+{
+	this(permissions.split(","), runnable);
+}
+
+public String[] getPermissions() { return permissions; }
+//public String getName() { return name; }
+//public java.util.Date getDTime() { return dTime; }
+public CBTask getCBRunnable() { return task; }
+
 }

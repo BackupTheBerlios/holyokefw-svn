@@ -5,9 +5,9 @@
 
 package citibob.resource;
 
-import citibob.sql.RsRunnable;
-import citibob.sql.RssRunnable;
-import citibob.sql.SqlRunner;
+import citibob.sql.RsTasklet;
+import citibob.sql.RssTasklet;
+import citibob.sql.SqlRun;
 import citibob.sql.pgsql.SqlString;
 import java.io.File;
 import java.sql.ResultSet;
@@ -34,7 +34,7 @@ protected TreeMap<String,Resource> resources = new TreeMap();
 
 protected int sysVersion;
 
-public ResSet(SqlRunner str, int sysVersion, ClassLoader jarClassLoader, String jarPrefix)
+public ResSet(SqlRun str, int sysVersion, ClassLoader jarClassLoader, String jarPrefix)
 throws SQLException
 {
 	this.jarClassLoader = jarClassLoader;
@@ -46,8 +46,8 @@ throws SQLException
 	String sql =
 		" select count(*) from  information_schema.tables" +
 		" where table_name in ('resources', 'resourceids');";
-	str.execSql(sql, new RsRunnable() {
-	public void run(SqlRunner str, ResultSet rs) throws Exception {
+	str.execSql(sql, new RsTasklet() {
+	public void run(ResultSet rs) throws Exception {
 		rs.next();
 		int count = rs.getInt(1);
 		switch(count) {
@@ -72,14 +72,14 @@ Resource get(String name)
 	{ return resources.get(name); }
 
 
-public ResResult load(SqlRunner str, String name, int uversionid)
+public ResResult load(SqlRun str, String name, int uversionid)
 {
 	Resource res = get(name);
 	int reqVersion = res.getRequiredVersion(sysVersion);
 	return res.load(str, uversionid, reqVersion);
 }
 
-public void saveResource(SqlRunner str, String name, int uversionid,
+public void saveResource(SqlRun str, String name, int uversionid,
 final File outFile)
 {
 	Resource res = get(name);
@@ -105,7 +105,7 @@ public SortedSet<RtResKey> newRelevant()
 
 
 
-public void createAllResourceIDs(SqlRunner str)
+public void createAllResourceIDs(SqlRun str)
 {
 	if (!dbbExists) return;
 
@@ -114,8 +114,8 @@ public void createAllResourceIDs(SqlRunner str)
 		sql.append("select w_resourceid_create(" +
 			SqlString.sql(res.getName()) + ");\n");
 	}
-	str.execSql(sql.toString(), new RssRunnable() {
-	public void run(citibob.sql.SqlRunner str, java.sql.ResultSet[] rss) throws Exception {
+	str.execSql(sql.toString(), new RssTasklet() {
+	public void run(java.sql.ResultSet[] rss) throws Exception {
 		int i = 0;
 		for (Resource res : resources.values()) {
 			ResultSet rs = rss[i++];

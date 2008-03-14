@@ -35,24 +35,24 @@ implements ObjHtmlPanel.Listener
 {
 
 protected App app;
-HashMap<String,Task> actionMap = new HashMap();
+HashMap<String,Job> actionMap = new HashMap();
 
 
 
 public void addAction(String url,
-String name, String[] permissions, CBRunnable runnable)
+String name, String[] permissions, CBTask runnable)
 {
-	actionMap.put(url, new Task(permissions, runnable));
+	actionMap.put(url, new Job(permissions, runnable));
 }
-public void addAction(String url, String name, CBRunnable runnable)
+public void addAction(String url, String name, CBTask runnable)
 {
-	actionMap.put(url, new Task((String[])null, runnable));
+	actionMap.put(url, new Job((String[])null, runnable));
 }	
 
 /** @param permissions Comma-separated list of permissions */
-public void addAction(String url, String name, String permissions, CBRunnable runnable)
+public void addAction(String url, String name, String permissions, CBTask runnable)
 {
-	actionMap.put(url, new Task(permissions, runnable));
+	actionMap.put(url, new Job(permissions, runnable));
 }
 
 
@@ -74,7 +74,7 @@ public void linkSelected(java.net.URL href, String target)
 	int slash = url.lastIndexOf('/');
 	if (slash > 0) url = url.substring(slash+1);
 	
-	Task t = actionMap.get(url);
-	if (t != null) app.runGui(this, t.getPermissions(), t.getCBRunnable());
+	Job job = actionMap.get(url);
+	if (job != null) app.guiRun().run(this, job);
 }
 }

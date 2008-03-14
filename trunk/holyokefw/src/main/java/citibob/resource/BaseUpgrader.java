@@ -6,8 +6,7 @@
 package citibob.resource;
 
 import citibob.sql.ConnPool;
-import citibob.sql.SqlRunner;
-import citibob.sql.UpdRunnable;
+import citibob.sql.SqlRun;
 import java.sql.Connection;
 import java.sql.SQLException;
 

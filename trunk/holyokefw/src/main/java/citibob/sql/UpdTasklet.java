@@ -15,14 +15,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
 package citibob.sql;
 
 
-/** Takes multiple result sets from one segment of a batch query. */
-public interface RssRunnable extends SqlRunnable {
+/**
+ * Runs after an update.
+ * @author citibob
+ */
+public interface UpdTasklet extends SqlTasklet {
 
-/** Runnable gets run on results of a previous batch query.  If the runnable
- needs to produce additional queries, it stores them in nstr.next(). */
-public void run(citibob.sql.SqlRunner str, java.sql.ResultSet[] rss) throws Exception;
-	
+public void run() throws Exception;
+
 }

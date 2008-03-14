@@ -15,33 +15,41 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-///*
-// * DefaultApp.java
-// *
-// * Created on January 19, 2007, 9:47 PM
-// *
-// * To change this template, choose Tools | Template Manager
-// * and open the template in the editor.
-// */
-//
-//package citibob.app;
-//
-//import citibob.sql.*;
-//
-///**
-// *
-// * @author citibob
-// */
-//public class DefaultApp extends App {
-//
-///** Creates a new instance of DefaultApp */
-//public DefaultApp(ConnPool pool) {
-//	this.pool = pool;
-//
-//SwingerMap swingerMap;
-//ActionRunner guiRunner;		// Run user-initiated actions; when user hits button, etc.
-//	// This will put on queue, etc.
-//ActionRunner appRunner;		// Run secondary events, in response to other events.  Just run immediately
-//}
-//
-//}
+package citibob.task;
+
+import citibob.app.App;
+import citibob.sql.*;
+
+/**
+ * Just run the CBRunnables in the current thread.  Route exceptions to the ExpHandler.
+ * @author citibob
+ */
+public class SimpleDbJobRun extends JobRun
+{
+
+DbRawRun raw;
+ExpHandler eh;
+
+public ConnPool getPool() { return raw.getPool(); }
+
+public SimpleDbJobRun(DbRawRun raw, ExpHandler eh)
+{
+	this.raw = raw;
+	this.eh = eh;
+}
+public SimpleDbJobRun(App app, ExpHandler eh)
+{
+	this(new DbRawRun(app), eh);
+}
+public SimpleDbJobRun(App app)
+{
+	this(new DbRawRun(app), new SimpleExpHandler());
+}
+
+public void run(CBTask rr)
+{
+	Throwable e = raw.doRun(rr);
+	if (e != null && eh != null) eh.consume(e);
+}
+
+}

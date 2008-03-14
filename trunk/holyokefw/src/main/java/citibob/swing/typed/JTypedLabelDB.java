@@ -42,11 +42,11 @@ public class JTypedLabelDB extends JTypedLabel
 {
 
 DBFormat dbformat;
-SqlRunner str;
+SqlRun str;
 
 // ---------------------------------------------------------------
 // Must override stuff in TextTypedWidget
-public void setJType(SqlRunner str, DBFormat dbformat)
+public void setJType(SqlRun str, DBFormat dbformat)
 {
 //	super.setJType(jt);
 	this.str = str;

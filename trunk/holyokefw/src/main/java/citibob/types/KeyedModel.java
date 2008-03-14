@@ -129,10 +129,10 @@ public void addItem(Object key, Object item)
 //	while (rs.next()) addItem(rs.getObject(keyCol), rs.getObject(itemCol));
 //}
 
-public void addAllItems(SqlRunner str, String sql, final int keyCol, final int itemCol)
+public void addAllItems(SqlRun str, String sql, final int keyCol, final int itemCol)
 {
-	str.execSql(sql, new RsRunnable() {
-	public void run(SqlRunner str, ResultSet rs) throws SQLException {
+	str.execSql(sql, new RsTasklet() {
+	public void run(ResultSet rs) throws SQLException {
 		clear();
 		while (rs.next()) {
 			addItem(rs.getObject(keyCol),
@@ -141,10 +141,10 @@ public void addAllItems(SqlRunner str, String sql, final int keyCol, final int i
 	}});
 }
 
-public void addAllItems(SqlRunner str, String sql, final String keyCol, final String itemCol)
+public void addAllItems(SqlRun str, String sql, final String keyCol, final String itemCol)
 {
-	str.execSql(sql, new RsRunnable() {
-	public void run(SqlRunner str, ResultSet rs) throws SQLException {
+	str.execSql(sql, new RsTasklet() {
+	public void run(ResultSet rs) throws SQLException {
 		clear();
 		while (rs.next()) {
 			addItem(rs.getObject(keyCol),
@@ -170,11 +170,11 @@ public Integer getSerial(Object key)
 	return oi.serial;
 }
 // -------------------------------------------------------------------
-public void KeyedModel(SqlRunner str, String sql, int keyCol, int itemCol)
+public void KeyedModel(SqlRun str, String sql, int keyCol, int itemCol)
 {
 	addAllItems(str, sql, keyCol, itemCol);
 }
-public void KeyedModel(SqlRunner str, String sql, String keyCol, String itemCol)
+public void KeyedModel(SqlRun str, String sql, String keyCol, String itemCol)
 {
 	addAllItems(str, sql, keyCol, itemCol);
 }

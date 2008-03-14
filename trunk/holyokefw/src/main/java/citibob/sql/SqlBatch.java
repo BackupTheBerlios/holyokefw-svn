@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.sql;
 
-import citibob.app.App;
 import java.sql.*;
 import java.util.*;
 
@@ -34,16 +33,16 @@ import java.util.*;
  *
  * @author citibob
  */
-public class SqlBatch { //implements SqlRunner {
+class SqlBatch { //implements SqlRun {
 
 // Used while building query
 StringBuffer sqlBuf = new StringBuffer();
-List<SqlRunnable> handlers = new ArrayList();
+List<SqlTasklet> handlers = new ArrayList();
 
 // Used while interpreting results
 //boolean inExec = false;
 //HashMap map;				// Map of values to pass from from one SqlRunnable to the next
-//SqlBatchSet nextBatch;			// The batch we're constructing for the next set of stuff
+//BatchSqlRun nextBatch;			// The batch we're constructing for the next set of stuff
 int nextCurrent = Statement.CLOSE_ALL_RESULTS;
 List<ResultSet> xrss = new ArrayList();
 
@@ -54,8 +53,6 @@ public SqlBatch() {
 public int size() { return handlers.size(); }
 
 
-
-
 // ========================================================================
 // Setting up the batch
 
@@ -64,25 +61,25 @@ public void execSql(String sql)
 
 /** Adds SQL to the batch --- multiple ResultSets returned, and it can create
  additional SQL as needed. */
-public void execSql(String sql, SqlRunnable rr)
+public void execSql(String sql, SqlTasklet rr)
 {
-//if (sql != null && sql.endsWith("FROM persons")) {
-//	System.out.println("hoi");
-//}
-//	if (inExec) throw new IllegalStateException("Cannot use execSql() or execUpdate() while executing the SQL batch.");
 	sqlBuf.append(sql);
 	sqlBuf.append(";\n select 'hello' as __divider__;\n");
 	handlers.add(rr);
 }
 
-public void execUpdate(UpdRunnable r)
+public void execUpdate(UpdTasklet2 r)
+{
+	execSql("", r);
+}
+public void execUpdate(UpdTasklet r)
 {
 	execSql("", r);
 }
 
 //// ========================================================================
 //// Running the batch
-//public SqlBatchSet next() { return nextBatch; }
+//public BatchSqlRun next() { return nextBatch; }
 ///** While SqlRunnables are running --- store a value for retrieval by later SqlRunnable. */
 //public void put(Object key, Object val)
 //{ map.put(key, val); }
@@ -93,7 +90,7 @@ public void execUpdate(UpdRunnable r)
 
 // ---------------------------------------
 /** Execute the SQL batch; puts any new queries in "nextBatch" */
-void execOneBatch(Statement st, SqlBatchSet str) throws Exception
+void execOneBatch(Statement st, BatchSqlRun str) throws Exception
 {
 	String sql = sqlBuf.toString();
 System.out.println(
@@ -103,7 +100,7 @@ System.out.println(
 	st.execute(sql);
 
 	ResultSet rs;
-	Iterator<SqlRunnable> curHandler = handlers.iterator();
+	Iterator<SqlTasklet> curHandler = handlers.iterator();
 	for (int n=0;; ++n,st.getMoreResults(nextCurrent)) {
 		nextCurrent = Statement.KEEP_CURRENT_RESULT;
 		rs = st.getResultSet();
@@ -125,14 +122,21 @@ System.out.println(
 			xrss.toArray(rss);
 
 			// Process this batch of ResultSets
-			SqlRunnable handler = curHandler.next();
+			SqlTasklet handler = curHandler.next();
 			if (handler != null) {
-				if (handler instanceof RssRunnable) {
-					((RssRunnable)handler).run(str, rss);
-				} else if (handler instanceof RsRunnable) {		
-					((RsRunnable)handler).run(str, rss[0]);
-				} else if (handler instanceof UpdRunnable) {
-					((UpdRunnable)handler).run(str);
+				if (handler instanceof RssTasklet) {
+					((RssTasklet)handler).run(rss);
+				} else if (handler instanceof RsTasklet) {		
+					((RsTasklet)handler).run(rss[0]);
+				} else if (handler instanceof UpdTasklet) {
+					((UpdTasklet)handler).run();
+				}
+				if (handler instanceof RssTasklet2) {
+					((RssTasklet2)handler).run(str, rss);
+				} else if (handler instanceof RsTasklet2) {		
+					((RsTasklet2)handler).run(str, rss[0]);
+				} else if (handler instanceof UpdTasklet2) {
+					((UpdTasklet2)handler).run(str);
 				}
 			}
 

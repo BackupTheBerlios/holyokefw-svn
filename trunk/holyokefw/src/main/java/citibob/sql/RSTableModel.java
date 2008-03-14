@@ -24,7 +24,7 @@ public class RSTableModel extends SchemaBuf
 	}
 	
 	/** All-in-one: execute a query, set up row headers, and add all rows to the table model. */
-	public void executeQuery(SqlRunner str, String sql)
+	public void executeQuery(SqlRun str, String sql)
 	{
 		if (autoSchema) {
 			super.setRowsAndCols(str, sql, null, null, tset);

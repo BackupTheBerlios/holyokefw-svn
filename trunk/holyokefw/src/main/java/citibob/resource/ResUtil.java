@@ -7,11 +7,10 @@ package citibob.resource;
 
 import citibob.gui.BareBonesOpen;
 import citibob.sql.ConnPool;
-import citibob.sql.RsRunnable;
-import citibob.sql.SqlRunner;
-import citibob.sql.UpdRunnable;
+import citibob.sql.RsTasklet;
+import citibob.sql.SqlRun;
+import citibob.sql.UpdTasklet;
 import citibob.sql.pgsql.*;
-import com.sun.java_cup.internal.version;
 import java.awt.Component;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -48,7 +47,7 @@ public static String delResourceSql(String name, int uversionid, int version)
 //	str.execSql(sql);
 }
 /** Loads resource with largest value < version */
-public static ResResult getResource(SqlRunner str, String name, int uversionid, int version)
+public static ResResult getResource(SqlRun str, String name, int uversionid, int version)
 {
 	final ResResult res = new ResResult();
 	res.name = name;
@@ -68,8 +67,8 @@ public static ResResult getResource(SqlRunner str, String name, int uversionid, 
 //			" and name = " + SqlString.sql(name) +
 //			" and uversionid = " + uversionid +
 //			" and version <= " + version + )";
-	str.execSql(sql, new RsRunnable() {
-	public void run(SqlRunner str, ResultSet rs) throws Exception {
+	str.execSql(sql, new RsTasklet() {
+	public void run(ResultSet rs) throws Exception {
 		if (rs.next()) {
 			res.name = rs.getString("name");
 			res.version = rs.getInt("version");
@@ -132,7 +131,7 @@ throws SQLException, IOException
 	}
 }
 
-public static void saveResource(SqlRunner str,
+public static void saveResource(SqlRun str,
 final RtResKey curResKey, final int version, final File outFile)
 {
 	saveResource(str, curResKey.res.getName(), curResKey.uversionid, version, outFile);
@@ -148,14 +147,14 @@ final RtResKey curResKey, final int version, final File outFile)
 //	}});	
 }
 
-public static void saveResource(SqlRunner str,
+public static void saveResource(SqlRun str,
 String resName, int uversionid, final int version, final File outFile)
 {
 	// Fetch the resource from the database
 	final ResResult rr = ResUtil.getResource(str,
 		resName, uversionid, version);
-	str.execUpdate(new UpdRunnable() {
-	public void run(SqlRunner str) throws Exception {
+	str.execUpdate(new UpdTasklet() {
+	public void run() throws Exception {
 		// Copy resource to the temporary file.
 		OutputStream out = new FileOutputStream(outFile);
 		out.write(rr.bytes);
@@ -167,7 +166,7 @@ String resName, int uversionid, final int version, final File outFile)
 //	int version = ver.version;
 //	ResourcePanel.this
 
-public static void editResource(SqlRunner str, final ConnPool pool,
+public static void editResource(SqlRun str, final ConnPool pool,
 final Component parentComponent,
 final RtResKey curResKey, final RtVers ver) //int version)
 throws IOException
@@ -181,8 +180,8 @@ throws IOException
 	tmpFile.deleteOnExit();
 	saveResource(str, curResKey, ver.version, tmpFile);
 
-	str.execUpdate(new UpdRunnable() {
-	public void run(SqlRunner str) throws Exception {
+	str.execUpdate(new UpdTasklet() {
+	public void run() throws Exception {
 		// Open the resource
 		BareBonesOpen.open(tmpFile);
 

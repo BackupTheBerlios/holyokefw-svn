@@ -72,11 +72,11 @@ SqlTypeSet tset, String sql)
 //	super.executeQuery(str, sql);
 //}
 /** All-in-one: execute a query, set up row headers, and add all rows to the table model. */
-public void executeQuery(SqlRunner str, String sql)
+public void executeQuery(SqlRun str, String sql)
 {
 //	setNumRows(0);
-	str.execSql(sql, new RsRunnable() {
-	public void run(SqlRunner str, ResultSet rs) throws SQLException {
+	str.execSql(sql, new RsTasklet() {
+	public void run(ResultSet rs) throws SQLException {
 //		if (tset != null) setColHeaders(rs);
 		addAllRows(rs);
 	}});

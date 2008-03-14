@@ -16,34 +16,27 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
- * SqlSequence.java
+ * ActionRunner.java
  *
- * Created on September 24, 2006, 11:03 PM
+ * Created on January 29, 2006, 7:49 PM
  *
  * To change this template, choose Tools | Options and locate the template under
  * the Source Creation and Management node. Right-click the template and choose
  * Open. You can then make changes to the template in the Source Editor.
  */
 
-package citibob.sql;
-
-
-import citibob.util.IntVal;
-import java.sql.*;
+package citibob.task;
 
 /**
- * Abstracted idea of an integer sequence in a SQL database.
+ * Runs the various kinds of runnables in the current thread, and returns any exceptions.
  * @author citibob
  */
-public interface SqlSequence {
+public interface RawRun {
+	
+//public void run(ERunnable r);
+//public void run(StRunnable r);
+//public void run(DbRunnable r);
 
-	/** Return current value of the sequence (after an INSERT has been called that incremented it.) */
-	public IntVal getCurVal(SqlRun str);
-	
-	/** Increment the sequence and return its value. */
-	public IntVal getNextVal(SqlRun str);
-	
-//	/** Retrieves a value previously stored in an SqlRunner */
-//	public int retrieve(SqlRun str);
-	
+public Throwable doRun(CBTask r);
+
 }

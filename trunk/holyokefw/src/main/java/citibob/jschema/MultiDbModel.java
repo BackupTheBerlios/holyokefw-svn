@@ -48,7 +48,7 @@ private int getStatus()
 	{ return 0; }	// Not needed, we're overriding doUpdate() and doDelete().
 
 // ---------------------------------------------------
-public void doUpdate(SqlRunner str)
+public void doUpdate(SqlRun str)
 //throws java.sql.SQLException
 {
 	for (Iterator ii = models.iterator(); ii.hasNext(); ) {
@@ -66,7 +66,7 @@ public void doUpdate(SqlRunner str)
 // 	}
 // }
 
-public void doDelete(SqlRunner str)
+public void doDelete(SqlRun str)
 //throws java.sql.SQLException
 {
 	for (Iterator ii = models.iterator(); ii.hasNext(); ) {
@@ -91,7 +91,7 @@ public void doDelete(SqlRunner str)
 //		m.doInit(str);
 //	}
 //}
-public void doSelect(SqlRunner str)
+public void doSelect(SqlRun str)
 //throws java.sql.SQLException
 {
 	inSelect = true;
@@ -101,7 +101,7 @@ public void doSelect(SqlRunner str)
 	}
 	inSelect = false;
 }
-public void doInsert(SqlRunner str)
+public void doInsert(SqlRun str)
 //throws java.sql.SQLException
 {
 	for (Iterator ii = models.iterator(); ii.hasNext(); ) {

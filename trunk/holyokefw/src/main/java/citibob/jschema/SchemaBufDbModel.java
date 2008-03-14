@@ -23,6 +23,7 @@ import citibob.task.*;
 import citibob.sql.*;
 import java.util.*;
 import citibob.jschema.log.*;
+import citibob.util.IntVal;
 
 public class SchemaBufDbModel extends BaseDbModel
 implements TableDbModel, RowStatusConst
@@ -272,7 +273,7 @@ public void setSelectWhere(ConsSqlQuery q)
 /** This should NOT be used by subclasses.  In general, instant update is a property
 assigned by enclosing objects --- panels that USE this DbModel.
 TODO: Make instant updates delete instantly when user hits "delete". */
-public void setInstantUpdate(TaskRunner runner, boolean instantUpdate)
+public void setInstantUpdate(SqlRun runner, boolean instantUpdate)
 {
 	if (instantUpdate) {
 		if (instantUpdateListener == null) {
@@ -292,7 +293,7 @@ public boolean isInstantUpdate()
 }
 
 // -----------------------------------------------------------
-protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SqlSchemaInfo qs)
+protected ConsSqlQuery doSimpleInsert(final int row, SqlRun str, SqlSchemaInfo qs)
 {
 	// Put together the insert for this row
 	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.INSERT);
@@ -302,8 +303,8 @@ protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SqlSchemaInf
 	String sql = q.getSql();
 		
 	// Dispatch it
-	str.execSql(sql, new UpdRunnable() {
-	public void run(SqlRunner str) {
+	str.execSql(sql, new UpdTasklet() {
+	public void run() {
 		sbuf.setStatus(row, 0);
 	}});
 	
@@ -321,10 +322,10 @@ protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SqlSchemaInf
 				final SqlSequence seq = (SqlSequence)col.jType;
 //				int val = seq.getCurVal(st);
 				final int qcol = qs.schemaMap[i];
-				seq.getCurVal(str);
-				str.execUpdate(new UpdRunnable() {
-				public void run(SqlRunner str) throws Exception {
-					sbuf.setValueAt(seq.retrieve(str), row, qcol);
+				final IntVal ival = seq.getCurVal(str);
+				str.execUpdate(new UpdTasklet2() {
+				public void run(SqlRun str) throws Exception {
+					sbuf.setValueAt(ival.val, row, qcol);
 				}});
 			}
 		}
@@ -334,7 +335,7 @@ protected ConsSqlQuery doSimpleInsert(final int row, SqlRunner str, SqlSchemaInf
 	return q;
 }
 // -----------------------------------------------------------
-protected ConsSqlQuery doSimpleUpdate(int row, SqlRunner str, SqlSchemaInfo qs)
+protected ConsSqlQuery doSimpleUpdate(int row, SqlRun str, SqlSchemaInfo qs)
 {
 	SchemaBuf sb = (SchemaBuf)sbuf;
 	SqlSchema schema = qs.schema;
@@ -365,7 +366,7 @@ System.out.println("doSimpleUpdate: " + sql);
 	}
 }
 /** Get Sql query to delete current record. */
-protected ConsSqlQuery doSimpleDeleteNoRemoveRow(int row, SqlRunner str, SqlSchemaInfo qs)
+protected ConsSqlQuery doSimpleDeleteNoRemoveRow(int row, SqlRun str, SqlSchemaInfo qs)
 {
 	SchemaBuf sb = (SchemaBuf)sbuf;
 	Schema schema = sb.getSchema();
@@ -394,7 +395,7 @@ public boolean getInsertBlankRow() { return insertBlankRow; }
 * from database.  When combined with an actual
 * database and the SqlDisplay.setSqlValue(), this
 * has the result of refreshing the current display. */
-public void doSelect(SqlRunner str)
+public void doSelect(SqlRun str)
 {
 	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.SELECT);
 	sbuf.getSelectCols(q, selectTable);
@@ -405,7 +406,7 @@ public void doSelect(SqlRunner str)
 // -----------------------------------------------------------
 /** Get Sql query to insert record into database,
 * assuming it isn't already there. */
-public void doInsert(SqlRunner str)
+public void doInsert(SqlRun str)
 {
 	for (int row = 0; row < sbuf.getRowCount(); ++row) {
 		for (SqlSchemaInfo qs : updateSchemas) doSimpleInsert(row, str, qs);
@@ -425,7 +426,7 @@ public boolean valueChanged()
 /** Get Sql query to flush updates to database.
 * Only updates records that have changed.
  @returns status of what was done to the row (DELETED, INSERTED, CHANGED, 0) */
-public int doUpdate(SqlRunner str, int row, SqlSchemaInfo qs)
+public int doUpdate(SqlRun str, int row, SqlSchemaInfo qs)
 {
 	boolean deleted = false;
 //System.out.println("doUpdate.status(" + row + ") = " + sbuf.getStatus(row));
@@ -457,7 +458,7 @@ public int doUpdate(SqlRunner str, int row, SqlSchemaInfo qs)
 	return 0;
 }
 // -----------------------------------------------------------
-void fireTablesWillChange(SqlRunner str)
+void fireTablesWillChange(SqlRun str)
 {
 	for (SqlSchemaInfo qs : updateSchemas) if (dbChange != null) {
 		dbChange.fireTableWillChange(str, qs.table);
@@ -466,7 +467,7 @@ void fireTablesWillChange(SqlRunner str)
 /** Get Sql query to flush updates to database.
 * Only updates records that have changed; returns null
 * if nothing has changed. */
-public void doUpdate(SqlRunner str)
+public void doUpdate(SqlRun str)
 {
 	boolean changed = false;
 	for (int row = 0; row < sbuf.getRowCount(); ++row) {
@@ -477,7 +478,7 @@ public void doUpdate(SqlRunner str)
 	if (changed) fireTablesWillChange(str);
 }
 /** Returns status of what was done */
-int doUpdateNoFireTableWillChange(SqlRunner str, int row)
+int doUpdateNoFireTableWillChange(SqlRun str, int row)
 {
 	int status = 0;
 	for (SqlSchemaInfo qs : updateSchemas) {
@@ -488,7 +489,7 @@ int doUpdateNoFireTableWillChange(SqlRunner str, int row)
 }
 // -----------------------------------------------------------
 /** Get Sql query to delete current record. */
-public void doDelete(SqlRunner str)
+public void doDelete(SqlRun str)
 {
 	for (int row = 0; row < sbuf.getRowCount(); ++row) {
 		for (SqlSchemaInfo qs : updateSchemas) {
@@ -508,29 +509,30 @@ public void doClear()
 // ==============================================
 private static class InstantUpdateListener implements TableModelListener {
 //	SqlRunner str;
-	TaskRunner runner;
+//	TaskRunner runner;
+	SqlRun runner;
 	SchemaBufDbModel dbModel;
-	public InstantUpdateListener(SchemaBufDbModel dbModel, TaskRunner runner)
+	public InstantUpdateListener(SchemaBufDbModel dbModel, SqlRun runner)
 	{
 		this.runner = runner;
 		this.dbModel = dbModel;
 	}
 	public void tableChanged(final TableModelEvent e) {
 System.out.println("InstantUpdateListener.tableChanged()");
-		runner.doRun(new BatchRunnable() {
-		public void run(SqlRunner str) throws SQLException {
+//		runner.run(new BatchRunnable() {
+//		public void run(SqlRunner str) throws SQLException {
 			switch(e.getType()) {
 				// TODO: Update only rows that have changed, don't waste
 				// your time on all the other rows!
 				case TableModelEvent.UPDATE :
 					for (int r=e.getFirstRow(); r <= e.getLastRow(); ++r) {
 System.out.println("InstantUpdateListener.doUpdate row = " + r);
-						dbModel.doUpdateNoFireTableWillChange(str, r);
-						dbModel.fireTablesWillChange(str);
+						dbModel.doUpdateNoFireTableWillChange(runner, r);
+						dbModel.fireTablesWillChange(runner);
 					}
 				break;
 			}
-		}});
+//		}});
  	}
 }
 // =============================================================

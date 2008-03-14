@@ -29,6 +29,7 @@ package citibob.sql.pgsql;
 
 import java.sql.*;
 import citibob.sql.*;
+import citibob.util.IntVal;
 
 /**
  *
@@ -47,9 +48,6 @@ public class SqlSerial extends SqlInteger implements SqlSequence
 	static String curValSql(String seq) { return "select currval(" + SqlString.sql(seq) + ")"; }
 	static String nextValSql(String seq) { return "select nextval(" + SqlString.sql(seq) + ")"; }
 
-	public int retrieve(SqlRunner str) { return (Integer)str.get(seq); }
-
-	
 	public int getCurVal(Statement st) throws SQLException
 	{
 		ResultSet rs = st.executeQuery(curValSql(seq));
@@ -67,32 +65,35 @@ public class SqlSerial extends SqlInteger implements SqlSequence
 		return ret;		
 	}
 	
-	public void getCurVal(SqlRunner str)
-		{ getCurVal(str, seq); }
-	public void getNextVal(SqlRunner str)
-		{ getNextVal(str, seq); }
+	public IntVal getCurVal(SqlRun str)
+		{ return getCurVal(str, seq); }
+	public IntVal getNextVal(SqlRun str)
+		{ return getNextVal(str, seq); }
+	
 	/** Return current value of the sequence (after an INSERT has been called that incremented it.)  Stores
 	 value in Str under name seq. */
-	public static void getCurVal(SqlRunner str, final String seq)
+	public static IntVal getCurVal(SqlRun str, final String seq)
 	{
+		final IntVal ival = new IntVal();
 		String sql = curValSql(seq);
-		str.execSql(sql, new RsRunnable() {
-		public void run(SqlRunner str, ResultSet rs) throws Exception {
+		str.execSql(sql, new RsTasklet() {
+		public void run(ResultSet rs) throws Exception {
 			rs.next();
-			int val = rs.getInt(1);
-			str.put(seq, val);
+			ival.val = rs.getInt(1);
 		}});
+		return ival;
 	}
 	
 	/** Return current value of the sequence (after an INSERT has been called that incremented it.) */
-	public static void getNextVal(SqlRunner str, final String seq)
+	public static IntVal getNextVal(SqlRun str, final String seq)
 	{
+		final IntVal ival = new IntVal();
 		String sql = nextValSql(seq);
-		str.execSql(sql, new RsRunnable() {
-		public void run( SqlRunner str, ResultSet rs) throws Exception {
+		str.execSql(sql, new RsTasklet() {
+		public void run(ResultSet rs) throws Exception {
 			rs.next();
-			int val = rs.getInt(1);
-			str.put(seq, val);
+			ival.val = rs.getInt(1);
 		}});
+		return ival;
 	}
 }

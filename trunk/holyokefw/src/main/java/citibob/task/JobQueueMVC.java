@@ -20,44 +20,44 @@ package citibob.task;
 import java.util.*;
 import java.io.*;
 
-public abstract class TaskQueueMVC extends TaskRunner implements Runnable
+public abstract class JobQueueMVC extends JobRun implements Runnable
 {
 public static interface Listener {
     /**  Task added to queue. */
-    public void taskAdded(Task t);
+    public void taskAdded(Job t);
 
 
     /**  Task removed from the queue */
-    public void taskRemoved(Task t);
+    public void taskRemoved(Job t);
 
 
     /**  Task being executed */
-    public void taskStarting(Task t);
+    public void taskStarting(Job t);
 
 
     /**  Task finished running --- exception (if any) is passed along */
-    public void taskFinished(Task t, Throwable e);
+    public void taskFinished(Job t, Throwable e);
 
 
     /**  Queue cleared (usually, the running task will be finished here as well.) */
     public void queueCleared();
 }
 // ======================================================
-public static class Adapter implements TaskQueueMVC.Listener {
+public static class Adapter implements JobQueueMVC.Listener {
     /**  Task added to queue. */
-    public void taskAdded(Task t) {}
+    public void taskAdded(Job t) {}
 
 
     /**  Task removed from the queue */
-    public void taskRemoved(Task t) {}
+    public void taskRemoved(Job t) {}
 
 
     /**  Task being executed */
-    public void taskStarting(Task t) {}
+    public void taskStarting(Job t) {}
 
 
     /**  Task finished running --- exception (if any) is passed along */
-    public void taskFinished(Task t, Throwable e) {}
+    public void taskFinished(Job t, Throwable e) {}
 
 
     /**  Queue cleared (usually, the running task will be finished here as well.) */
@@ -65,44 +65,44 @@ public static class Adapter implements TaskQueueMVC.Listener {
 }
 // ======================================================
 java.util.LinkedList listeners = new java.util.LinkedList();
-public void addListener(TaskQueueMVC.Listener l)
+public void addListener(JobQueueMVC.Listener l)
 	{ listeners.add(l); }
-public void removeListener(TaskQueueMVC.Listener l)
+public void removeListener(JobQueueMVC.Listener l)
 	{ listeners.remove(l); }
 
 // ======================================================
-public void fireTaskAdded(Task t)
+public void fireTaskAdded(Job t)
 {
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
-		TaskQueueMVC.Listener l = (TaskQueueMVC.Listener)ii.next();
+		JobQueueMVC.Listener l = (JobQueueMVC.Listener)ii.next();
 		l.taskAdded(t);
 	}
 }
-public void fireTaskRemoved(Task t)
+public void fireTaskRemoved(Job t)
 {
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
-		TaskQueueMVC.Listener l = (TaskQueueMVC.Listener)ii.next();
+		JobQueueMVC.Listener l = (JobQueueMVC.Listener)ii.next();
 		l.taskRemoved(t);
 	}
 }
-public void fireTaskStarting(Task t)
+public void fireTaskStarting(Job t)
 {
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
-		TaskQueueMVC.Listener l = (TaskQueueMVC.Listener)ii.next();
+		JobQueueMVC.Listener l = (JobQueueMVC.Listener)ii.next();
 		l.taskStarting(t);
 	}
 }
-public void fireTaskFinished(Task t, Throwable e)
+public void fireTaskFinished(Job t, Throwable e)
 {
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
-		TaskQueueMVC.Listener l = (TaskQueueMVC.Listener)ii.next();
+		JobQueueMVC.Listener l = (JobQueueMVC.Listener)ii.next();
 		l.taskFinished(t, e);
 	}
 }
 public void fireQueueCleared()
 {
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
-		TaskQueueMVC.Listener l = (TaskQueueMVC.Listener)ii.next();
+		JobQueueMVC.Listener l = (JobQueueMVC.Listener)ii.next();
 		l.queueCleared();
 	}
 }

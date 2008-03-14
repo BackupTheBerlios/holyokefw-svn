@@ -56,7 +56,7 @@ protected citibob.app.App app;
 public JTypeTableModel toTableModel(java.sql.ResultSet rs)
 throws java.sql.SQLException
 {
-	RSTableModel mod = new citibob.sql.RSTableModel(app.getSqlTypeSet());
+	RSTableModel mod = new citibob.sql.RSTableModel(app.sqlTypeSet());
 	mod.executeQuery(rs);
 //	mod.setRowsAndCols(rs);
 //	mod.setColHeaders(rs);
@@ -72,11 +72,11 @@ throws java.sql.SQLException
 // ===================================================================
 public StringTableModel format(JTypeTableModel mod)
 {
-	return new StringTableModel(mod, app.getSFormatMap());
+	return new StringTableModel(mod, app.sFormatMap());
 }
 public StringTableModel format(JTypeTableModel mod, String[] scol, SFormat[] sfmt)
 {
-	return new StringTableModel(mod, app.getSFormatMap(), scol, sfmt);
+	return new StringTableModel(mod, app.sFormatMap(), scol, sfmt);
 }
 // ===================================================================
 public JRDataSource toJasper(java.sql.ResultSet rs)
@@ -103,7 +103,7 @@ public List toJodList(JTypeTableModel model,
 String[][] sgcols,
 String[] scols, SFormat[] sfmt)
 {
-	SFormat[] formatters = app.getSFormatMap().newSFormats(model, scols, sfmt);
+	SFormat[] formatters = app.sFormatMap().newSFormats(model, scols, sfmt);
 	StringTableModelGrouper grouper =
 		new StringTableModelGrouper(model, sgcols, formatters);
 	return grouper.groupRowsList();
@@ -347,7 +347,7 @@ throws IOException
 	fout = correctFile(templateName, "xls", fout);
 	
 	InputStream reportIn = openTemplateFile(templateDir, templateName);
-	PoiXlsWriter poiw = new PoiXlsWriter(reportIn, app.getTimeZone());
+	PoiXlsWriter poiw = new PoiXlsWriter(reportIn, app.timeZone());
 	poiw.replaceHolders(models);
 	poiw.writeSheet(fout);
 	return fout;

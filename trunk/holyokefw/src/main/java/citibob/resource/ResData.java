@@ -5,12 +5,10 @@
 
 package citibob.resource;
 
-import citibob.sql.RsRunnable;
+import citibob.sql.RsTasklet;
 import citibob.sql.SqlDateType;
-import citibob.sql.SqlRunner;
+import citibob.sql.SqlRun;
 import citibob.sql.SqlTypeSet;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -33,7 +31,7 @@ boolean schemaExists = false;		// true if database schema existed at constructio
 
 public ArrayList<RtRes> getRtRes() { return rtres; }
 
-public ResData(SqlRunner str, ResSet xrset, SqlTypeSet xtset)
+public ResData(SqlRun str, ResSet xrset, SqlTypeSet xtset)
 {
 	this.rset = xrset;
 	this.tset = xtset;
@@ -65,7 +63,7 @@ public ResData(SqlRunner str, ResSet xrset, SqlTypeSet xtset)
 }
 
 /** Re-read the data */
-public void readData(SqlRunner str)
+public void readData(SqlRun str)
 {
 	fetchAvailableVersions(str, tset, relevant);
 }
@@ -98,7 +96,7 @@ public static ArrayList<RtRes> newRtRes(SortedSet<RtResKey> keys)
 
 
 /** Looks in database for available versions of each requested resource. */
-private static void fetchAvailableVersions(SqlRunner str,
+private static void fetchAvailableVersions(SqlRun str,
 final SqlTypeSet tset, final SortedSet<RtResKey> keys)
 {
 	StringBuffer sql = new StringBuffer(
@@ -116,8 +114,8 @@ final SqlTypeSet tset, final SortedSet<RtResKey> keys)
 		" order by k.serial,r.version;\n" +
 		" drop table _keys;");
 	final List<Set<Integer>> list = new LinkedList();
-	str.execSql(sql.toString(), new RsRunnable() {
-	public void run(citibob.sql.SqlRunner str, java.sql.ResultSet rs) throws Exception {
+	str.execSql(sql.toString(), new RsTasklet() {
+	public void run(java.sql.ResultSet rs) throws Exception {
 		SqlDateType tstamp = tset.newTimestamp(true);
 		
 		for (RtResKey rk : keys) rk.availVersions.clear();

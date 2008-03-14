@@ -6,7 +6,7 @@
 package citibob.resource;
 
 import citibob.sql.ConnPool;
-import citibob.sql.SqlRunner;
+import citibob.sql.SqlRun;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -234,7 +234,7 @@ public List<UpgradePlan> getAvailablePlans(int uversionid, Set<Integer> availVer
 	return null;
 }
 
-public void applyPlan(SqlRunner str, ConnPool pool, UpgradePlan uplan)
+public void applyPlan(SqlRun str, ConnPool pool, UpgradePlan uplan)
 	throws Exception
 {
 	int uversionid = uplan.uversionid0();
@@ -321,11 +321,11 @@ System.out.println("Loading template as resource: " + resourceName);
 
 
 
-public ResResult load(SqlRunner str, int uversionid, int version)
+public ResResult load(SqlRun str, int uversionid, int version)
 {
 	return ResUtil.getResource(str, getName(), uversionid, version);
 }
-public ResResult loadRequiredVersion(SqlRunner str, int uversionid, int sysVersion)
+public ResResult loadRequiredVersion(SqlRun str, int uversionid, int sysVersion)
 {
 	return load(str, uversionid, getRequiredVersion(sysVersion));
 }

@@ -25,8 +25,8 @@ import java.util.*;
 import citibob.types.JType;
 import static citibob.jschema.RowStatusConst.*;
 import citibob.sql.ConsSqlQuery;
-import citibob.sql.RsRunnable;
-import citibob.sql.SqlRunner;
+import citibob.sql.RsTasklet2;
+import citibob.sql.SqlRun;
 import citibob.sql.SqlTypeSet;
 import citibob.types.JavaJType;
 
@@ -67,7 +67,7 @@ protected SchemaBuf() {}
 public SchemaBuf(ResultSet rs, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
 throws SQLException
 	{ this(new RSSchema(rs, typeSchemas, keyFields, tset)); }
-public SchemaBuf(SqlRunner str, String protoSql, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
+public SchemaBuf(SqlRun str, String protoSql, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
 	{ setCols(str, protoSql, typeSchemas, keyFields, tset); }
 // =====================================================
 // Unique to SchemaBuf
@@ -180,29 +180,29 @@ public void addAllRows(ResultSet rs) throws SQLException
 	int lastRow = rows.size()-1;
 	if (lastRow >= firstRow) fireTableRowsInserted(firstRow, lastRow);
 }
-public void setRows(SqlRunner str, String sql)
+public void setRows(SqlRun str, String sql)
 {
-	str.execSql(sql,new RsRunnable() {
-	public void run(SqlRunner str, ResultSet rs) throws SQLException {
+	str.execSql(sql,new RsTasklet2() {
+	public void run(SqlRun str, ResultSet rs) throws SQLException {
 		clear();
 		addAllRows(rs);
 	}});
 }
-public void setCols(SqlRunner str, String sql,
+public void setCols(SqlRun str, String sql,
 final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 {
-	str.execSql(sql,new RsRunnable() {
-	public void run(SqlRunner str, ResultSet rs) throws SQLException {
+	str.execSql(sql,new RsTasklet2() {
+	public void run(SqlRun str, ResultSet rs) throws SQLException {
 		clearNoFire();
 		schema = new RSSchema(rs, typeSchemas, keyFields, tset);
 		fireTableStructureChanged();
 	}});
 }
-public void setRowsAndCols(SqlRunner str, String sql,
+public void setRowsAndCols(SqlRun str, String sql,
 final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 {
-	str.execSql(sql,new RsRunnable() {
-	public void run(SqlRunner str, ResultSet rs) throws SQLException {
+	str.execSql(sql,new RsTasklet2() {
+	public void run(SqlRun str, ResultSet rs) throws SQLException {
 		setRowsAndCols(rs, typeSchemas, keyFields, tset);
 	}});
 }

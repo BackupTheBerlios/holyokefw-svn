@@ -20,7 +20,7 @@ package citibob.task;
 import citibob.app.App;
 import java.util.*;
 
-public class TaskQueue extends TaskQueueMVC
+public class JobQueue extends JobQueueMVC
 {
 
 Thread qThread;
@@ -29,19 +29,19 @@ LinkedList tasks = new LinkedList();
 Thread curTask;
 ExpHandler ehandler;
 public List getQueue() { return tasks; }
-RawRunner raw;
+RawRun raw;
 
 /** @param ehander Handles only minor TaskQueue errors.  Exceptions encountered
  *while running tasks are passed to the TaskQueue.Listener. */
-public TaskQueue(RawRunner raw, ExpHandler ehandler)
+public JobQueue(RawRun raw, ExpHandler ehandler)
 {
 	super();
 	this.raw = raw;
 	this.ehandler = ehandler;
 }
-public TaskQueue(App app, ExpHandler ehandler)
+public JobQueue(App app, ExpHandler ehandler)
 {
-	this(new DbRawRunner(app), ehandler);
+	this(new DbRawRun(app), ehandler);
 }
 
 public void setSingleTask(boolean b)
@@ -49,7 +49,7 @@ public void setSingleTask(boolean b)
 	this.singleTask = b;
 }
 // -------------------------------------------------------
-synchronized public boolean doRun(Task r)
+synchronized public boolean run(Job r)
 {
 //System.out.println("Adding task: " + r + "(" + r.getCBRunnable());
 	if (super.checkPermissions(r.getPermissions())) {
@@ -60,12 +60,12 @@ synchronized public boolean doRun(Task r)
 	} else return false;
 }
 /** Convenience function */
-public void doRun(String name, CBRunnable r)
+public void doRun(String name, CBTask r)
 {
-	Task task = new Task(name, r);
-	doRun(task);
+	Job task = new Job(name, r);
+	run(task);
 }
-public void doRun(CBRunnable r)
+public void run(CBTask r)
 {
 	doRun(null, r);
 }
@@ -91,7 +91,7 @@ public void clear()
 
 public void run() {
 	for (;;) {
-		Task r = null;
+		Job r = null;
 
 		// Remove element from the queue
 		try {
@@ -105,7 +105,7 @@ public void run() {
 		for (;;) {
 			try {
 				synchronized(this) {
-					r = (Task)tasks.removeFirst();
+					r = (Job)tasks.removeFirst();
 				}
 //System.out.println("Removed task: " + r);
 				fireTaskRemoved(r);

@@ -15,17 +15,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+package citibob.task;
 
+/** Takes multiple result sets from one segment of a batch query. */
+public interface SqlTask extends CBTask {
 
-package citibob.sql;
-
-
-/**
- * Runs after an update.
- * @author citibob
- */
-public interface UpdRunnable extends SqlRunnable {
-
-public void run(SqlRunner str) throws Exception;
-
+/** Runnable gets run on results of a previous batch query.  If the runnable
+ needs to produce additional queries, it stores them in sqlb. */
+public void run(citibob.sql.SqlRun batch) throws Exception;
+	
 }

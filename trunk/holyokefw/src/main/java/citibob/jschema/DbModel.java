@@ -55,7 +55,7 @@ public Object getKey(String name);
 * from database.  When combined with an actual
 * database and the SqlDisplay.setSqlValue(), this
 * has the result of refreshing the current display. */
-void doSelect(SqlRunner str);
+void doSelect(SqlRun str);
 
 
 
@@ -65,14 +65,14 @@ boolean valueChanged();
 /** Get Sql query to flush updates to database.
 * Only updates records that have changed; returns null
 * if nothing has changed. */
-void doUpdate(SqlRunner str);
+void doUpdate(SqlRun str);
 
 /** Get Sql query to insert record into database,
 * assuming it isn't already there. */
-void doInsert(SqlRunner str);
+void doInsert(SqlRun str);
 
 /** Get Sql query to delete current record. */
-void doDelete(SqlRunner str);
+void doDelete(SqlRun str);
 
 /** Clear all buffered data from this component.  Then there
 is no current record. */

@@ -54,14 +54,14 @@ public boolean valueChanged() { return false; }
 /** Get Sql query to flush updates to database.
 * Only updates records that have changed; returns null
 * if nothing has changed. */
-public void doUpdate(SqlRunner str) {}
+public void doUpdate(SqlRun str) {}
 
 /** Get Sql query to insert record into database,
 * assuming it isn't already there. */
-public void doInsert(SqlRunner str) {}
+public void doInsert(SqlRun str) {}
 
 /** Get Sql query to delete current record. */
-public void doDelete(SqlRunner str) {}
+public void doDelete(SqlRun str) {}
 
 // --------------------------------------------------------
 // No querying done, don't need to worry about key fields.

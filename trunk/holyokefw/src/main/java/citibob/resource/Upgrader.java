@@ -6,7 +6,7 @@
 package citibob.resource;
 
 import citibob.sql.ConnPool;
-import citibob.sql.SqlRunner;
+import citibob.sql.SqlRun;
 
 /**
  * Encapsulates a procedure to upgrade one resource to the next version.
@@ -25,7 +25,7 @@ public int version1();
 public boolean isBackCompatible();
 
 /** Does the actual upgrade! */
-public void upgrade(SqlRunner str, final ConnPool pool, int uversionid0, int uversionid1)
+public void upgrade(SqlRun str, final ConnPool pool, int uversionid0, int uversionid1)
 	throws Exception;
 
 /** Describes the action of this upgrader in plain English */

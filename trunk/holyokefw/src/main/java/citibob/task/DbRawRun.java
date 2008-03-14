@@ -26,7 +26,7 @@ import citibob.app.*;
  * for running the polymorphic runnable types.
  * @author citibob
  */
-public class DbRawRunner implements RawRunner
+public class DbRawRun implements RawRun
 {
 
 App app;
@@ -34,13 +34,13 @@ App app;
 //SqlBatchSet batchSet;
 //int recursionDepth;
 
-public ConnPool getPool() { return app.getPool(); }
-public DbRawRunner(App app)
+public ConnPool getPool() { return app.pool(); }
+public DbRawRun(App app)
 {
 	this.app = app;
 }
 
-public static Exception run(ERunnable r)
+public static Exception run(ETask r)
 {
 	try {
 		r.run();		
@@ -85,14 +85,14 @@ public static Exception run( ConnPool pool,StRunnable r)
 //	}
 //	return null;
 //}
-public Exception run(BatchRunnable r)
+public Exception run(SqlTask r)
 {
 //	SqlBatchSet batch = new SqlBatchSet();
-	SqlBatchSet batchSet = app.getBatchSet();
+	SqlRun batchSet = app.sqlRun();
 	try {
 		batchSet.enterRecursion();
 		r.run(batchSet);
-		if (batchSet.getRecursionDepth() == 1) batchSet.runBatches();
+		if (batchSet.getRecursionDepth() == 1) batchSet.flush();
 	} catch(Exception e) {
 		return e;
 	} finally {
@@ -126,7 +126,7 @@ public Exception run(BatchRunnable r)
 //	return ret;
 //}
 
-public static Exception run(ConnPool pool, DbRunnable r)
+public static Exception run(ConnPool pool, DbRun r)
 {
 	Connection dbb = null;
 	Exception ret = null;
@@ -143,22 +143,22 @@ public static Exception run(ConnPool pool, DbRunnable r)
 	return ret;
 }
 
-public Exception doRun(CBRunnable rr)
+public Exception doRun(CBTask rr)
 {
 	Exception ret;
-	SqlBatchSet batchSet = app.getBatchSet();
-	if (rr instanceof BatchRunnable) {
-		BatchRunnable r = (BatchRunnable)rr;
+	SqlRun batchSet = app.sqlRun();
+	if (rr instanceof SqlTask) {
+		SqlTask r = (SqlTask)rr;
 		ret = run(r);
-	} else if (rr instanceof ERunnable) {
-		ERunnable r = (ERunnable)rr;
+	} else if (rr instanceof ETask) {
+		ETask r = (ETask)rr;
 		ret = run(r);
 	} else if (rr instanceof StRunnable) {
 		StRunnable r = (StRunnable)rr;
-		ret = run( app.getPool(),r);
-	} else if (rr instanceof DbRunnable) {
-		DbRunnable r = (DbRunnable)rr;
-		ret = run( app.getPool(),r);
+		ret = run( app.pool(),r);
+	} else if (rr instanceof DbRun) {
+		DbRun r = (DbRun)rr;
+		ret = run( app.pool(),r);
 	} else {
 		ret = new ClassCastException("CBRunnable of class " + rr.getClass() + " is not one of ERunnable, StRunnable or DbRunnable");
 	}

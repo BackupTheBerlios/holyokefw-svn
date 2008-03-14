@@ -35,7 +35,7 @@ public static interface Listener {
 //    /** Something has changed in the courses table. */
 //    coursesChanged(SqlRunner str) throws SQLException;
 
-    public void tableWillChange(SqlRunner str, String table);
+    public void tableWillChange(SqlRun str, String table);
 }
 // ======================================================
 public static class Adapter implements DbChangeModel.Listener {
@@ -45,7 +45,7 @@ public static class Adapter implements DbChangeModel.Listener {
 //    /** Something has changed in the courses table. */
 //    coursesChanged(SqlRunner str) throws SQLException;
 
-    public void tableWillChange(SqlRunner str, String table)
+    public void tableWillChange(SqlRun str, String table)
 	{}
 }
 // ======================================================
@@ -68,7 +68,7 @@ public void removeListener(String table, DbChangeModel.Listener l)
 }
 
 // ======================================================
-public void fireTableWillChange(SqlRunner str, String table)
+public void fireTableWillChange(SqlRun str, String table)
 {
 	LinkedList listeners = (LinkedList)tListeners.get(table);
 	if (listeners == null) return;

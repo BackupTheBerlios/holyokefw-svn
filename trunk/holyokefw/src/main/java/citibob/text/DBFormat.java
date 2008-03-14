@@ -39,6 +39,6 @@ import java.sql.*;
 public interface DBFormat //implements SFormat
 {
 
-public abstract void setDisplayValue(SqlRunner str, Object value);
+public abstract void setDisplayValue(SqlRun str, Object value);
 
 }

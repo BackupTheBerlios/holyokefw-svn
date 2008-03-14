@@ -15,28 +15,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*
- * ActionRunner.java
- *
- * Created on January 29, 2006, 7:49 PM
- *
- * To change this template, choose Tools | Options and locate the template under
- * the Source Creation and Management node. Right-click the template and choose
- * Open. You can then make changes to the template in the Source Editor.
- */
+package citibob.sql;
 
-package citibob.task;
 
-/**
- * Runs the various kinds of runnables in the current thread, and returns any exceptions.
- * @author citibob
- */
-public interface RawRunner {
+/** Takes multiple result sets from one segment of a batch query. */
+public interface RssTasklet2 extends SqlTasklet {
+
+/** Runnable gets run on results of a previous batch query.  If the runnable
+ needs to produce additional queries, it stores them in nstr.next(). */
+public void run(citibob.sql.SqlRun str, java.sql.ResultSet[] rss) throws Exception;
 	
-//public void run(ERunnable r);
-//public void run(StRunnable r);
-//public void run(DbRunnable r);
-
-public Throwable doRun(CBRunnable r);
-
 }

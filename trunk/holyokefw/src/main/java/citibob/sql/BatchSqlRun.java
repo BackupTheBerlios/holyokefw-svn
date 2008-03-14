@@ -25,7 +25,7 @@ import java.util.*;
  *
  * @author citibob
  */
-public class SqlBatchSet implements SqlRunner {
+public class BatchSqlRun implements SqlRun {
 
 ConnPool xpool;
 HashMap map;				// Map of values to pass from from one SqlRunnable to the next
@@ -44,7 +44,7 @@ public void exitRecursion() { --recursionDepth; }
 public int getRecursionDepth() { return recursionDepth; }
 
 /** @param pool Connection to use to run batches here; can be null; */
-public SqlBatchSet(ConnPool pool)
+public BatchSqlRun(ConnPool pool)
 {
 	this.xpool = pool;
 	init();
@@ -66,10 +66,12 @@ public void execSql(String sql)
 
 /** Adds SQL to the batch --- multiple ResultSets returned, and it can create
  additional SQL as needed. */
-public void execSql(String sql, SqlRunnable rr)
+public void execSql(String sql, SqlTasklet rr)
 	{ batch.execSql(sql, rr); }
 
-public void execUpdate(UpdRunnable r)
+public void execUpdate(UpdTasklet r)
+	{ batch.execSql("", r); }
+public void execUpdate(UpdTasklet2 r)
 	{ batch.execSql("", r); }
 
 /** Executes all (potentially) buffered SQL up to now. */
@@ -85,12 +87,12 @@ public Object get(Object key)
 
 // ---------------------------------------
 
-public void runBatches(App app)
+private void runBatches(App app)
 {
 	try {
-		runBatches(app.getPool());
+		runBatches(app.pool());
 	} catch(Exception e) {
-		app.getExpHandler().consume(e);
+		app.expHandler().consume(e);
 	}
 }
 public void runBatches(ConnPool pool) throws Exception
@@ -144,5 +146,10 @@ public void runBatches(Statement st) throws Exception
 	}
 	System.out.println("+++ Done running " + nbatch + " batches of SQL");
 }
+
+// TODO: Implement from old FrontApp!!!
+public void pushBatch() { throw new NullPointerException(); }
+public void popBatch() { throw new NullPointerException(); }
+
 
 }

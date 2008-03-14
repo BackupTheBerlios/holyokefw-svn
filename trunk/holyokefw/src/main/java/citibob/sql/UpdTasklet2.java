@@ -15,41 +15,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package citibob.task;
 
-import citibob.app.App;
-import citibob.sql.*;
+
+package citibob.sql;
+
 
 /**
- * Just run the CBRunnables in the current thread.  Route exceptions to the ExpHandler.
+ * Runs after an update.
  * @author citibob
  */
-public class SimpleDbTaskRunner extends TaskRunner
-{
+public interface UpdTasklet2 extends SqlTasklet {
 
-DbRawRunner raw;
-ExpHandler eh;
-
-public ConnPool getPool() { return raw.getPool(); }
-
-public SimpleDbTaskRunner(DbRawRunner raw, ExpHandler eh)
-{
-	this.raw = raw;
-	this.eh = eh;
-}
-public SimpleDbTaskRunner(App app, ExpHandler eh)
-{
-	this(new DbRawRunner(app), eh);
-}
-public SimpleDbTaskRunner(App app)
-{
-	this(new DbRawRunner(app), new SimpleExpHandler());
-}
-
-public void doRun(CBRunnable rr)
-{
-	Throwable e = raw.doRun(rr);
-	if (e != null && eh != null) eh.consume(e);
-}
+public void run(SqlRun str) throws Exception;
 
 }

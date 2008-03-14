@@ -33,32 +33,43 @@ import java.util.*;
  * A way to run SQL queries --- either in batch, or one at a time.
  * @author citibob
  */
-public interface SqlRunner {
+public interface SqlRun {
 
 /** Adds SQL to the next batch to run.
  Multiple ResultSets returned, and it can create
  additional SQL as needed.
  @param rr one of RssRunnable, RsRunnable, UpdRunnable */
-public void execSql(String sql, SqlRunnable rr);
+public void execSql(String sql, SqlTasklet rr);
 
 /** Adds Sql to next batch to run, without any processing code. */
 public void execSql(String sql);
 
 /** Adds processing code to run without any SQL. */
-public void execUpdate(UpdRunnable r);
+public void execUpdate(UpdTasklet r);
+
+/** Adds processing code to run without any SQL. */
+public void execUpdate(UpdTasklet2 r);
 
 /** Executes all (potentially) buffered SQL up to now. */
 public void flush() throws Exception;
+
+// TODO: Review all these methods below, see if they can be simplified.
+public void enterRecursion();
+public void exitRecursion();
+public int getRecursionDepth();
+public void pushBatch();
+public void popBatch();
+
 ///** @deprecated
 // Gets the SqlRunner for the next batch --- used inside SqlRunnable
 // to run things in sequence. */
 //public SqlRunner next();
 
-/** While SqlRunnables are running --- store a value for retrieval by later SqlRunnable. */
-public void put(Object key, Object val);
-
-/** While SqlRunnables are running --- retrieve a previously stored value. */
-public Object get(Object key);
+///** While SqlRunnables are running --- store a value for retrieval by later SqlRunnable. */
+//public void put(Object key, Object val);
+//
+///** While SqlRunnables are running --- retrieve a previously stored value. */
+//public Object get(Object key);
 
 // =================================================================
 // Something that keeps track of the "current available" SqlRunner

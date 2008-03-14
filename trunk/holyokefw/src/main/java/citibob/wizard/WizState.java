@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.wizard;
 
-import citibob.sql.SqlRunner;
+import citibob.sql.SqlRun;
 
 public interface WizState
 {

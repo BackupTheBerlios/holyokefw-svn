@@ -7,7 +7,7 @@ package citibob.jschema.swing;
 
 import citibob.app.App;
 import citibob.jschema.SchemaBufDbModel;
-import citibob.task.ERunnable;
+import citibob.task.ETask;
 import java.awt.Component;
 import javax.swing.JTable;
 
@@ -31,7 +31,7 @@ public void addRow()
 // =============================================================
 public void addAction()
 {
-	fapp.runGui(component, new ERunnable() {
+	fapp.guiRun().run(component, new ETask() {
 	public void run() throws Exception {
 		addRow();
 	}});
@@ -39,7 +39,7 @@ public void addAction()
 
 public void delAction()
 {
-	fapp.runGui(component, new ERunnable() {
+	fapp.guiRun().run(component, new ETask() {
 	public void run() throws Exception {
 		dm.getSchemaBuf().deleteRow(table.getSelectedRow());
 		table.requestFocus();
@@ -47,7 +47,7 @@ public void delAction()
 }                                          
 public void undelAction()
 {                                                 
-	fapp.runGui(component, new ERunnable() {
+	fapp.guiRun().run(component, new ETask() {
 	public void run() throws Exception {
 		dm.getSchemaBuf().undeleteRow(table.getSelectedRow());
 		table.requestFocus();		// Enable easy cursor key movement
@@ -56,7 +56,7 @@ public void undelAction()
 
 public void delAllAction()
 {                                                  
-	fapp.runGui(component, new ERunnable() {
+	fapp.guiRun().run(component, new ETask() {
 	public void run() throws Exception {
 		dm.getSchemaBuf().deleteAllRows();
 	}});
@@ -64,7 +64,7 @@ public void delAllAction()
 
 public void undelAllAction()
 {                                                     
-	fapp.runGui(component, new ERunnable() {
+	fapp.guiRun().run(component, new ETask() {
 	public void run() throws Exception {
 		dm.getSchemaBuf().undeleteAllRows();
 	}});

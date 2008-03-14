@@ -49,13 +49,13 @@ public SqlTableModel getTableModel() { return model; }
 // ========================================================
 // DbModel
 /** Initialize component to receive data.  Might be needed if some kind of database lookup is needed. */
-public void doInit(SqlRunner str) {}
+public void doInit(SqlRun str) {}
 
 /** Get Sql query to re-select current record
 * from database.  When combined with an actual
 * database and the SqlDisplay.setSqlValue(), this
 * has the result of refreshing the current display. */
-public void doSelect(SqlRunner str)
+public void doSelect(SqlRun str)
 {
 //	ResultSet rs = st.executeQuery(sql);
 	model.executeQuery(str);

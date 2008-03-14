@@ -71,7 +71,7 @@ public Map<Object,List<Integer>> makeJoinMap(String joinCol)
 	return joinMap;
 }
 
-public void executeQuery(SqlRunner str, String sql)
+public void executeQuery(SqlRun str, String sql)
 {
 System.out.println("MainSqlTableModel.executeQuery: " + sql);
 	super.executeQuery(str, sql);

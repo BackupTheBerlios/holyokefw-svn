@@ -6,7 +6,7 @@
 package citibob.resource;
 
 import citibob.sql.ConnPool;
-import citibob.sql.SqlRunner;
+import citibob.sql.SqlRun;
 
 /**
  *
@@ -20,7 +20,7 @@ public class UpgradePlan {
 	public Upgrader getLast() { return path[path.length-1]; }
 	public Resource getResource() { return getLast().getResource(); }
 	
-	public void applyPlan(SqlRunner str, ConnPool pool)
+	public void applyPlan(SqlRun str, ConnPool pool)
 	throws Exception
 	{
 		getResource().applyPlan(str, pool, this);

@@ -7,7 +7,7 @@ package citibob.resource;
 
 import citibob.sql.ConnPool;
 import citibob.sql.RemoveSqlCommentsReader;
-import citibob.sql.SqlRunner;
+import citibob.sql.SqlRun;
 import citibob.sql.pgsql.SqlString;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -36,7 +36,7 @@ public String getDescription() {
 	
 }
 
-public void upgrade(SqlRunner str, final ConnPool pool, int uversionid0, final int uversionid1)
+public void upgrade(SqlRun str, final ConnPool pool, int uversionid0, final int uversionid1)
 throws Exception
 {
 	ResSet rset = resource.getResSet();
