@@ -150,7 +150,7 @@ App app;
 
 public void doSave()
 {
-		app.guiRun().run(StatusPNC.this, new SqlTask() {
+		app.guiRun().run(StatusPNC.this, new SqlTasklet() {
 		public void run(SqlRun str) throws Exception {
 			if (dbm.valueChanged()) {
 				dbm.doUpdate(str);
@@ -166,7 +166,7 @@ private void bSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:e
 }//GEN-LAST:event_bSaveActionPerformed
 
 	private void bRestoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRestoreActionPerformed
-		app.guiRun().run(StatusPNC.this, new SqlTask() { public void run(SqlRun str) throws Exception {
+		app.guiRun().run(StatusPNC.this, new SqlTasklet() { public void run(SqlRun str) throws Exception {
 			dbm.doSelect(str);
 		}});
 // TODO add your handling code here:

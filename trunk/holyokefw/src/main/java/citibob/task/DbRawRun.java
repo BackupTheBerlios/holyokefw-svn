@@ -126,7 +126,7 @@ public Exception run(SqlTask r)
 //	return ret;
 //}
 
-public static Exception run(ConnPool pool, DbRun r)
+public static Exception run(ConnPool pool, DbTask r)
 {
 	Connection dbb = null;
 	Exception ret = null;
@@ -156,8 +156,8 @@ public Exception doRun(CBTask rr)
 	} else if (rr instanceof StRunnable) {
 		StRunnable r = (StRunnable)rr;
 		ret = run( app.pool(),r);
-	} else if (rr instanceof DbRun) {
-		DbRun r = (DbRun)rr;
+	} else if (rr instanceof DbTask) {
+		DbTask r = (DbTask)rr;
 		ret = run( app.pool(),r);
 	} else {
 		ret = new ClassCastException("CBRunnable of class " + rr.getClass() + " is not one of ERunnable, StRunnable or DbRunnable");

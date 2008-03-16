@@ -33,7 +33,7 @@ public void applyPlan(SqlRun str, final ConnPool pool, final UpgradePlan uplan)
 			bytes = dup.upgrade(bytes);
 		}
 		final byte[] xbytes = bytes;
-		Exception e = pool.exec(new citibob.task.DbRun() {
+		Exception e = pool.exec(new citibob.task.DbTask() {
 		public void run(java.sql.Connection dbb) throws Exception {
 			Upgrader[] path = uplan.getPath();
 			ResUtil.setResource(dbb, getName(), uplan.uversionid1(), uplan.version1(), xbytes);

@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.sql;
 
+import citibob.sql.ansi.SqlDate;
 import java.sql.*;
 import static java.sql.Types.*;
 
@@ -45,6 +46,8 @@ protected boolean msDates;
 public SqlTypeSet(boolean msDates)
 {
 	this.msDates = msDates;
+	date = newDate(true);
+	dateNotNullable = newDate(false);
 }
 	
 public SqlType getSqlType(ResultSet rs, int col) throws SQLException
@@ -62,4 +65,10 @@ public SqlDateType newTimestamp(boolean nullable)
 	{ return (SqlDateType)getSqlType(TIMESTAMP,0,0, nullable); }
 public SqlDateType newDate(boolean nullable)
 	{ return (SqlDateType)getSqlType(DATE, 0,0, nullable); }
+
+SqlDateType date, dateNotNullable;
+
+public SqlDateType date() { return date; }
+public SqlDateType dateNotNullable() { return dateNotNullable; }
+
 }

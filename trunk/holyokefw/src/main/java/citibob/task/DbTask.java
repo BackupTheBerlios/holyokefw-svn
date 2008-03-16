@@ -30,7 +30,7 @@ package citibob.task;
  *
  * @author citibob
  */
-public interface DbRun extends CBTask {
+public interface DbTask extends CBTask {
 
 public void run(java.sql.Connection dbb) throws Exception;
 	

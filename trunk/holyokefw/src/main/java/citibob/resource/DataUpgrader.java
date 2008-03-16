@@ -39,7 +39,7 @@ throws Exception
 	final ResResult rr = resource.load(str, uversionid0, version0);
 	str.execUpdate(new UpdTasklet() {
 	public void run() throws Exception {
-		Exception e = pool.exec(new citibob.task.DbRun() {
+		Exception e = pool.exec(new citibob.task.DbTask() {
 		public void run(java.sql.Connection dbb) throws Exception {
 			upgrade(dbb, rr, uversionid1);
 		}});
