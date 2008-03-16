@@ -35,7 +35,10 @@ protected String table;
 //	return ls;
 //}
 
-public ConstSqlSchema() {}
+public ConstSqlSchema() {
+	// Default table name same as class
+	table = getClass().getSimpleName();
+}
 /** @Deprecated */
 public ConstSqlSchema(Column[] cols, String table)
 {

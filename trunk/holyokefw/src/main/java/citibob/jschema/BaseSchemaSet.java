@@ -43,4 +43,9 @@ public SqlSchema get(String name) {
 	return sc;
 }
 
+public void add(SqlSchema schema)
+{
+	map.put(schema.getDefaultTable(), schema);
+}
+
 }
