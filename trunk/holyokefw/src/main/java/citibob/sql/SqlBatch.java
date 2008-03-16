@@ -90,7 +90,7 @@ public void execUpdate(UpdTasklet r)
 
 // ---------------------------------------
 /** Execute the SQL batch; puts any new queries in "nextBatch" */
-void execOneBatch(Statement st, BatchSqlRun str) throws Exception
+void execOneBatch(Statement st, SqlRun str) throws Exception
 {
 	String sql = sqlBuf.toString();
 System.out.println(

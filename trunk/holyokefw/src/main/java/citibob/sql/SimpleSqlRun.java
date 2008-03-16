@@ -50,31 +50,31 @@ public SimpleSqlRun(ConnPool pool, ExpHandler expHandler) {
 public void execSql(String sql, SqlTasklet rr)
 {
 	super.execSql(sql, rr);
-	myFflush();
+	myFlush();
 }
 
 /** Adds Sql to next batch to run, without any processing code. */
 public void execSql(String sql)
 {
 	super.execSql(sql);
-	myFflush();
+	myFlush();
 }
 
 /** Adds processing code to run without any SQL. */
 public void execUpdate(UpdTasklet r)
 {
 	super.execUpdate(r);
-	myFflush();
+	myFlush();
 }
 
 /** Adds processing code to run without any SQL. */
 public void execUpdate(UpdTasklet2 r)
 {
 	super.execUpdate(r);
-	myFflush();
+	myFlush();
 }
 
-public void myFflush()
+public void myFlush()
 {
 	try {
 		super.flush();
@@ -83,26 +83,6 @@ public void myFflush()
 	}
 }
 
-// TODO: Review all these methods below, see if they can be simplified.
-public void enterRecursion() {}
-public void exitRecursion() {}
-public int getRecursionDepth() { return 0; }
-public void pushBatch() {}
-public void popBatch() {}
-
-///** @deprecated
-// Gets the SqlRunner for the next batch --- used inside SqlRunnable
-// to run things in sequence. */
-//public SqlRunner next();
-
-///** While SqlRunnables are running --- store a value for retrieval by later SqlRunnable. */
-//public void put(Object key, Object val);
-//
-///** While SqlRunnables are running --- retrieve a previously stored value. */
-//public Object get(Object key);
-
-// =================================================================
-// Something that keeps track of the "current available" SqlRunner
 
 }
 

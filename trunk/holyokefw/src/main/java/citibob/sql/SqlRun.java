@@ -57,8 +57,8 @@ public void flush() throws Exception;
 public void enterRecursion();
 public void exitRecursion();
 public int getRecursionDepth();
-public void pushBatch();
-public void popBatch();
+public void push();
+public void pop() throws Exception;
 
 ///** @deprecated
 // Gets the SqlRunner for the next batch --- used inside SqlRunnable

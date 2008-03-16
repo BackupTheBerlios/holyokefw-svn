@@ -128,10 +128,10 @@ protected String vsql(String col, citibob.jschema.SqlSchema schema)
 public boolean runWizard(String startState) throws Exception
 {
 	try {
-		app.sqlRun().pushBatch();
+		app.sqlRun().push();
 		return super.runWizard(startState);
 	} finally {
-		app.sqlRun().popBatch();
+		app.sqlRun().pop();
 	}
 }
 }

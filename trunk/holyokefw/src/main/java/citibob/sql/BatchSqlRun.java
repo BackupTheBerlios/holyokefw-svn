@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.sql;
 
 import citibob.app.App;
+import citibob.task.ExpHandler;
 import java.sql.*;
 import java.util.*;
 
@@ -27,38 +28,47 @@ import java.util.*;
  */
 public class BatchSqlRun implements SqlRun {
 
-ConnPool xpool;
-HashMap map;				// Map of values to pass from from one SqlRunnable to the next
-SqlBatch batch;			// The batch we're constructing (but not yet running)
-int recursionDepth = 0;		// How many times we've entered a "batch" zone in external code
-int batchDepth = 0;			// How many times we've called ourselves here
+ConnPool pool;
+//ExpHandler expHandler;
 
+static class Rec {
+	SqlBatch batch;			// The batch we're constructing (but not yet running)
+	int recursionDepth = 0;		// How many times we've entered a "batch" zone in external code
+	public Rec() { this.batch = new SqlBatch(); }
+}
+Stack<Rec> stack;
+Rec top() { return stack.peek(); }
 // ========================================================================
 // Setting up the batch
 
 /** Not really public */
-public void enterRecursion() { ++recursionDepth; }
+public void enterRecursion() { ++top().recursionDepth; }
 /** Not really public */
-public void exitRecursion() { --recursionDepth; }
+public void exitRecursion() { --top().recursionDepth; }
 /** Not really public */
-public int getRecursionDepth() { return recursionDepth; }
+public int getRecursionDepth() { return top().recursionDepth; }
 
 /** @param pool Connection to use to run batches here; can be null; */
-public BatchSqlRun(ConnPool pool)
+public BatchSqlRun(ConnPool xpool)
 {
-	this.xpool = pool;
-	init();
+	this.pool = xpool;
+	stack = new Stack();
+	push();
 }
 
-//public SqlBatchSet()
-//	{ this(null); }
-
-void init()
+public void push()
 {
-	// Set up initial batch
-	batch = new SqlBatch();
-	map = new HashMap();	
+	stack.push(new Rec());
 }
+public void pop() throws Exception
+{
+	runBatches();
+	stack.pop();
+}
+
+
+
+
 //public SqlRunner next() { return this; }
 
 public void execSql(String sql)
@@ -67,37 +77,22 @@ public void execSql(String sql)
 /** Adds SQL to the batch --- multiple ResultSets returned, and it can create
  additional SQL as needed. */
 public void execSql(String sql, SqlTasklet rr)
-	{ batch.execSql(sql, rr); }
+	{ top().batch.execSql(sql, rr); }
 
 public void execUpdate(UpdTasklet r)
-	{ batch.execSql("", r); }
+	{ top().batch.execSql("", r); }
 public void execUpdate(UpdTasklet2 r)
-	{ batch.execSql("", r); }
+	{ top().batch.execSql("", r); }
 
 /** Executes all (potentially) buffered SQL up to now. */
 public void flush() throws Exception { runBatches(); }
 // ========================================================================
-/** While SqlRunnables are running --- store a value for retrieval by later SqlRunnable. */
-public void put(Object key, Object val)
-{ map.put(key, val); }
-
-/** While SqlRunnables are running --- retrieve a previously stored value. */
-public Object get(Object key)
-{ return map.get(key); }
-
 // ---------------------------------------
 
-private void runBatches(App app)
+public void runBatches() throws Exception
 {
-	try {
-		runBatches(app.pool());
-	} catch(Exception e) {
-		app.expHandler().consume(e);
-	}
-}
-public void runBatches(ConnPool pool) throws Exception
-{
-	if (batch.size() == 0) return;
+	Rec rec = top();
+	if (rec.batch.size() == 0) return;
 	Throwable ret = null;
 	Statement st = null;
 	Connection dbb = null;
@@ -115,41 +110,23 @@ public void runBatches(ConnPool pool) throws Exception
 	}
 }
 
-public void runBatches() throws Exception
-{
-	runBatches(xpool);
-}
-
-//int batchDepth = 0;
-
 /** Recursively executes this batch and all batches its execution creates. */
 public void runBatches(Statement st) throws Exception
-{//	if (batchDepth != 0)
-	++batchDepth;
+{
+	Rec rec = top();
 	int nbatch = 0;
-	try {
-		if (batch.size() == 0) return;
+	if (rec.batch.size() == 0) return;
 
-		for (;;) {
-			// Update to next batch...
-			SqlBatch curBatch = batch;
-			batch = new SqlBatch();
+	for (;;) {
+		// Update to next batch...
+		SqlBatch curBatch = rec.batch;
+		rec.batch = new SqlBatch();
 
-			curBatch.execOneBatch(st, this);
-			++nbatch;
-			if (batch.size() == 0) break;
-		}
-	} finally {
-		// Prepare for next set of batches, so we can re-use SqlBatchSet
-		--batchDepth;
-		if (batchDepth == 0) init();
+		curBatch.execOneBatch(st, this);
+		++nbatch;
+		if (rec.batch.size() == 0) break;
 	}
 	System.out.println("+++ Done running " + nbatch + " batches of SQL");
 }
-
-// TODO: Implement from old FrontApp!!!
-public void pushBatch() { throw new NullPointerException(); }
-public void popBatch() { throw new NullPointerException(); }
-
 
 }
