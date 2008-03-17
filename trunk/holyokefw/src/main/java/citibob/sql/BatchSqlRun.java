@@ -28,8 +28,8 @@ import java.util.*;
  */
 public class BatchSqlRun implements SqlRun {
 
-ConnPool pool;
-//ExpHandler expHandler;
+protected ConnPool pool;
+protected ExpHandler expHandler;
 
 static class Rec {
 	SqlBatch batch;			// The batch we're constructing (but not yet running)
@@ -49,9 +49,10 @@ public void exitRecursion() { --top().recursionDepth; }
 public int getRecursionDepth() { return top().recursionDepth; }
 
 /** @param pool Connection to use to run batches here; can be null; */
-public BatchSqlRun(ConnPool xpool)
+public BatchSqlRun(ConnPool xpool, ExpHandler expHandler)
 {
 	this.pool = xpool;
+	this.expHandler = expHandler;
 	stack = new Stack();
 	push();
 }
@@ -60,9 +61,14 @@ public void push()
 {
 	stack.push(new Rec());
 }
-public void pop() throws Exception
+public void pop()
 {
-	runBatches();
+//	try {
+//		runBatches();
+//	} catch(Exception e) {
+//		expHandler.consume(e);
+//	}
+	flush();
 	stack.pop();
 }
 
@@ -85,11 +91,17 @@ public void execUpdate(UpdTasklet2 r)
 	{ top().batch.execSql("", r); }
 
 /** Executes all (potentially) buffered SQL up to now. */
-public void flush() throws Exception { runBatches(); }
+public void flush() {
+	try {
+		runBatches();
+	} catch(Exception e) {
+		expHandler.consume(e);
+	}
+}
 // ========================================================================
 // ---------------------------------------
 
-public void runBatches() throws Exception
+void runBatches() throws Exception
 {
 	Rec rec = top();
 	if (rec.batch.size() == 0) return;

@@ -37,10 +37,10 @@ import java.util.*;
 public class SimpleSqlRun extends BatchSqlRun
 {
 
-ExpHandler expHandler;
+//ExpHandler expHandler;
 public SimpleSqlRun(ConnPool pool, ExpHandler expHandler) {
-	super(pool);
-	this.expHandler = expHandler;
+	super(pool, expHandler);
+//	this.expHandler = expHandler;
 }
 	
 /** Adds SQL to the next batch to run.
@@ -50,38 +50,38 @@ public SimpleSqlRun(ConnPool pool, ExpHandler expHandler) {
 public void execSql(String sql, SqlTasklet rr)
 {
 	super.execSql(sql, rr);
-	myFlush();
+	flush();
 }
 
 /** Adds Sql to next batch to run, without any processing code. */
 public void execSql(String sql)
 {
 	super.execSql(sql);
-	myFlush();
+	flush();
 }
 
 /** Adds processing code to run without any SQL. */
 public void execUpdate(UpdTasklet r)
 {
 	super.execUpdate(r);
-	myFlush();
+	flush();
 }
 
 /** Adds processing code to run without any SQL. */
 public void execUpdate(UpdTasklet2 r)
 {
 	super.execUpdate(r);
-	myFlush();
+	flush();
 }
 
-public void myFlush()
-{
-	try {
-		super.flush();
-	} catch(Exception e) {
-		expHandler.consume(e);
-	}
-}
+//public void myFlush()
+//{
+//	try {
+//		super.flush();
+//	} catch(Exception e) {
+//		expHandler.consume(e);
+//	}
+//}
 
 
 }

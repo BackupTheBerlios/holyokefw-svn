@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.sql;
 
-import citibob.sql.ansi.SqlDate;
 import java.sql.*;
+import java.util.TimeZone;
 import static java.sql.Types.*;
 
 /**
@@ -43,9 +43,12 @@ public abstract class SqlTypeSet
 public abstract SqlType getSqlType(int type, int precision, int scale, boolean nullable);
 // ------------------------------------------------------
 protected boolean msDates;
-public SqlTypeSet(boolean msDates)
+protected TimeZone tz;
+public SqlTypeSet(TimeZone tz, boolean msDates)
 {
+	this.tz = tz;
 	this.msDates = msDates;
+
 	date = newDate(true);
 	dateNotNullable = newDate(false);
 }

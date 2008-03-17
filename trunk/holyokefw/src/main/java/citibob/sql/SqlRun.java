@@ -51,14 +51,14 @@ public void execUpdate(UpdTasklet r);
 public void execUpdate(UpdTasklet2 r);
 
 /** Executes all (potentially) buffered SQL up to now. */
-public void flush() throws Exception;
+public void flush(); // throws Exception;
 
 // TODO: Review all these methods below, see if they can be simplified.
 public void enterRecursion();
 public void exitRecursion();
 public int getRecursionDepth();
 public void push();
-public void pop() throws Exception;
+public void pop(); // throws Exception;
 
 ///** @deprecated
 // Gets the SqlRunner for the next batch --- used inside SqlRunnable
