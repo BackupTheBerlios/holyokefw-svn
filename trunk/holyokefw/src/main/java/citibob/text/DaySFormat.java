@@ -5,8 +5,11 @@
 
 package citibob.text;
 
+import citibob.util.Day;
+import citibob.util.DayConv;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Computes days since 1970
@@ -14,38 +17,36 @@ import java.util.TimeZone;
  */
 public class DaySFormat implements SFormat
 {
-	
-DateSFormat sub;
-DayConv dconv;
+String nullText;
+DateFormat dfmt;
 
-public DaySFormat(DateSFormat sub)
-{
-	this.sub = sub;
-	dconv = new DayConv(sub.getDisplayTZ());
-}
-
+public DaySFormat(String fmtString)
+	{ this(fmtString, ""); }
 public DaySFormat(String fmtString, String nullText)
 {
-	this(new DateSFormat(fmtString, nullText,
-			TimeZone.getTimeZone("GMT")));
+	this.nullText = nullText;
+	dfmt = new SimpleDateFormat(fmtString);
+	dfmt.setTimeZone(Day.gmt);
 }
-
 
 public Object stringToValue(String text) throws java.text.ParseException
 {
-	Date dt = (Date)sub.stringToValue(text);
-	if (dt == null) return null;
-	return new Integer(dconv.toDay(dt));
+	if (nullText.equals(text)) return null;
+	
+	long ms = dfmt.parse(text).getTime();
+	int dayNum = DayConv.midnightToDayNum(ms, dfmt.getTimeZone());
+	return new Day(dayNum);
 }
-public String valueToString(Object value) throws java.text.ParseException
+public String valueToString(Object value) //throws java.text.ParseException
 {
-	if (value == null) return sub.valueToString(null);
-	Integer Day = (Integer)value;
-	Date dt = dconv.toDate(Day.intValue());
-	return sub.valueToString(dt);
+	if (value == null) return nullText;
+
+	Day day = (Day)value;
+	long ms = day.toMS(dfmt.getCalendar());
+	return dfmt.format(new Date(ms));
 }
 
 /** Should equal valueToString(null); */
-public String getNullText() { return sub.getNullText(); }
+public String getNullText() { return nullText; }
 
 }

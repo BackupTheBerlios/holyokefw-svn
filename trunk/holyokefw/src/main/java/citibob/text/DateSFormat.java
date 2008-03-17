@@ -36,18 +36,21 @@ import java.text.*;
 public class DateSFormat extends FormatSFormat
 {
 
-TimeZone displayTZ;
+//TimeZone displayTZ;
+Calendar cal;
 
 /** Creates a new instance of DateSFormat */
 public DateSFormat(DateFormat fmt, String nullText)
 {
 	super(fmt, nullText);
-	displayTZ = fmt.getTimeZone();
+	cal = fmt.getCalendar();
+	//displayTZ = fmt.getTimeZone();
 }
 public DateSFormat(DateFlexiFormat fmt, String nullText)
 {
 	super(fmt, nullText);
-	displayTZ = fmt.getTimeZone();
+	cal = fmt.getCalendar();
+//	displayTZ = fmt.getTimeZone();
 }
 
 private static DateFormat newSimpleDateFormat(String fmtString, TimeZone displayTZ)
@@ -65,7 +68,10 @@ public DateSFormat(String[] sfmts, String nullText, TimeZone displayTZ)
 	super(new DateFlexiFormat(sfmts, displayTZ), nullText);
 }
 
-public TimeZone getDisplayTZ() { return displayTZ; }
+public TimeZone getDisplayTZ() { return cal.getTimeZone(); }
+
+/** Returns Calendar object associated with this SFormat */
+public Calendar getCalendar() { return cal; }
 
 
 }

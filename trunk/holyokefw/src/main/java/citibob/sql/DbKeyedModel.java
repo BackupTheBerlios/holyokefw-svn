@@ -64,7 +64,7 @@ String idTableName, String sql)
 public DbKeyedModel(SqlRun str, DbChangeModel change,
 String idTableName, String idFieldName,
 String nameFieldName, String orderFieldName)
-throws SQLException
+//throws SQLException
 {
 	this(str, change, idTableName,
 		"select " + idFieldName + ", " + nameFieldName + " from " +

@@ -174,11 +174,15 @@ public void setTime(Date date)
 	if (date == null) {
 		setNull(true);
 	} else {
-		cal.setTime(date);
-		setNullNoFire(false);
-		fireNullChanged();
-		fireCalChanged();
+		setTimeInMillis(date.getTime());
 	}
+}
+public void setTimeInMillis(long ms)
+{
+	cal.setTimeInMillis(ms);
+	setNullNoFire(false);
+	fireNullChanged();
+	fireCalChanged();
 }
 //   void  setTimeInMillis(long millis) 
 //{

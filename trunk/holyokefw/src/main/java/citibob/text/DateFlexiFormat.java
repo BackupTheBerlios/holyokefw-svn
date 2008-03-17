@@ -38,6 +38,8 @@ public class DateFlexiFormat extends FlexiFormat
 
 public TimeZone getTimeZone()
 { return ((DateFormat)super.displayFormat).getTimeZone(); }
+public Calendar getCalendar()
+{ return ((DateFormat)super.displayFormat).getCalendar(); }
 
 public DateFlexiFormat(String[] sfmts, TimeZone tz)
 	{ this(sfmts[0], sfmts, tz); }

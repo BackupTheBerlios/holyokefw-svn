@@ -154,7 +154,10 @@ public Object getValue()
 {
 	return cmod.getTime();
 }
+public long getValueInMillis() { return cmod.getTime().getTime(); }
 
+protected void setValueInMillis(long ms)
+	{ cmod.setTimeInMillis(ms); }
 /** Sets the value.  Same as method in JFormattedTextField.  Fires a
  * propertyChangeEvent("value") when calling setValue() changes the value. */
 public void setValue(Object o)
