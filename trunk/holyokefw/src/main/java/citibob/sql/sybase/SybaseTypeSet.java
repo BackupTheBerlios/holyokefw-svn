@@ -39,16 +39,16 @@ import citibob.sql.*;
 public class SybaseTypeSet extends SqlTypeSet
 {
 	
-TimeZone tz;
+//TimeZone tz;
 
-public SybaseTypeSet(boolean msDates, TimeZone tz)
+public SybaseTypeSet(TimeZone tz, boolean msDates)
 {
-	super(msDates);
-	this.tz = tz;
+	super(tz, msDates);
+//	this.tz = tz;
 }
 public SybaseTypeSet(boolean msDates)
 {
-	this(msDates, TimeZone.getDefault());
+	this(TimeZone.getDefault(), msDates);
 }
 
 

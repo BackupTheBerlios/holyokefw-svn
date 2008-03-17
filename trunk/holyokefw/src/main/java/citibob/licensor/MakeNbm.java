@@ -38,6 +38,7 @@ public class MakeNbm {
 			"citibob.swing.typed.JBoolCheckbox",
 			"citibob.swing.typed.JKeyedComboBox",
 			"citibob.swing.typed.JTypedDateChooser",
+			"citibob.swing.typed.JTypedDayChooser",			
 			"citibob.swing.typed.JTypedEditableLabel",
 			"citibob.swing.typed.JTypedEditableLabelDB",
 			"citibob.swing.typed.JTypedFileName",

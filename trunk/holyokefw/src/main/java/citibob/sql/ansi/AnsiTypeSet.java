@@ -38,16 +38,14 @@ import citibob.sql.*;
 public class AnsiTypeSet extends SqlTypeSet
 {
 	
-TimeZone tz;
 
-public AnsiTypeSet(boolean msDates, TimeZone tz)
+public AnsiTypeSet(TimeZone tz, boolean msDates)
 {
-	super(msDates);
-	this.tz = tz;
+	super(tz, msDates);
 }
 public AnsiTypeSet(boolean msDates)
 {
-	this(msDates, TimeZone.getDefault());
+	this(TimeZone.getDefault(), msDates);
 }
 
 

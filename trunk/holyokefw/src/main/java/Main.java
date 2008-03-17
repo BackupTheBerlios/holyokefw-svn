@@ -15,23 +15,23 @@ import citibob.util.IndexSet;
  */
 public class Main {
 public static void main(String[] args) throws Exception {
-	
-	
-	
-	
-	
-	
-	
-	
-                bsh.Interpreter bsh = new bsh.Interpreter();
-
-                // Evaluate statements and expressions
-                bsh.eval("foo=Math.sin(0.5)");
-                bsh.eval("bar=foo*5; bar=Math.cos(bar);");
-                bsh.eval("for(i=0; i<10; i++) { print(\"hello\"); }");
-                // same as above using java syntax and apis only
-                bsh.eval("for(int i=0; i<10; i++) { System.out.println(\"hello\"); }");
-System.exit(0);
+//	
+//	
+//	
+//	
+//	
+//	
+//	
+//	
+//                bsh.Interpreter bsh = new bsh.Interpreter();
+//
+//                // Evaluate statements and expressions
+//                bsh.eval("foo=Math.sin(0.5)");
+//                bsh.eval("bar=foo*5; bar=Math.cos(bar);");
+//                bsh.eval("for(i=0; i<10; i++) { print(\"hello\"); }");
+//                // same as above using java syntax and apis only
+//                bsh.eval("for(int i=0; i<10; i++) { System.out.println(\"hello\"); }");
+//System.exit(0);
 
 	AppLauncher.launch("holyokefw", new Class[] {
 		IndexSet.class,

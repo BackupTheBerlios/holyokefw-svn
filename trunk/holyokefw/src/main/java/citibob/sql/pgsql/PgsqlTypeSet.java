@@ -38,11 +38,11 @@ import citibob.sql.*;
 public class PgsqlTypeSet extends SqlTypeSet
 {
 	
-TimeZone tz;
+//TimeZone tz;
 
 public PgsqlTypeSet(TimeZone tz)
 {
-	super(false);
+	super(tz, false);
 	this.tz = tz;
 }
 public PgsqlTypeSet()
