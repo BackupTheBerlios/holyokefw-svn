@@ -57,25 +57,25 @@ public static int ms1970(TimeZone tz)
 {
 	return -tz.getOffset(0L);
 }
+
+public static long truncate(long ms, Calendar cal)
+{
+	// Re-figure the day
+	cal.setTimeInMillis(ms);
+	cal.set(Calendar.HOUR_OF_DAY, 0);
+	cal.set(Calendar.MINUTE, 0);
+	cal.set(Calendar.SECOND, 0);
+	cal.set(Calendar.MILLISECOND, 0);
+	return cal.getTimeInMillis();
+}
 //// ---------------------------------------------------------------
 //public int toDayNum(long ms, Calendar cal, long ms1970)
 //{
 //	// Re-use last day's calculation if we're still on same day
 //	if (ms >= lastDayStartMS && ms < lastNextDayMS) return lastDay;
 //
-//	// Re-figure the day
-//	cal.setTimeInMillis(ms);
-//	cal.set(Calendar.HOUR_OF_DAY, 0);
-//	cal.set(Calendar.MINUTE, 0);
-//	cal.set(Calendar.SECOND, 0);
-//	cal.set(Calendar.MILLISECOND, 0);
-//	lastDayStartMS = cal.getTimeInMillis();
-//	cal.add(Calendar.DATE, 1);
-//	lastNextDayMS = cal.getTimeInMillis();
-//	lastDay = Math.round((lastDayStartMS - ms1970) / (86400*1000));
-//	return lastDay;
 //}
-// 
+ 
 ///** @param dt This must already be truncated to midnight in Market's time zone. */
 //public int toDayNum(java.util.Date dt)
 //{

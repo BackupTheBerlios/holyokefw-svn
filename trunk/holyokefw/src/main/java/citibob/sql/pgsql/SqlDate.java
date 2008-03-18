@@ -21,7 +21,7 @@ import java.text.*;
 import java.util.*;
 import java.sql.*;
 
-public class SqlDate extends citibob.swing.typed.JDate
+public class SqlDate extends citibob.types.JDate
 implements citibob.sql.SqlDateType
 {
 // Assumes SQL dates are stored without a timezone.

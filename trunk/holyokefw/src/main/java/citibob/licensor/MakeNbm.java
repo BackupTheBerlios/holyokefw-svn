@@ -19,7 +19,8 @@ public class MakeNbm {
 		Beans2Nbm.Params prm = new Beans2Nbm.Params();
 		
 		prm.version = "1.0";		// Must be numeric for NetBeans
-		prm.projectHome = "../.."; // Works for NetBeans running Maven project
+//		prm.projectHome = "../.."; // Works for NetBeans running Maven project
+		prm.projectHome = "c:\\fiscrob\\mvn\\holyokefw";
 		prm.jarFolder = "target";		// For Maven
 		prm.jarName = "holyokefw-1.0-SNAPSHOT";
 		

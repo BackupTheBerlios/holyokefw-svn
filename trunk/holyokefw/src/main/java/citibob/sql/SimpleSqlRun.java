@@ -74,6 +74,10 @@ public void execUpdate(UpdTasklet2 r)
 	flush();
 }
 
+public void flush()
+{
+	if (top().batch.size() > 0) super.flush();
+}
 //public void myFlush()
 //{
 //	try {

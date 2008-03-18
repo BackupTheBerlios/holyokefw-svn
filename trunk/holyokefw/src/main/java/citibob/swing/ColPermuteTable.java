@@ -57,6 +57,11 @@ public void setModelU(CitibobTableModel uModel, String[] colNames, String[] sCol
 	setModel(model);
 }
 
+public void setAllEditable(boolean edit)
+{
+	((ColPermuteTableModel)getModel()).setAllEditable(edit);
+}
+
 /** Convenience function, to be used by subclasses:
  * finds the column number in THIS table model based on a column name, not display name. */
 public int findColumnU(String s)
@@ -74,24 +79,24 @@ public CitibobTableModel getModelU()
 }
 
 /** Sets a render/edit on a colum, by UNDERLYING column name. */
-public void setRenderEditU(String underlyingName, Swinger swinger)
+public void setFormatU(String underlyingName, Swinger swinger)
 	{ setRenderEdit(findColumnU(underlyingName), swinger); }
 
-public void setRenderEditU(String underlyingName, Swinger.RenderEdit re)
+public void setFormatU(String underlyingName, Swinger.RenderEdit re)
 	{ setRenderEdit(findColumnU(underlyingName), re); }
 
-public void setRenderEditU(String underlyingName, KeyedModel kmodel)
+public void setFormatU(String underlyingName, KeyedModel kmodel)
 	{ setRenderEdit(findColumnU(underlyingName), kmodel); }
 
 /** Sets a render/edit on a colum, by UNDERLYING column name. */
-public void setRenderEditU(String underlyingName, SFormat sfmt)
-	{ setRenderEdit(findColumnU(underlyingName), sfmt); }
+public void setFormatU(String underlyingName, SFormat sfmt)
+	{ setFormat(findColumnU(underlyingName), sfmt); }
 
-public void setRenderEditU(String underlyingName, java.text.Format fmt)
-	{ setRenderEdit(findColumnU(underlyingName), fmt); }
+public void setFormatU(String underlyingName, java.text.Format fmt)
+	{ setFormat(findColumnU(underlyingName), fmt); }
 
-public void setRenderEditU(String underlyingName, String fmtString)
-	{ setRenderEdit(findColumnU(underlyingName), fmtString); }
+public void setFormatU(String underlyingName, String fmtString)
+	{ setFormat(findColumnU(underlyingName), fmtString); }
 
 public int rowOfValueU(Object val, int col_u)
 	{ return rowOfValue(val, col_u, getModelU()); }

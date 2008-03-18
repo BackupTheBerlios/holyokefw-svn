@@ -37,7 +37,12 @@ public Day(String sdt) throws ParseException
 {
 	day = DayConv.midnightToDayNum(dfmtGMT.parse(sdt).getTime(), gmt);
 }
-
+public Day(long ms, TimeZone tz)
+{
+	Calendar cal = Calendar.getInstance(tz);
+	ms = DayConv.truncate(ms, cal);
+	day = DayConv.midnightToDayNum(ms, tz);
+}
 public void setInCal(Calendar cal)
 	{ cal.setTimeInMillis(toMS(cal)); }
 

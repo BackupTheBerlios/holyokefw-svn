@@ -39,7 +39,7 @@ import citibob.swing.table.*;
  * of system.  Used to automatically construct GUIs appropriate for a schema.
  * @author citibob
  */
-public class DefaultSwingerMap extends citibob.swing.typed.SwingerMap
+public class BaseSwingerMap extends citibob.swing.typed.SwingerMap
 {
 
 //HashMap constMap = new HashMap();
@@ -76,6 +76,9 @@ public Swinger newSwinger(JType t, String colName)
 //public Swinger newSwinger(JType t, boolean editable)
 {
 	Maker m = null;
+//if ("DTime".equals(colName)) {
+//	System.out.println("hoi");
+//}
 	
 	// Try by name
 	if (colName != null) {
@@ -99,7 +102,7 @@ public Swinger newSwinger(JType t, String colName)
 	if (m != null) return m.newSwinger(t);
 
 	// No swinger found, punt...
-System.err.println("Failed to find a swinger for column " + colName);
+System.err.println("Failed to find a swinger for column " + colName + "(class = " + klass + ") this = " + this);
 	return null;
 }
 

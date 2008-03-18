@@ -21,41 +21,25 @@ import java.text.*;
 import java.util.*;
 import java.sql.*;
 
-public class SqlDate extends citibob.swing.typed.JDate
-implements citibob.sql.SqlDateType
+public class SqlDate extends citibob.sql.ansi.SqlDate
 {
-// Assumes SQL dates are stored without a timezone.
-DateFormat sqlFmt;
-
-// -----------------------------------------------------
-private void setFmt() {
-	sqlFmt = new SimpleDateFormat("yyyy-MM-dd");
-	sqlFmt.setCalendar(cal);
-}
+	
+	
+//protected void setFmt() {
+//	sqlFmt = new SimpleDateFormat("yyyy-MM-dd");
+//	sqlFmt.setCalendar(cal);
+//}
 public SqlDate(Calendar cal, boolean nullable) {
 	super(cal,nullable);
-	setFmt();
 }
-//public SqlDate(boolean nullable) {
-//	super(nullable);
-//	setFmt();
-//}
 
 /** @param stz TimeZone of dates stored in database. */
 public SqlDate(String stz, boolean nullable) {
 	super(stz, nullable);
-	setFmt();
 }
 public SqlDate(TimeZone tz, boolean nullable) {
 	super(tz, nullable);
-	setFmt();
-}
-//public SqlDate() {
-//	super();
-//	setFmt();
-//}
-// -----------------------------------------------------
-// -----------------------------------------------------
+}	
 
 /** Convert an element of this type to an Sql string for use in a query */
 public String toSql(Object o)
@@ -63,56 +47,6 @@ public String toSql(Object o)
 	java.util.Date ts = (java.util.Date)o;
 	return ts == null ? "null" : '\'' + sqlFmt.format(ts) + '\'';
 }
-	/** Returns the SQL string that encodes this data type. */
-	public String sqlType()
-		{ return "date"; }
-
-public boolean isInstance(Object o)
-{
-	if (o == null) return nullable;
-	if (!(o instanceof java.util.Date)) return false;
-//
-//	return true;
-// TODO: This is too strict, it just results in class
-	java.util.Date dt = (java.util.Date)o;
-	cal.setTime(dt);
-	return (
-		cal.get(Calendar.HOUR_OF_DAY) == 0 &&
-		cal.get(Calendar.MINUTE) == 0 &&
-		cal.get(Calendar.SECOND) == 0 &&
-		cal.get(Calendar.MILLISECOND) == 0);
-}
-// ==================================================	
-/** Reads the date with the appropriate timezone. */
-public java.util.Date get(java.sql.ResultSet rs, int col) throws SQLException
-{
-	try {
-		String s = rs.getString(col);
-		if (s == null) return null;
-		return sqlFmt.parse(s);
-	} catch(java.text.ParseException e) {
-		throw new SQLException(e.getMessage());
-	}
-}
-/** Reads the date with the appropriate timezone. */
-public java.util.Date get(java.sql.ResultSet rs, String col) throws SQLException
-{
-	return get(rs, rs.findColumn(col));
-}
-// ==========================================================
-//public static List makeDateList(Date first, Date last, long periodMS)
-//{
-//	ArrayList ret = new ArrayList();
-//	Date dt = (Date)first.clone();
-//	while (dt.getTime() <= last.getTime()) {
-//		ret.add(dt);
-//		dt = new java.sql.Date(dt.getTime() + periodMS);
-//	}
-//	return ret;
-//}
-
-
-
 }
 
 	

@@ -62,6 +62,8 @@ public SwingPrefs swingPrefs() { return swingPrefs; }
  */
 public void setUserPrefs(java.awt.Component c, String base)
 	{ swingPrefs().setPrefs(c, userRoot().node(base)); }
+public void setUserPrefs(java.awt.Component c)
+	{ setUserPrefs(c, c.getClass().getSimpleName()); }
 
 protected Preferences userRoot;
 /** @returns Root user preferences node for this application */

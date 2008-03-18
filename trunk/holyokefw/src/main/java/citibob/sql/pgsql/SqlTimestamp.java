@@ -21,7 +21,7 @@ import java.util.*;
 import java.sql.*;
 import java.text.*;
 
-public class SqlTimestamp extends citibob.swing.typed.JDate
+public class SqlTimestamp extends citibob.types.JDate
 implements citibob.sql.SqlDateType
 {
 

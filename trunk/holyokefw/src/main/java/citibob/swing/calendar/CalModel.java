@@ -106,16 +106,27 @@ public void useTmpDay()
 { if (tmpDay != -1) set(Calendar.DAY_OF_MONTH, tmpDay); }
 
 // ===========================================================
+boolean inCalChanged = false;
 public void fireCalChanged()
 {
-//	System.out.println("Cal changed to: " + getTime());
+	if (inCalChanged) return;
+	inCalChanged = true;
 	super.fireCalChanged();
+	inCalChanged = false;
 }
+boolean inNullChanged = false;
 public void fireNullChanged()
 {
-//	System.out.println("Null changed to: " + getTime());
+	if (inNullChanged) return;
+	inNullChanged = true;
 	super.fireNullChanged();
+	inNullChanged = false;
 }
+//public void fireNullChanged()
+//{
+////	System.out.println("Null changed to: " + getTime());
+//	super.fireNullChanged();
+//}
 // ===========================================================
 // ==== Stuff from Calendar
 public void  add(int field, int amount)
@@ -179,6 +190,8 @@ public void setTime(Date date)
 }
 public void setTimeInMillis(long ms)
 {
+	if (ms == cal.getTimeInMillis()) return;
+
 	cal.setTimeInMillis(ms);
 	setNullNoFire(false);
 	fireNullChanged();

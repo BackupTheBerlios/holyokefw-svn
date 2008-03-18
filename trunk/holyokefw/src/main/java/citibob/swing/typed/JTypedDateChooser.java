@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.swing.typed;
 
+import citibob.types.JDate;
 import citibob.swing.calendar.*;
 import citibob.types.JDateType;
 import javax.swing.*;
@@ -152,7 +153,11 @@ void popupShow()
 /** Returns last legal value of the widget.  Same as method in JFormattedTextField */
 public Object getValue()
 {
-	return cmod.getTime();
+	if (jType.getObjClass() == Long.class) {
+		return new Long(cmod.getTime().getTime());
+	} else {
+		return cmod.getTime();
+	}
 }
 public long getValueInMillis() { return cmod.getTime().getTime(); }
 
@@ -162,14 +167,16 @@ protected void setValueInMillis(long ms)
  * propertyChangeEvent("value") when calling setValue() changes the value. */
 public void setValue(Object o)
 {
-	java.util.Date d = (java.util.Date)o;
+	java.util.Date d;
+	if (o instanceof Date) d = (java.util.Date)o;
+	else d = new Date((Long)o);
 //
 //	cmod.setTime(d);
 
 // TODO: Temporarily allow null in ALL fields --- to make it work
 // in the query editor for dates...
-if (d != null) {
-	if (!isInstance(d)) throw new ClassCastException("Bad type " + d.getClass() + " " + d);
+if (o != null) {
+	if (!isInstance(o)) throw new ClassCastException("Bad type " + o.getClass() + " " + o);
 }
 	java.util.Date dt = (d == null ? null :  jType.truncate(d));
 	
@@ -275,12 +282,22 @@ public void dayButtonSelected() {
 /**  Value has changed. */
 public void calChanged() {
 	if (!cmod.isNull()) {
+//		if (inValueChanged) return;
+//		inValueChanged = true;
 		firePropertyChange("value", null, cmod.getTime());
+//		inValueChanged = false;
 	}
 }
 
+//boolean inValueChanged;
 /**  Nullness has changed. */
-public void nullChanged() { firePropertyChange("value", null, cmod.getTime()); }
+public void nullChanged() {
+//	if (inValueChanged) return;
+//	inValueChanged = true;
+	if (cmod.isNull())
+		firePropertyChange("value", null, cmod.getTime());
+//	inValueChanged = false;
+}
 // =========================================================
 
 /** Testing code */

@@ -76,6 +76,7 @@ protected void init(SchemaBuf sbuf, String selectTable, SqlSchemaInfo[] updateSc
 	invKeyFields = new int[schema.size()];
 	for (int i=0; i<schema.size(); ++i) invKeyFields[i] = -1;
 	
+	if (updateSchemas != null)
 	for (int i=0; i<updateSchemas.length; ++i) {
 		updateSchemas[i].schemaMap = SchemaHelper.newSchemaMap(updateSchemas[i].schema, sbuf.getSchema());
 	}

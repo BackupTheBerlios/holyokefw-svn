@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.swingers;
 
+import citibob.types.JDate;
 import citibob.sql.*;
 import citibob.swing.typed.*;
 import citibob.swing.typed.Swinger;
@@ -38,7 +39,7 @@ import java.util.*;
  *
  * @author citibob
  */
-public class JavaSwingerMap extends DefaultSwingerMap
+public class JavaSwingerMap extends BaseSwingerMap
 {
 
 
@@ -48,30 +49,30 @@ public JavaSwingerMap(final TimeZone tz)
 Maker maker;
 
 	// =========== Standard Java classes
-	this.addMaker(String.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(String.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new JStringSwinger();
 	}});
 
 	// Integer
-	maker = new DefaultSwingerMap.Maker() {
+	maker = new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new JIntegerSwinger();
 	}};
 	this.addMaker(Integer.class, maker);
-	maker = new DefaultSwingerMap.Maker() {
+	maker = new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new JIntegerSwinger();
 	}};
 	this.addMaker(int.class, maker);
 	
 	// Double
-	maker = new DefaultSwingerMap.Maker() {
+	maker = new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new TypedTextSwinger(new JavaJType(Double.class), new DivDoubleSFormat());
 	}};
 	this.addMaker(Double.class, maker);
-	maker = new DefaultSwingerMap.Maker() {
+	maker = new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new TypedTextSwinger(new JavaJType(Double.class),
 			new NoNullSFormat(new DivDoubleSFormat(), new Double(0)));
@@ -79,7 +80,7 @@ Maker maker;
 	this.addMaker(double.class, maker);
 
 	// Boolean
-	maker = new DefaultSwingerMap.Maker() {
+	maker = new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new BoolSwinger();
 	}};
@@ -87,21 +88,21 @@ Maker maker;
 	this.addMaker(boolean.class, maker);
 	
 	// File
-	this.addMaker(JFile.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(JFile.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new JFileSwinger((JFile)jType);
 	}});
 
 	// ================== Other Java Classes
 	// TimeZone
-	this.addMaker(java.util.TimeZone.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(java.util.TimeZone.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new TypedTextSwinger(new JavaJType(TimeZone.class), new TimeZoneSFormat());
 	}});
 
 	
 	// SqlDate --- stored in native TimeZone, render in same TimeZone as is stored.
-	this.addMaker(JDate.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(JDate.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		JDateType jt = (JDateType)jType;
 		return new JDateSwinger(jt,
@@ -109,35 +110,55 @@ Maker maker;
 			"", tz,
 			citibob.swing.calendar.JCalendarDateOnly.class);
 	}});
+	
+//	// SqlDate --- stored in native TimeZone, render in same TimeZone as is stored.
+//	this.addMaker(JTimestamp.class, new BaseSwingerMap.Maker() {
+//	public Swinger newSwinger(JType jType) {
+//		JDateType jt = (JDateType)jType;
+//		return new JDateSwinger(jt,
+//			new String[] {"MM/dd/yyyy", "yyyy-MM-dd", "MM/dd/yy", "MMddyy", "MMddyyyy"},
+//			"", tz,
+//			citibob.swing.calendar.JCalendarDateOnly.class);
+//	}});
+	
+	// SqlDate --- stored in native TimeZone, render in same TimeZone as is stored.
+	this.addMaker(JDay.class, new BaseSwingerMap.Maker() {
+	public Swinger newSwinger(JType jType) {
+		JDay jt = (JDay)jType;
+		return new JDaySwinger(jt,
+			new String[] {"MM/dd/yyyy", "yyyy-MM-dd", "MM/dd/yy", "MMddyy", "MMddyyyy"},
+			"",
+			citibob.swing.calendar.JCalendarDateOnly.class);
+	}});
 
 	// Short class names
-	this.addMaker(Class.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(Class.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new TypedTextSwinger(new JavaJType(Class.class), new ClassSFormat());
 	}});
 	
 	// =========== JTypes
-	this.addMaker(JEnum.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(JEnum.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new JEnumSwinger((JEnum)jType);
 	}});
 	
 	// =========== SQL Types
 	// SqlNumeric
-	this.addMaker(SqlNumeric.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(SqlNumeric.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new SqlNumericSwinger((SqlNumeric)jType);
 	}});
 	
 	// SqlEnum
-	this.addMaker(SqlEnum.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(SqlEnum.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new SqlEnumSwinger((SqlEnum)jType);
 	}});
 	
 	
 	// =========== Special Named Columns
-	this.addMaker("__status__", new DefaultSwingerMap.Maker() {
+	this.addMaker("__status__", new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new citibob.swingers.TypedTextSwinger(JavaJType.jtInteger, new StatusSFormat());
 	}});

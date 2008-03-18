@@ -84,8 +84,16 @@ boolean[] editable)			// Is each column editable?
 //System.out.println("ColPermuteTableModel: this = " + this);
 	int[] colMap;
 	if (sColMap == null) {
-		colMap = new int[model_u.getColumnCount()];
-		for (int i=0; i<colMap.length; ++i) colMap[i] = i;
+		// Count number of "real" columns
+		int ncol = 0;
+		for (int i=0; i < model_u.getColumnCount(); ++i) {
+			if (!model_u.getColumnName(i).startsWith("__")) ++ncol;
+		}
+		colMap = new int[ncol];
+		int j=0;
+		for (int i=0; i < model_u.getColumnCount(); ++i) {
+			if (!model_u.getColumnName(i).startsWith("__")) colMap[j++] = i;
+		}
 	} else {
 		colMap = new int[sColMap.length];
 		for (int i = 0; i < colMap.length; ++i) {
@@ -103,6 +111,11 @@ boolean[] editable)			// Is each column editable?
 public void setEditable(boolean[] editable)
 {
 	this.editable = editable;
+}
+public void setAllEditable(boolean edit)
+{
+	editable = new boolean[this.getColumnCount()];
+	for (int i=0; i<getColumnCount(); ++i) editable[i] = edit;
 }
 /** @param model_u Underlying table model
  @param xColNames Display names

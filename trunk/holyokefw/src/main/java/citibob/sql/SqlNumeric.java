@@ -88,9 +88,11 @@ public NumberFormat newNumberFormat()
 	} else {
 		nf = NumberFormat.getInstance();
 		nf.setMinimumIntegerDigits(0);
-		nf.setMaximumIntegerDigits(getPrecision() - getScale());
+		int max = getPrecision() - getScale();
+		nf.setMaximumIntegerDigits(max < 0 ? 100 : max);
 		nf.setMinimumFractionDigits(getScale());
 		nf.setMaximumFractionDigits(getScale());
+		nf.setGroupingUsed(true);
 	}
 	return nf;
 }

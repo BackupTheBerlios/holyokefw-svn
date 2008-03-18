@@ -21,19 +21,13 @@ import java.util.*;
 import java.sql.*;
 import java.text.*;
 
-public class SqlTimestamp extends citibob.swing.typed.JDate
+public class SqlTimestamp extends citibob.types.JDate
 implements citibob.sql.SqlDateType
 {
 
-java.text.DateFormat sqlFmt, sqlParse;
-static DateFormat gmtFmt;
-
-static {
-	gmtFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	gmtFmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-}
+protected java.text.DateFormat sqlFmt, sqlParse;
 // -----------------------------------------------------
-private void setFmt() {
+protected void setFmt() {
 	sqlFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	sqlFmt.setCalendar(cal);
 	sqlParse = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -73,7 +67,10 @@ public String toSql(Object o)
 }
 // ==================================================	
 /** Reads the date with the appropriate timezone. */
-public java.util.Date get(java.sql.ResultSet rs, int col) throws SQLException
+public Object get(java.sql.ResultSet rs, int col) throws SQLException
+{ return getDate(rs, col); }
+/** Reads the date with the appropriate timezone. */
+public java.util.Date getDate(java.sql.ResultSet rs, int col) throws SQLException
 {
 	try {
 		String s = rs.getString(col);
@@ -98,15 +95,13 @@ public java.util.Date get(java.sql.ResultSet rs, int col) throws SQLException
 //	}
 }
 /** Reads the date with the appropriate timezone. */
-public java.util.Date get(java.sql.ResultSet rs, String col) throws SQLException
+public Object get(java.sql.ResultSet rs, String col) throws SQLException
+{ return getDate(rs, col); }
+/** Reads the date with the appropriate timezone. */
+public java.util.Date getDate(java.sql.ResultSet rs, String col) throws SQLException
 {
-	return get(rs, rs.findColumn(col));
+	return getDate(rs, rs.findColumn(col));
 }
 public java.util.Date truncate(java.util.Date dt)
 { return dt; }
-// ===========================================================
-public static String gmt(java.util.Date ts)
-{
-	return ts == null ? "null" : ("TIMESTAMP '" + gmtFmt.format(ts) + '\'');	
-}
 }

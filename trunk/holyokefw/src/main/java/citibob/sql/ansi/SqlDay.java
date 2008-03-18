@@ -17,24 +17,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.sql.ansi;
 
-import citibob.sql.SqlType;
+import citibob.sql.SqlDateType;
 import java.text.*;
 import java.util.*;
 import java.sql.*;
 import citibob.sql.pgsql.*;
 import citibob.text.DaySFormat;
+import citibob.types.JDay;
 import citibob.util.Day;
 
 
-public class SqlDay implements SqlType
+public class SqlDay extends JDay implements SqlDateType
 {
 
-protected boolean nullable = true;
+//protected boolean nullable = true;
 protected DaySFormat dsfmt;
 
 	protected SqlDay(String sfmt, boolean nullable)
 	{
-		this.nullable = nullable;
+		super(nullable);
 		dsfmt = new DaySFormat(sfmt, "");		
 	}
 	public SqlDay(boolean nullable) {
@@ -42,10 +43,6 @@ protected DaySFormat dsfmt;
 	}
 	public SqlDay() { this(true); }
 	
-	/** Java class used to represent this type */
-	public Class getObjClass()
-		{ return Day.class; }
-
 	/** Convert an element of this type to an Sql string for use in a query */
 	public String toSql(Object o)
 	{
@@ -57,10 +54,6 @@ protected DaySFormat dsfmt;
 	public String sqlType()
 		{ return "date"; }
 
-	public boolean isInstance(Object o)
-		{ return (o instanceof Day || (nullable && o == null)); }
-		
-//		return rs.getObject(col); }
 	public Object get(java.sql.ResultSet rs, String col) throws SQLException
 		{ return get(rs, rs.findColumn(col)); }
 	public Object get(java.sql.ResultSet rs, int col) throws SQLException
@@ -73,6 +66,8 @@ protected DaySFormat dsfmt;
 			throw new SQLException(e.getMessage());
 		}
 	}
+
+
 }
 
 	

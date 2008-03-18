@@ -64,7 +64,7 @@ public void execSql(String sql)
 public void execSql(String sql, SqlTasklet rr)
 {
 	sqlBuf.append(sql);
-	sqlBuf.append(";\n select 'hello' as __divider__;\n");
+	sqlBuf.append("\n select 'hello' as __divider__\n");
 	handlers.add(rr);
 }
 

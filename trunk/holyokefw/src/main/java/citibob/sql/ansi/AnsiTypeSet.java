@@ -39,13 +39,9 @@ public class AnsiTypeSet extends SqlTypeSet
 {
 	
 
-public AnsiTypeSet(TimeZone tz, boolean msDates)
+public AnsiTypeSet(TimeZone tz, int dateStyle, int timeStyle, int tsStyle)
 {
-	super(tz, msDates);
-}
-public AnsiTypeSet(boolean msDates)
-{
-	this(TimeZone.getDefault(), msDates);
+	super(tz, dateStyle, timeStyle, tsStyle);
 }
 
 
@@ -65,11 +61,6 @@ public SqlType getSqlType(int type, int precision, int scale, boolean nullable)
 		case CHAR : return new SqlString(nullable);
 		case CLOB : return new SqlString(nullable);
 		case DATALINK : return null;
-		case DATE : {
-			SqlDateType sdt = new SqlDate(tz, nullable);
-			if (msDates) sdt = new SqlMSDateWrapper(sdt);
-			return sdt;
-		}
 		case DECIMAL : return new SqlNumeric(precision, scale, nullable);
 		case DISTINCT : return null;
 		case DOUBLE : return new SqlDouble(nullable);
@@ -85,19 +76,31 @@ public SqlType getSqlType(int type, int precision, int scale, boolean nullable)
 		case REF : return null;
 		case SMALLINT : return new SqlInteger(nullable);
 		case STRUCT : return null;
-		case TIME : {
-			SqlDateType sdt = new SqlTime(nullable);
-			if (msDates) sdt = new SqlMSDateWrapper(sdt);
-			return sdt;
-		}
-		case TIMESTAMP : {
-			SqlDateType sdt = new SqlTimestamp(tz, nullable);
-			if (msDates) sdt = new SqlMSDateWrapper(sdt);
-			return sdt;
-		}
 		case TINYINT : return null;
 		case VARBINARY : return null;
 		case VARCHAR : return new SqlString(nullable);
+		case DATE : switch(dateStyle) {
+			case DS_DATE : return new SqlDate(tz, nullable);
+			case DS_MS : return new MSSqlDate(tz, nullable);
+			case DS_DAY : return new SqlDay(nullable);
+			default : return null;
+		}
+		case TIME : {
+			switch(dateStyle) {
+				case DS_DATE : return new SqlTime(nullable);
+//				case DS_MS : return new SqlMSDateWrapper(
+//					new SqlTime(nullable));
+				// case DS_DAY : return new SqlDay(nullable);
+				default : return null;
+			}
+		}
+		case TIMESTAMP : {
+			switch(dateStyle) {
+				case DS_DATE : return new SqlTimestamp(tz, nullable);
+				case DS_MS : return new MSSqlTimestamp(tz, nullable);
+				default : return null;
+			}
+		}
 	}
 	return null;
 }

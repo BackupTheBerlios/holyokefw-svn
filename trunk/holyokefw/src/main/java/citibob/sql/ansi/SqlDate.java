@@ -22,14 +22,14 @@ import java.util.*;
 import java.sql.*;
 import citibob.sql.pgsql.*;
 
-public class SqlDate extends citibob.swing.typed.JDate
+public class SqlDate extends citibob.types.JDate
 implements citibob.sql.SqlDateType
 {
 // Assumes SQL dates are stored without a timezone.
-DateFormat sqlFmt;
+protected DateFormat sqlFmt;
 
 // -----------------------------------------------------
-private void setFmt() {
+protected void setFmt() {
 	sqlFmt = new SimpleDateFormat("yyyy-MM-dd");
 	sqlFmt.setCalendar(cal);
 }
@@ -84,8 +84,10 @@ public boolean isInstance(Object o)
 		cal.get(Calendar.MILLISECOND) == 0);
 }
 // ==================================================	
+public Object get(java.sql.ResultSet rs, int col) throws SQLException
+	{ return getDate(rs, col); }
 /** Reads the date with the appropriate timezone. */
-public java.util.Date get(java.sql.ResultSet rs, int col) throws SQLException
+public java.util.Date getDate(java.sql.ResultSet rs, int col) throws SQLException
 {
 	try {
 		String s = rs.getString(col);
@@ -95,10 +97,12 @@ public java.util.Date get(java.sql.ResultSet rs, int col) throws SQLException
 		throw new SQLException(e.getMessage());
 	}
 }
+public Object get(java.sql.ResultSet rs, String col) throws SQLException
+	{ return getDate(rs, col); }
 /** Reads the date with the appropriate timezone. */
-public java.util.Date get(java.sql.ResultSet rs, String col) throws SQLException
+public java.util.Date getDate(java.sql.ResultSet rs, String col) throws SQLException
 {
-	return get(rs, rs.findColumn(col));
+	return getDate(rs, rs.findColumn(col));
 }
 // ==========================================================
 //public static List makeDateList(Date first, Date last, long periodMS)

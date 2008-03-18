@@ -21,92 +21,35 @@ import java.util.*;
 import java.sql.*;
 import java.text.*;
 
-public class SqlTimestamp extends citibob.swing.typed.JDate
-implements citibob.sql.SqlDateType
+public class SqlTimestamp extends citibob.sql.ansi.SqlTimestamp
 {
 
-java.text.DateFormat sqlFmt, sqlParse;
-static DateFormat gmtFmt;
-
-static {
-	gmtFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-	gmtFmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-}
 // -----------------------------------------------------
-private void setFmt() {
-	sqlFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+protected void setFmt() {
+	sqlFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	sqlFmt.setCalendar(cal);
-	sqlParse = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	sqlParse.setCalendar(cal);
+	sqlParse = sqlFmt;
 }
 public SqlTimestamp(Calendar cal, boolean nullable) {
 	super(cal,nullable);
-	setFmt();
 }
-//public SqlTimestamp(boolean nullable) {
-//	super(nullable);
-//	setFmt();
-//}
 
 public SqlTimestamp(TimeZone tz, boolean nullable) {
 	super(tz, nullable);
-	setFmt();
 }
-	/** Returns the SQL string that encodes this data type. */
-	public String sqlType()
-		{ return "timestamp"; }
+
 /** @param stz TimeZone of timestamps stored in database. */
 public SqlTimestamp(String stz, boolean nullable)
 	{ this(TimeZone.getTimeZone(stz), nullable); }
 public SqlTimestamp(String stz) { this(stz, true); }
 
-//public SqlTimestamp() {
-//	super();
-//	setFmt();
-//}
 // -----------------------------------------------------
 /** Convert an element of this type to an Sql string for use in a query */
 public String toSql(Object o)
 {
 	java.util.Date ts = (java.util.Date)o;
-	return ts == null ? "null" : ("TIMESTAMP '" + sqlFmt.format(ts) + '\'');
+	return ts == null ? "null" : ("'" + sqlFmt.format(ts) + '\'');
 }
 // ==================================================	
 /** Reads the date with the appropriate timezone. */
-public java.util.Date get(java.sql.ResultSet rs, int col) throws SQLException
-{
-	try {
-		String s = rs.getString(col);
-		if (s == null) return null;
-		int dot = s.indexOf('.');
-		if (dot < 0) return sqlParse.parse(s);
-		else {
-			java.util.Date dt = sqlParse.parse(s.substring(0,dot));
-			double frac = Double.parseDouble("0." + s.substring(dot+1));
-			int ms = (int)(frac * 1000);
-			return new java.util.Date(dt.getTime() + ms);
-		}
-	} catch(java.text.ParseException e) {
-		throw new SQLException(e.getMessage());
-	}
-//	try {
-//		String s = rs.getString(col);
-//		if (s == null) return null;
-//		return sqlParse.parse(s);
-//	} catch(java.text.ParseException e) {
-//		throw new SQLException(e.getMessage());
-//	}
-}
-/** Reads the date with the appropriate timezone. */
-public java.util.Date get(java.sql.ResultSet rs, String col) throws SQLException
-{
-	return get(rs, rs.findColumn(col));
-}
-public java.util.Date truncate(java.util.Date dt)
-{ return dt; }
-// ===========================================================
-public static String gmt(java.util.Date ts)
-{
-	return ts == null ? "null" : ("TIMESTAMP '" + gmtFmt.format(ts) + '\'');	
-}
 }

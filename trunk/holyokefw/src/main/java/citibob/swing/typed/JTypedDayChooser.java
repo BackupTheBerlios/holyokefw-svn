@@ -5,7 +5,8 @@
 
 package citibob.swing.typed;
 
-import citibob.swing.calendar.JCalendar;
+import citibob.types.JDate;
+import citibob.swing.calendar.JCalendarDateOnly;
 import citibob.text.DateSFormat;
 import citibob.types.JType;
 import citibob.util.Day;
@@ -23,11 +24,12 @@ JType dayType;
 DateSFormat sformat;
 
 public void setJType(JType dayType,
-DateSFormat sformat, JCalendar jcal)
+DateSFormat sformat)
 {
 	this.dayType = dayType;
 	this.sformat = sformat;
-	super.setJType(new JDate(dayType.isInstance(null)), sformat, jcal);
+	super.setJType(new JDate(dayType.isInstance(null)), sformat,
+		new JCalendarDateOnly());
 }
 
 // TypedWidget

@@ -92,6 +92,13 @@ public String getTooltip(int row, int col)
 //	return sb;
 //}
 
+public JTypeTableModel setModelU(JTypeTableModel jtModel,
+		citibob.swing.typed.SwingerMap smap)
+{
+	JTypeTableModel jtmod = setModelU(jtModel, null,null,null, smap);
+	setAllEditable(false);
+	return jtmod;
+}
 /** @param jtModel Underling data buffer to use
  * @param typeCol Name of type column in the schema
  * @param xColNames Columns (other than type and status) from schema to display

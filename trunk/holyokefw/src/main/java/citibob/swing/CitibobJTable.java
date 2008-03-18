@@ -178,7 +178,7 @@ public void setRenderEdit(int colNo, Swinger.RenderEdit re)
 /** Sets a text-based renderer and editor pair at once, for a column,
 without going through Swingers or anything.  Works for simpler text-based
 renderers and editors ONLY. */
-public void setRenderEdit(int colNo, SFormat sformat)
+public void setFormat(int colNo, SFormat sformat)
 {
 	TableColumn col = getColumnModel().getColumn(colNo);
 	col.setCellRenderer(new SFormatRenderer(sformat));
@@ -187,19 +187,19 @@ public void setRenderEdit(int colNo, SFormat sformat)
 	col.setCellEditor(new TypedWidgetEditor(tw));
 }
 
-public void setRenderEdit(int colNo, java.text.Format fmt)
-	{ setRenderEdit(colNo, new FormatSFormat(fmt)); }
+public void setFormat(int colNo, java.text.Format fmt)
+	{ setFormat(colNo, new FormatSFormat(fmt)); }
 
 /** Sets up a renderer and editor based on a format string.  Works for a small
 number of well-known types, this is NOT general. */
-public void setRenderEdit(int colNo, String fmtString)
+public void setFormat(int colNo, String fmtString)
 {
 	Class klass = getModel().getColumnClass(colNo);
 	Format fmt = FormatUtils.newFormat(klass, fmtString);
 //if (fmt == null) {
 //	Class klass3 = getModel().getColumnClass(colNo);	
 //}
-	setRenderEdit(colNo, fmt);
+	setFormat(colNo, fmt);
 }
 
 /** Sets a renderer and editor pair at once, for a column. */

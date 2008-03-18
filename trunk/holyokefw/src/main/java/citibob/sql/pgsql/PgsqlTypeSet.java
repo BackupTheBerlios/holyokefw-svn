@@ -42,7 +42,7 @@ public class PgsqlTypeSet extends SqlTypeSet
 
 public PgsqlTypeSet(TimeZone tz)
 {
-	super(tz, false);
+	super(tz, DS_DATE, DS_DATE, DS_DATE);
 	this.tz = tz;
 }
 public PgsqlTypeSet()

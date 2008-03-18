@@ -64,6 +64,11 @@ SqlSchema[] typeSchemas, String[] updateKeyFields, final SqlSchemaInfo[] updateS
 	{ init(str,app,typeSchemas,updateKeyFields,updateSchemas); }
 
 
+/** Read-only! */
+public SqlBufDbModel(App app, String... sTypeSchemas)
+{
+	this(app.sqlRun(), app, sTypeSchemas, (String[])null, (String[])null);
+}
 /** Convenience method.  Takes schemas as strings, looks them up in App */
 public SqlBufDbModel(SqlRun str, App app,
 String[] sTypeSchemas, String[] updateKeyFields, String[] sUpdateSchemas)

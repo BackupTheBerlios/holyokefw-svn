@@ -131,6 +131,12 @@ public int addRowNoFire(ResultSet rs, int rowIndex, int[] colmap) throws SQLExce
 		int scol = colmap[rscol];
 		if (scol < 0) continue;
 		SqlCol col = (SqlCol)schema.getCol(scol);
+////System.out.println("scol = " + scol);
+//System.out.println(col);
+//System.out.println(col.getSqlType());
+//if (col.getSqlType() == null) {
+//	System.out.println("hoi");
+//}
 		row.data[scol] = col.getSqlType().get(rs, col.getName()); //xyzqqq
 		row.origData[scol] = row.data[scol];
 	}

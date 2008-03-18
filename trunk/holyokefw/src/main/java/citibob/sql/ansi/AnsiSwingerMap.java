@@ -56,13 +56,13 @@ public AnsiSwingerMap(final TimeZone tz) {
 	super(tz);
 	
 	// SqlBool
-	this.addMaker(SqlBool.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(SqlBool.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType sqlType) {
 		return new SqlBoolSwinger((SqlBool)sqlType);
 	}});
 	
 	// SqlDate --- stored in native TimeZone, render in same TimeZone as is stored.
-	this.addMaker(SqlDate.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(SqlDate.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		SqlDateType jt = (SqlDateType)jType;
 		return new JDateSwinger(jt,
@@ -72,25 +72,25 @@ public AnsiSwingerMap(final TimeZone tz) {
 	}});
 
 	// SqlInteger
-	this.addMaker(SqlInteger.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(SqlInteger.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType sqlType) {
 		return new SqlIntegerSwinger((SqlInteger)sqlType);
 	}});
 
 	// SqlString
-	this.addMaker(SqlString.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(SqlString.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType sqlType) {
 		return new SqlStringSwinger((SqlString)sqlType);
 	}});
 
 	// SqlTime
-	this.addMaker(SqlTime.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(SqlTime.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType sqlType) {
 		return new JDateSwinger((SqlTime)sqlType, new String[] {"HH:mm:ss"}, "", tz, null);
 	}});
 
 	// SqlTimestamp --- always stored in GMT, render in application native TimeZone
-	this.addMaker(SqlTimestamp.class, new DefaultSwingerMap.Maker() {
+	this.addMaker(SqlTimestamp.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType jType) {
 		return new JDateSwinger((SqlDateType)jType,
 			new String[] {"MM/dd/yyyy hh:mm a", "MM/dd/yy hh:mm a", "MMddyy hh:mm a", "MMddyyyy hh:mm a"},

@@ -25,6 +25,7 @@ public class SimpleExpHandler implements ExpHandler
 public void consume(Throwable e)
 {
 	e.printStackTrace(System.out);
+	System.exit(-1);
 }
 	
 }

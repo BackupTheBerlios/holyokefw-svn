@@ -42,12 +42,19 @@ public abstract class SqlTypeSet
  or not yet implemented as an SqlType, returns null. */
 public abstract SqlType getSqlType(int type, int precision, int scale, boolean nullable);
 // ------------------------------------------------------
-protected boolean msDates;
+protected int dateStyle, timeStyle, tsStyle;
+public static final int DS_DATE = 0;
+public static final int DS_MS = 1;
+public static final int DS_DAY = 2;		// not valid for tsStyle
+
+
 protected TimeZone tz;
-public SqlTypeSet(TimeZone tz, boolean msDates)
+public SqlTypeSet(TimeZone tz, int dateStyle, int timeStyle, int tsStyle)
 {
 	this.tz = tz;
-	this.msDates = msDates;
+	this.dateStyle = dateStyle;
+	this.timeStyle = timeStyle;
+	this.tsStyle = tsStyle;
 
 	date = newDate(true);
 	dateNotNullable = newDate(false);
