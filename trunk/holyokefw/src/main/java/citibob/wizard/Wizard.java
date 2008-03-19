@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.wizard;
 
 
-import bsh.This;
 import java.util.*;
 import java.sql.*;
 import citibob.sql.*;
@@ -123,15 +122,18 @@ protected Wiz createWiz(WizState stateRec, Context con) throws Exception {
 /** Override this to create context for Wiz's and WizState's */
 protected Context newContext() throws Exception
 {
-	// TODO: Review this!!!
-	throw new NullPointerException();
+	return new Context(app.sqlRun(), v);
+//	// TODO: Review this!!!
+//	
+//	throw new NullPointerException();
 //////////	return new Context(new BatchSqlSet(app.pool()), v);
 //	return new Context(app.getBatchSet(), v);
 }
 /** Write out any buffers in the context when Wiz/State is done with it. */
 protected void finishContext(Context con) throws Exception
 {
-	throw new NullPointerException();
+	app.sqlRun().flush();
+//	throw new NullPointerException();
 //////////	con.str.runBatches();
 }
 
@@ -197,9 +199,9 @@ public boolean runWizard(String startState) throws Exception
 }
 // =================================================================
 public static class Context {
-	public BatchSqlRun str;		// Access to database
+	public SqlRun str;		// Access to database
 	public TypedHashMap v;		// Values passed around
-	public Context(BatchSqlRun str, TypedHashMap v) {
+	public Context(SqlRun str, TypedHashMap v) {
 		this.str = str;
 		this.v = v;
 	}

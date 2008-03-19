@@ -112,7 +112,9 @@ public JFrame getFrame(String frameName) throws Exception
 
 	rec.frame = newFrame(rec);
 	rec.frame.pack();
-	if (swingPrefs != null) swingPrefs.setPrefs(rec.frame, "", prefsRoot.node("frame-" + rec.name));
+	if (swingPrefs != null) {
+		swingPrefs.setPrefs(rec.frame, "", prefsRoot.node("frame-" + rec.name));
+	}
 	return rec.frame;
 }
 

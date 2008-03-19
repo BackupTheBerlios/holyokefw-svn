@@ -54,6 +54,7 @@ public JKeyedComboBox()
 	// Called when user changes selection
 	addActionListener(new ActionListener() {
 	public void actionPerformed(ActionEvent evt) {
+		Object oldVal = getValue();
 		Object o = getSelectedItem();
 		setValue(o == NULL ? null : o);
 //		// No need for setValue(), since value === getSelectedItem()
@@ -61,7 +62,7 @@ public JKeyedComboBox()
 		// For some reason, this line was commented out.  Probably had to do
 		// with debugging the School screen in OffstageArts.  But commenting
 		// it out is clearly wrong.
-		firePropertyChange("value", null, getValue());
+		firePropertyChange("value", oldVal, getValue());
 	}});
 }
 public JKeyedComboBox(KeyedModel kmodel)
