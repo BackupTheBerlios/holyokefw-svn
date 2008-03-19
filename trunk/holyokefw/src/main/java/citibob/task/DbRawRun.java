@@ -89,14 +89,14 @@ public Exception run(SqlTask r)
 {
 //	SqlBatchSet batch = new SqlBatchSet();
 	SqlRun batchSet = app.sqlRun();
+	batchSet.pushFlush();
 	try {
-		batchSet.enterRecursion();
 		r.run(batchSet);
-		if (batchSet.getRecursionDepth() == 1) batchSet.flush();
+//		if (batchSet.getRecursionDepth() == 1) batchSet.flush();
 	} catch(Exception e) {
 		return e;
 	} finally {
-		batchSet.exitRecursion();
+		batchSet.popFlush();
 	}
 	return null;
 }
@@ -146,7 +146,7 @@ public static Exception run(ConnPool pool, DbTask r)
 public Exception doRun(CBTask rr)
 {
 	Exception ret;
-	SqlRun batchSet = app.sqlRun();
+//	SqlRun batchSet = app.sqlRun();
 	if (rr instanceof SqlTask) {
 		SqlTask r = (SqlTask)rr;
 		ret = run(r);

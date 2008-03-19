@@ -40,7 +40,7 @@ SchemaBuf sbuf;		// The buffer -- has its own schema, to be used for SQL selects
 String selectTable = null;		// Table to use for select queries
 
 SqlSchemaInfo[] updateSchemas;
-/** The listener used to push updates to the database instantly (a la Access) */
+/** The listener used to pushBatch updates to the database instantly (a la Access) */
 TableModelListener instantUpdateListener = null;
 //InstantUpdateListener instantUpdateListener;
 

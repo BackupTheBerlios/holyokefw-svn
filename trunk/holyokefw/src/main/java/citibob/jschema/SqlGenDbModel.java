@@ -33,7 +33,7 @@ SqlGen gen;
 String table;
 /** Key of the (single) record we're processing. */
 //Object[] curKey;
-/** The listener used to push updates to the database instantly (a la Access) */
+/** The listener used to pushBatch updates to the database instantly (a la Access) */
 TableModelListener instantUpdateListener = null;
 // -----------------------------------------------------------
 public void setInsertBlankRow(boolean b) { insertBlankRow = b; }

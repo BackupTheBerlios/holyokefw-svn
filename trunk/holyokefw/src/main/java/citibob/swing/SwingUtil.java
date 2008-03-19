@@ -29,12 +29,12 @@ public class SwingUtil
 /** Sets the look of the mouse cursor for an entire window, given just the sub-element in that window. */
 public static void setCursor(Component c, int type)
 {
-        // Get root parent (for AWT and Swing)
-        Component root = c;
-        while (root.getParent() != null) root = root.getParent();
-
-//		Component root = (c == null ? null : c.getTopLevelAncestor());		// Swing only
-        root.setCursor(Cursor.getPredefinedCursor(type));
+	// Get root parent (for AWT and Swing)
+	Component root = c;
+	if (root != null) {
+		while (root.getParent() != null) root = root.getParent();
+		root.setCursor(Cursor.getPredefinedCursor(type));
+	}
 }
 
 /** Recursively sets or clears the enabled property on a JComponent and all its children. */

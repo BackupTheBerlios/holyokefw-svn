@@ -53,7 +53,7 @@ public void setHighlightMouseover(boolean b)
 		this.removeMouseMotionListener(this); //new MyMouseMotionAdapter());		
 	}
 }
-public boolean getHighlightMouseover(boolean b) { return isHighlightMouseover; }
+public boolean getHighlightMouseover() { return isHighlightMouseover; }
 
 //RowHeightUpdater rhu;
 

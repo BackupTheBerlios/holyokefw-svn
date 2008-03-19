@@ -168,7 +168,8 @@ protected void setValueInMillis(long ms)
 public void setValue(Object o)
 {
 	java.util.Date d;
-	if (o instanceof Date) d = (java.util.Date)o;
+	if (o == null) d = null;
+	else if (o instanceof Date) d = (java.util.Date)o;
 	else d = new Date((Long)o);
 //
 //	cmod.setTime(d);

@@ -112,11 +112,11 @@ public void flush()
 {
 }
 // TODO: Review all these methods below, see if they can be simplified.
-public void enterRecursion() {}
-public void exitRecursion() {}
+public void pushFlush() {}
+public void popFlush() {}
 public int getRecursionDepth() { return 0; }
-public void push() {}
-public void pop() {} // throws Exception {}
+public void pushBatch() {}
+public void popBatch() {} // throws Exception {}
 
 }
 

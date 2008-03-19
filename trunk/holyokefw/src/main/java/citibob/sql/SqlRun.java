@@ -50,15 +50,19 @@ public void execUpdate(UpdTasklet r);
 /** Adds processing code to run without any SQL. */
 public void execUpdate(UpdTasklet2 r);
 
-/** Executes all (potentially) buffered SQL up to now. */
+/** Executes all (potentially) buffered SQL up to now.  */
 public void flush(); // throws Exception;
 
-// TODO: Review all these methods below, see if they can be simplified.
-public void enterRecursion();
-public void exitRecursion();
-public int getRecursionDepth();
-public void push();
-public void pop(); // throws Exception;
+/** Increases the "recursion depth." */
+public void pushFlush();
+
+/** Reduces the "recursion depth" by one, and flushes if it's gotten to zero. */
+public void popFlush();
+
+///** Conditional flush --- only flush if recursion depth is 0. */
+
+public void pushBatch();
+public void popBatch(); // throws Exception;
 
 ///** @deprecated
 // Gets the SqlRunner for the next batch --- used inside SqlRunnable

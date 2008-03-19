@@ -42,9 +42,13 @@ Rec top() { return stack.peek(); }
 // Setting up the batch
 
 /** Not really public */
-public void enterRecursion() { ++top().recursionDepth; }
+public void pushFlush() {
+	++top().recursionDepth;
+}
 /** Not really public */
-public void exitRecursion() { --top().recursionDepth; }
+public void popFlush() {
+	if (0 == --top().recursionDepth) flush();
+}
 /** Not really public */
 public int getRecursionDepth() { return top().recursionDepth; }
 
@@ -54,14 +58,14 @@ public BatchSqlRun(ConnPool xpool, ExpHandler expHandler)
 	this.pool = xpool;
 	this.expHandler = expHandler;
 	stack = new Stack();
-	push();
+	pushBatch();
 }
 
-public void push()
+public void pushBatch()
 {
 	stack.push(new Rec());
 }
-public void pop()
+public void popBatch()
 {
 //	try {
 //		runBatches();

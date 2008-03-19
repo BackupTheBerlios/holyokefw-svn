@@ -255,7 +255,8 @@ public static void bindRecursive(Component c, SchemaRowModel bufRow, SwingerMap 
 	if (c instanceof TypedWidget) {
 		TypedWidget tw = (TypedWidget)c;
 //System.out.println("Binding TypedWidget: " + tw.getColName());
-		if (tw.getColName() != null) {
+		String colName = tw.getColName();
+		if (colName != null && bufRow.getSchema().findCol(colName) >= 0) {
 			new TypedWidgetBinder().bind(tw, bufRow, tw.getColName(), BT_READWRITE, map);
 		}
 	}

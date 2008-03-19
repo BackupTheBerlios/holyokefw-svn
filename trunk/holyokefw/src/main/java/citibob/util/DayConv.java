@@ -7,9 +7,7 @@ package citibob.util;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 /**
@@ -68,6 +66,12 @@ public static long truncate(long ms, Calendar cal)
 	cal.set(Calendar.MILLISECOND, 0);
 	return cal.getTimeInMillis();
 }
+
+public static int parse( DateFormat dfmt,String sdate) throws ParseException
+{
+	return midnightToDayNum(dfmt.parse(sdate).getTime(), dfmt.getTimeZone());
+}
+
 //// ---------------------------------------------------------------
 //public int toDayNum(long ms, Calendar cal, long ms1970)
 //{
