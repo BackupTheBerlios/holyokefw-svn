@@ -22,7 +22,7 @@ import java.io.*;
 public class TeeWriter extends Writer
 {
     Writer[] outs;
-    Writer out2;
+//    Writer out2;
 
     public TeeWriter(Writer[] outs)
     {

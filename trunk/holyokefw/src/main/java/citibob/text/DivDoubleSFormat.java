@@ -34,6 +34,9 @@ import java.text.*;
  */
 public class DivDoubleSFormat extends FormatSFormat
 {
+static String nanText = "NaN";
+static String infText = "Inf";
+static String ninfText = "-Inf";
 
 double div = 1;
 
@@ -45,6 +48,9 @@ public DivDoubleSFormat(NumberFormat fmt, String nullText, double div)
 }
 public DivDoubleSFormat(String fmtString, double div)
 	{ this(new DecimalFormat(fmtString), "", div); }
+/** @param div Divide by this amount when displaying the number. */
+public DivDoubleSFormat(String fmtString, String nullText, double div)
+	{ this(new DecimalFormat(fmtString), nullText, div); }
 
 public DivDoubleSFormat(NumberFormat fmt, String nullText)
 	{ this(fmt, nullText, 1.0); }
@@ -57,6 +63,9 @@ public DivDoubleSFormat()
 public Object stringToValue(String text)  throws java.text.ParseException
 {
 	if (nullText.equals(text)) return null;
+	if (nanText.equals(text)) return Double.NaN;
+	if (infText.endsWith(text)) return Double.POSITIVE_INFINITY;
+	if (ninfText.equals(text)) return Double.NEGATIVE_INFINITY;
 	Number n = (Number)fmt.parseObject(text);
 	return new Double(n.doubleValue() * div);
 }
@@ -64,6 +73,9 @@ public String valueToString(Object value) throws java.text.ParseException
 {
 	if (value == null) return nullText;
 	double val = ((Number)value).doubleValue();
+	if (Double.isNaN(val)) return nanText;
+	if (val == Double.POSITIVE_INFINITY) return infText;
+	if (val == Double.NEGATIVE_INFINITY) return ninfText;
 	return fmt.format(val / div);
 }
 

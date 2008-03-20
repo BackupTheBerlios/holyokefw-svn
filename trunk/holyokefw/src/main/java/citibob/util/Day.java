@@ -45,5 +45,7 @@ public Day(long ms, TimeZone tz)
 }
 public void setInCal(Calendar cal)
 	{ cal.setTimeInMillis(toMS(cal)); }
-
+public String toString() { 
+	return "Day(" + day + ")";
+}
 }
