@@ -23,19 +23,28 @@ public class ResModels
 App app;
 int sysVersion;
 ResData rdata;
+String resourceGroup;
 
 public ResModels.ResModel resMod;
 public ResModels.ResKeyModel rkMod;
 public ResModels.AvailModel availMod;
 public ResModels.UPlanModel uplanMod;
 
-public ResModels(ResData rdata, App xapp, int sysVersion)
+/** @param resourceGroup Only pay attention to Resources that match this
+ (or all resources if null).
+ @param rdata
+ @param xapp
+ @param sysVersion
+ @param resourceGroup
+ */
+public ResModels(ResData rdata, App xapp, int sysVersion, String resourceGroup)
 {
 	this.app = xapp;
 	ResSet rset = app.resSet();
 	this.rdata = rdata;
 	this.sysVersion = sysVersion;
-
+	this.resourceGroup = resourceGroup;
+	
 	availNames = new String[] {"RtVers", "version", "lastmodified", "size"};
 	availTypes = new JType[] {new JavaJType(RtVers.class), JavaJType.jtInteger,
 			app.sqlTypeSet().getSqlType(java.sql.Types.TIMESTAMP, 0, 0, true),
@@ -78,7 +87,11 @@ public class ResModel extends BaseJTypeTableModel<RtRes>
 		super(resNames, resTypes, null);
 	}
 	public void setData(ResData rdata) {
-		data = rdata.rtres;
+		data = new ArrayList();
+		for (RtRes rr : rdata.rtres) {
+			if (resourceGroup == null || 
+				resourceGroup.equals(rr.res.getResourceGroup())) data.add(rr);
+		}
 		fireTableDataChanged();
 	}
 	public Object getValueAt(int irow, int icol)

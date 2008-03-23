@@ -68,7 +68,7 @@ public String getJarPrefix() { return jarPrefix; }
 
 public void add(Resource res)
 	{resources.put(res.getName(), res); }
-Resource get(String name)
+public Resource get(String name)
 	{ return resources.get(name); }
 
 

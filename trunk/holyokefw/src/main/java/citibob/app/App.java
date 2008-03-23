@@ -25,6 +25,7 @@ import citibob.mail.*;
 import citibob.jschema.*;
 import citibob.jschema.log.QueryLogger;
 import citibob.reports.Reports;
+import citibob.resource.ResData;
 import citibob.resource.ResSet;
 import citibob.swing.prefs.*;
 import citibob.text.SFormatMap;
@@ -49,6 +50,10 @@ public Properties props() { return props; }
 protected ResSet resSet;
 /** Access to versioned resources outside the Jar file (eg. templates, etc) */
 public ResSet resSet() { return resSet; }
+
+protected ResData resData;
+/** Runtime info about which resources in ResSet are available. */
+public ResData resData() { return resData; }
 
 protected SwingPrefs swingPrefs;
 /** Set of Swing preference setters used to store GUI configurations in

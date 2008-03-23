@@ -57,8 +57,50 @@ public class RtResKey implements Comparable<RtResKey> {
 		return uplan;
 	}
 
+	/** Gets an upgrade or creator plan to version1, from the
+	latest existing version.  This assumes the required version
+	  does NOT yet exist! */
+	public UpgradePlan getUpgradePlanFromLatest(int reqVersion)
+	{
+		RtResKey rk = this;
+
+		// Look at all existing versions, from highest number to lowest.
+		UpgradePlan uplan = null;
+		for (int i=rk.availVersions.size()-1; i >= 0; --i) {
+			RtVers vers = rk.availVersions.get(i);
+			// See if required version is already available
+			if (vers.version == reqVersion) return null;
+			
+			// See if we can make required version from this version
+			uplan = rk.getUpgradePlan(vers.version, reqVersion);
+			if (uplan != null) return uplan;
+		}
+		
+		// Cannot make from previous version.  Try to create it.
+		uplan = rk.getCreatorPlan(reqVersion);
+		if (uplan != null) return uplan;
+		
+		return null;
+	}
+	
+	
 	public String toString()
 	{
 		return "ResKey(" + res.getName() + ":" + res.getResourceID() + ", " + uversionName + ":" + uversionid + ")";
+	}
+	
+	/** Returns the RtVers record for an available version, or null
+	 if that version is not available.
+	 @param version
+	 @return
+	 */
+	public RtVers getRtVers(int reqVersion)
+	{
+		// See if we have the required version
+		//int reqVersion = rk.res.getRequiredVersion(app.sysVersion());
+		for (RtVers rv : availVersions) {
+			if (rv.version == reqVersion) return rv;
+		}
+		return null;
 	}
 }

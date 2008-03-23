@@ -140,10 +140,10 @@ final SqlTypeSet tset, final SortedSet<RtResKey> keys)
 //				
 //				lastSerial = serial;
 //			}
-System.out.println("rk = " + rk);
-System.out.println("avail = " + rk.availVersions);
 			rk.availVersions.add(new RtVers(rs.getInt("version"), rs.getLong("size"),
 				(Date)tstamp.get(rs, "lastmodified")));
+System.out.println("rk = " + rk);
+System.out.println("avail = " + rk.availVersions);
 		}
 	}});
 //	return list;

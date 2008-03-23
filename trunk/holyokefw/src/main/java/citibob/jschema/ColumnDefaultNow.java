@@ -52,7 +52,7 @@ public Object getDefault()
 {
 	JDateType jtype = (JDateType)super.getType();
 	java.util.Date dt = jtype.truncate(new Date());
-System.out.println("DefaultNow = " + dt + "(jtype = " + jtype.getClass());
+//System.out.println("DefaultNow = " + dt + "(jtype = " + jtype.getClass());
 	return dt;
 }
 	

@@ -33,7 +33,7 @@ protected int resourceid;		// ID obtained from database
 protected boolean editable = false;
 String uversionType;		// Table or whatnot where uversionids are loaded from
 
-public String getUversionType() { return uversionType; }
+public String getResourceGroup() { return uversionType; }
 
 /** Can the user edit this resoure and save a new version? */
 public boolean isEditable() { return editable; }
