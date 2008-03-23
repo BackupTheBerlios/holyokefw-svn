@@ -1,8 +1,6 @@
-package citibob.sql.pgsql;
-
 /*
-JSchema: library for GUI-based database applications
-This file Copyright (c) 2006-2007 by Robert Fischer
+Holyoke Framework: library for GUI-based database applications
+This file Copyright (c) 2006-2008 by Robert Fischer
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

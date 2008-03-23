@@ -1,6 +1,6 @@
 /*
-JSchema: library for GUI-based database applications
-This file Copyright (c) 2006-2007 by Robert Fischer
+Holyoke Framework: library for GUI-based database applications
+This file Copyright (c) 2006-2008 by Robert Fischer
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ String[] suffixes = new String[] {".c", ".cpp", ".java", ".mvc"};
 
 public Licensor() throws IOException
 {
-	license = "/*\n" + readLicenseFile(getClass(), "license-short.txt") + "\n*/";
+	license = "/*\n" + readLicenseFile(getClass(), "license.txt") + "\n*/";
 }
 
 static String readLicenseFile(Class klass, String licenseResourceName)
@@ -58,7 +58,8 @@ throws java.io.IOException
 {
 	String resourceName = klass.getPackage().getName().replace('.', '/') + "/" + licenseResourceName;
 	Reader in = null;
-	
+
+System.out.println("Reading license resource: " + resourceName);
 	in = new InputStreamReader(klass.getClassLoader().getResourceAsStream(resourceName));
 	StringWriter out = new StringWriter();
 	char[] buf = new char[8192];
@@ -166,7 +167,8 @@ outer :
 public static void main(String[] args) throws Exception
 {
 	Licensor l = new Licensor();
-	l.relicenseDir(new File("../../src/main/java/citibob"));	// Works for NetBeans running Maven project
+//	l.relicenseDir(new File("../../src/main/java/citibob"));	// Works for NetBeans running Maven project
+	l.relicenseDir(new File("/export/home/citibob/mvn/holyokefw/src/main/java/citibob"));	// Works for NetBeans running Maven project
 //	l.relicenseDir(new File("/home/citibob/svn/jschema/src/main/java/citibob"));
 //	l.relicenseFile(new File("/home/citibob/svn/jschema/src/citibob/licensor/Licensor.java"));
 //	l.relicenseDir(new File("/export/home/citibob/tmp/svnmac/jschema/src/citibob"));
