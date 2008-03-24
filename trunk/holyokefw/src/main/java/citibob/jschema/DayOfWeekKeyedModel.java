@@ -45,6 +45,7 @@ static DateFormat fmt = new SimpleDateFormat("HH:mm");
 /** Creates a new instance of TimeKeyedModel */
 public DayOfWeekKeyedModel()
 {
+	this.addItem(new Integer(-1), "<none>");
 	this.addItem(new Integer(1), "Sun");
 	this.addItem(new Integer(2), "Mon");
 	this.addItem(new Integer(3), "Tue");

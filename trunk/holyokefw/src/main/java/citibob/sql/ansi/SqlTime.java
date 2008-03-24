@@ -46,6 +46,7 @@ public SqlTime()
 /** Convert an element of this type to an Sql string for use in a query */
 public String toSql(Object o)
 {
+	if (o == null) return "null";
 //System.out.println("o.class = " + o.getClass());
 	return SqlTime.sql((java.util.Date)o);
 }

@@ -47,6 +47,7 @@ public SqlTime()
 public String toSql(Object o)
 {
 //System.out.println("o.class = " + o.getClass());
+	if (o == null) return "null";
 	return SqlTime.sql((java.util.Date)o);
 }
 	/** Returns the SQL string that encodes this data type. */
