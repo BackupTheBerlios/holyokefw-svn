@@ -47,7 +47,10 @@ public void pushFlush() {
 }
 /** Not really public */
 public void popFlush() {
-	if (0 >= --top().recursionDepth) flush();
+	if (0 >= --top().recursionDepth) {
+		flush();
+		top().recursionDepth = 0;
+	}
 }
 /** Not really public */
 public int getRecursionDepth() { return top().recursionDepth; }
