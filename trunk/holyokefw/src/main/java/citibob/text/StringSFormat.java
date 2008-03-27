@@ -38,8 +38,8 @@ public class StringSFormat
 implements citibob.text.SFormat
 {
 
-int limit;
-String nullText;
+protected int limit;
+protected String nullText;
 
 /** Creates a new instance of KeyedFormatter */
 public StringSFormat(int limit, String nullText) {
