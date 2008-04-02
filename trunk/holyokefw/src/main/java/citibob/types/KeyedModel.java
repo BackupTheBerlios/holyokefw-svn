@@ -197,7 +197,7 @@ public KeyedModel(Object[] keys, Object[] items)
 	
 }
 public KeyedModel() {}
-public static KeyedModel intKeys(Object[] items)
+public static KeyedModel intKeys(Object... items)
 {
 	KeyedModel km = new KeyedModel();
 	for (int i=0; i<items.length; ++i) {

@@ -120,19 +120,25 @@ public void addTable(String tableName, String asName)
 	addTable(name);
 }
 
+//String tabString = " inner join " + cn.getTable() + " on (" + joinClause + ")";
 /** Adds table: A as A' Inner/Outer JOIN (xxxxxxx) */
-public void addTable(String tableName, String asName, String joinLogic)
+public void addTable(String tableName, String asName, String joinType, String joinLogic)
 {
-	String name = tableName;
-	if (!(asName == null || asName.equals(tableName))) {
-		// asName is different
-		name = name + " as " + asName;
+	if (joinType == null) joinType = "inner join";
+	StringBuffer sb = new StringBuffer("\n" + joinType + " ");
+	
+	if (asName == null || asName.equals(tableName)) {
+		// asName is same
+		sb.append(tableName);
 		asName = tableName;
+	} else {
+		// asName is different
+		sb.append(tableName + " as " + asName);
 	}
 	if (joinLogic != null) {
-		name = name + " " + joinLogic;
+		sb.append(" on (" + joinLogic + ")");
 	}
-	addTable(name);
+	addTable(sb.toString());
 }
 
 

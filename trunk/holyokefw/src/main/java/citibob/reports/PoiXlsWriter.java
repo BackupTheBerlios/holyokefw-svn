@@ -264,12 +264,12 @@ int replaceOneHolder(HSSFSheet sheet, int row, int col, TableModel mod)
 	
 	// Fill in the data, iterating through the model...
 	for (int r=0; r<mod.getRowCount(); ++r) {
-System.out.println("r=" + r);
+//System.out.println("r=" + r);
 		HSSFRow r2 = sheet.getRow(row + r);
 		if (r2 == null) r2 = sheet.createRow(row + r);
 
 		for (int c=0; c<mod.getColumnCount(); ++c) {
-System.out.println("  c=" + c);
+//System.out.println("  c=" + c);
 			HSSFCell c2 = r2.getCell((short)(col + c));
 			if (c2 == null) c2 = r2.createCell((short)(col + c));
 			Object val = mod.getValueAt(r,c);
