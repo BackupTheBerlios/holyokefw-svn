@@ -55,7 +55,7 @@ public class JTypeTable extends CitibobJTable
 
 	/** Creates a new instance of JTypeTable */
 	public JTypeTable() {
-		reMap = new HashMap();
+		reMap = new WeakHashMap();
 	}
 
 	public TableCellEditor getCellEditor(int row, int col)
