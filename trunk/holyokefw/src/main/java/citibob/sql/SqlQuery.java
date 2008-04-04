@@ -32,6 +32,13 @@ package citibob.sql;
  */
 public interface SqlQuery
 {
+public static final int JT_NONE = 0;
+public static final int JT_INNER = 1;
+public static final int JT_OUTER = 2;
+public static final String[] sJoinTypes = {"", "inner join", "outer join"};
+
+
+	
 	public String getSql();
 	/** Sql required to free any database resources after this query is finished running. */
 	public String getCleanupSql();

@@ -37,6 +37,7 @@ public class JEnum implements JType
 		this(KeyedModel.intKeys(objs));
 	}
 	public KeyedModel getKeyedModel() { return kmodel; }
+	public Object getSegment() { return null; }
 	
 	/** Java class used to represent this type */
 	public Class getObjClass()

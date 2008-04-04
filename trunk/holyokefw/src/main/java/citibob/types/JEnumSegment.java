@@ -15,36 +15,24 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+package citibob.types;
 
-package citibob.swingers;
-
+import java.sql.*;
+import citibob.jschema.*;
 import citibob.sql.*;
-import citibob.swing.typed.*;
-import citibob.text.KeyedSFormat;
-import citibob.types.JEnum;
-import javax.swing.text.*;
-import java.text.*;
+import citibob.types.KeyedModel;
 
-/**
- *
- * @author citibob
- */
-public class SqlEnumSwinger extends AbstractSwinger
+/** Create one of these to specify that we want the same TYPE as a full JEnum,
+ * but we only want to DISPLAY one segment of it. */
+public class JEnumSegment extends JEnum
 {
+	protected Object segment;
+	
+	public Object getSegment() { return segment; }
 
-/** Creates a new instance of TypedWidgetSTFactory */
-public SqlEnumSwinger(SqlEnum sqlType) {
-	super(sqlType, new KeyedSFormat(sqlType.getKeyedModel()), false);
-}
-
-/** Create a widget suitable for editing this type of data. */
-public citibob.swing.typed.TypedWidget createWidget()
-	{ return new JKeyedComboBox(); }
-public void configureWidget(TypedWidget w)
-{
-	JEnum etype = (JEnum)jType;
-	JKeyedComboBox ww = (JKeyedComboBox)w;
-	ww.setKeyedModel(etype);
-}
-
+	/** nullText = string to use for null value, or else <null> if this is not nullable. */
+	public JEnumSegment(JEnum jenum, Object segment) {
+		super(jenum.getKeyedModel());
+		this.segment = segment;
+	}
 }

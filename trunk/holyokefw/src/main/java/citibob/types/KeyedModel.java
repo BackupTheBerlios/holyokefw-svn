@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * KeyedModel.java
  *
  * Created on March 20, 2005, 5:51 PM
- * TODO: Should this be in citibob.jschema package?
  * TODO: This does not use the SqlTypeSet structure.  Thus, it may do incorrect
  * data conversions on some types (such as dates, wrong timezone).  This should
  * not be much of a problem, since KeyedModel is rarely if ever used for dates
@@ -42,7 +41,7 @@ public class KeyedModel extends KeyedModelMVC
 
 Map itemMap = new HashMap();	// HashMap instead of TreeMap doesn't require comparision method
 Map invMap = new HashMap();
-Vector keyList = new Vector();
+List<Item> itemList = new ArrayList();
 //String nullString = "<none>";
 int nextSerial = 0;
 
@@ -52,14 +51,16 @@ public int size() { return itemMap.size(); }
 public class Item {
 	public Object key;
 	public Object obj;
-	public Integer serial;	// Order of this item in the KeyedModel list
+	public Object segment;
+//	public Integer serial;	// Order of this item in the KeyedModel list
 	public String toString() {
 		if (obj == null) return null;
 		return obj.toString();
 	}
-	public Item(Object key, Object obj) {
+	public Item(Object key, Object obj, Object segment) {
 		this.key = key;
 		this.obj = obj;
+		this.segment = segment;
 	}
 	/** Pointer equality requires model object be used */
 	public boolean equals(Object o)
@@ -75,8 +76,19 @@ public class Item {
 //	{ this.nullString = s; }
 //public String getNullString()
 //	{ return nullString; }
-public Vector getKeyList()
-	{ return keyList; }
+public Object getKey(int ix)
+	{ return itemList.get(ix).key; }
+
+public Vector newKeyList(Object segment, Object nullValue)
+{
+	Vector ret = new Vector();
+	for (Item item : itemList) {
+		if (segment == null || item.segment == null || segment.equals(item.segment)) {
+			ret.add(item.key == null ? nullValue : item.key);
+		}
+	}
+	return ret;
+}
 public Map getItemMap()
 	{ return itemMap; }
 
@@ -84,10 +96,12 @@ public boolean containsKey(Object key)
 {
 	return itemMap.get(key) != null;
 }
+/** Converts a key to its KeyedModel.Item record */
 public KeyedModel.Item get(Object key)
 {
 	return (KeyedModel.Item)itemMap.get(key);
 }
+/** Converts a value to its associated KeyedModel.Item record */
 public KeyedModel.Item getInv(Object val)
 {
 	return (KeyedModel.Item)invMap.get(val);
@@ -106,20 +120,24 @@ protected void clear()
 {
 	itemMap.clear();
 	invMap.clear();
-	keyList.clear();
+	itemList.clear();
 }
 private void addItem(KeyedModel.Item oi)
 {
-	oi.serial = new Integer(nextSerial++);
+//	oi.serial = new Integer(nextSerial++);
 	itemMap.put(oi.key, oi);
 	invMap.put(oi.obj, oi);
-	keyList.add(oi.key);
+	itemList.add(oi);
 }
 
 /** Adds another item to the dropdown list. */
 public void addItem(Object key, Object item)
+{ addItem(key, item, null); }
+
+/** Adds another item to the dropdown list. */
+public void addItem(Object key, Object item, Object segment)
 {
-	KeyedModel.Item oi = new KeyedModel.Item(key, item);
+	KeyedModel.Item oi = new KeyedModel.Item(key, item, segment);
 	addItem(oi);
 }
 
@@ -129,26 +147,29 @@ public void addItem(Object key, Object item)
 //	while (rs.next()) addItem(rs.getObject(keyCol), rs.getObject(itemCol));
 //}
 
-public void addAllItems(SqlRun str, String sql, final int keyCol, final int itemCol)
+public void addAllItems(SqlRun str, String sql, final int keyCol, final int itemCol, final int segmentCol)
 {
 	str.execSql(sql, new RsTasklet() {
 	public void run(ResultSet rs) throws SQLException {
 		clear();
 		while (rs.next()) {
 			addItem(rs.getObject(keyCol),
-				rs.getObject(itemCol));
+				rs.getObject(itemCol),
+				segmentCol < 0 ? null : rs.getObject(segmentCol));
 		}
 	}});
 }
 
-public void addAllItems(SqlRun str, String sql, final String keyCol, final String itemCol)
+public void addAllItems(SqlRun str, String sql, final String keyCol,
+final String itemCol, final String segmentCol)
 {
 	str.execSql(sql, new RsTasklet() {
 	public void run(ResultSet rs) throws SQLException {
 		clear();
 		while (rs.next()) {
 			addItem(rs.getObject(keyCol),
-				rs.getObject(itemCol));
+				rs.getObject(itemCol),
+				segmentCol == null ? null : rs.getObject(segmentCol));
 		}
 	}});
 }
@@ -162,21 +183,21 @@ public String toString(Object key)
 	if (oi == null) return null;
 	return oi.toString();
 }
-public Integer getSerial(Object key)
-{
-	//if (key == null) return null;
-	KeyedModel.Item oi = (Item)itemMap.get(key);
-	if (oi == null) return null;
-	return oi.serial;
-}
+//public Integer getSerial(Object key)
+//{
+//	//if (key == null) return null;
+//	KeyedModel.Item oi = (Item)itemMap.get(key);
+//	if (oi == null) return null;
+//	return oi.serial;
+//}
 // -------------------------------------------------------------------
 public void KeyedModel(SqlRun str, String sql, int keyCol, int itemCol)
 {
-	addAllItems(str, sql, keyCol, itemCol);
+	addAllItems(str, sql, keyCol, itemCol, -1);
 }
 public void KeyedModel(SqlRun str, String sql, String keyCol, String itemCol)
 {
-	addAllItems(str, sql, keyCol, itemCol);
+	addAllItems(str, sql, keyCol, itemCol, null);
 }
 //public KeyedModel(Object[] objs)
 /** Creates a KeyedModel in which key == value. */
@@ -184,7 +205,7 @@ public static KeyedModel sameKeys(Object[] objs)
 {
 	KeyedModel km = new KeyedModel();
 	for (int i=0; i<objs.length; ++i) {
-		km.addItem(objs[i], objs[i]);
+		km.addItem(objs[i], objs[i], null);
 	}
 	return km;
 }
@@ -192,7 +213,7 @@ public static KeyedModel sameKeys(Object[] objs)
 public KeyedModel(Object[] keys, Object[] items)
 {
 	for (int i=0; i<keys.length; ++i) {
-		addItem(keys[i], items[i]);
+		addItem(keys[i], items[i], null);
 	}
 	
 }
@@ -201,7 +222,7 @@ public static KeyedModel intKeys(Object... items)
 {
 	KeyedModel km = new KeyedModel();
 	for (int i=0; i<items.length; ++i) {
-		km.addItem(new Integer(i), items[i]);
+		km.addItem(new Integer(i), items[i], null);
 	}
 	return km;
 }

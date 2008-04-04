@@ -35,12 +35,62 @@ public static class NVPair
 	public NVPair(String name, String value)
 		{ this.name = name; this.value = value;}
 }
+
+public static class TableJoin
+{
+	public String tableName;
+	public String asName;		// null if same as tableName
+	public int joinType;
+	String joinLogic;
+	
+	public TableJoin(String tableName, String asName, int joinType, String joinLogic)
+	{
+		this.tableName = tableName;
+		this.asName = asName;
+		this.joinType = joinType;
+		this.joinLogic = joinLogic;
+	}
+	public TableJoin(String tableName, String asName)
+		{ this(tableName, asName, JT_NONE, null); }
+	public TableJoin(String tableName)
+		{ this(tableName, null); }
+
+	public String toSql(boolean first)
+	{
+		StringBuffer sb = new StringBuffer("\n");
+
+		// Join Type
+		switch(joinType) {
+			case JT_NONE : sb.append(first ? " FROM " :  ", "); break;
+			case JT_INNER : sb.append(" inner join "); break;
+			case JT_OUTER : sb.append(" outer join "); break;
+		}
+
+		// Name of Table
+		if (asName == null || asName.equals(tableName)) {
+			// asName is same
+			sb.append(tableName);
+			asName = tableName;
+		} else {
+			// asName is different
+			sb.append(tableName + " as " + asName);
+		}
+		
+		// Join Logic
+		if (joinType != JT_NONE) {
+			sb.append(" on (" + joinLogic + ")");
+		}
+		
+		return sb.toString();
+	}
+}
+
 // ========================================
 protected String mainTable = null;
 protected ArrayList<NVPair> columns = new ArrayList();
 protected TreeMap<String,NVPair> colMap = new TreeMap();
-protected ArrayList<String> tables = new ArrayList();
-protected TreeSet tableSet = new TreeSet();
+protected ArrayList<TableJoin> tables = new ArrayList();
+protected TreeMap<String,List<TableJoin>> tableSet = new TreeMap();
 protected ArrayList whereClauses = new ArrayList();
 protected int type = SELECT;
 protected ArrayList orderClauses = new ArrayList();
@@ -54,7 +104,7 @@ public Object clone()
 	ret.columns = (ArrayList)columns.clone();
 	ret.colMap = (TreeMap)colMap.clone();
 	ret.tables = (ArrayList)tables.clone();
-	ret.tableSet = (TreeSet)tableSet.clone();
+	ret.tableSet = (TreeMap)tableSet.clone();
 	return ret;
 }
 // --------------------------------------------------------
@@ -92,8 +142,6 @@ public boolean addColumn(String name, String value)
 /** Add a name-only pair to the list of columns (for select statements) */
 public void addColumn(String name)
 { addColumn(name, null); }
-//	columns.add(new NVPair(name, null));
-//}
 
 public void addColumns(Schema schema)
 {
@@ -102,58 +150,49 @@ public void addColumns(Schema schema)
 	}
 }
 
-/** Adds to the list of tables being joined in this query */
-public void addTable(String t)
+/** Returns all the times a particular table has been joined */
+public List<TableJoin> getTables(String tableName)
 {
-	tables.add(t);
-	tableSet.add(t);
+	return tableSet.get(tableName);
+}
+public void addTable(TableJoin tj)
+{
+	tables.add(tj);
+	
+	// Add to tableSet structure
+	List<TableJoin> list = tableSet.get(tj.tableName);
+	if (list == null) {
+		list = new LinkedList();
+		tableSet.put(tj.tableName, list);
+	}
+	list.add(tj);
+}
+
+
+/** Adds to the list of tables being joined in this query */
+public void addTable(String tableName)
+{
+	addTable(new TableJoin(tableName));
 }
 
 /** Adds table: A as A' */
 public void addTable(String tableName, String asName)
 {
-	String name = tableName;
-	if (!(asName == null || asName.equals(tableName))) {
-		// asName is different
-		name = name + " as " + asName;
-	}
-	addTable(name);
+	addTable(new TableJoin(tableName, asName));
 }
 
 //String tabString = " inner join " + cn.getTable() + " on (" + joinClause + ")";
 /** Adds table: A as A' Inner/Outer JOIN (xxxxxxx) */
-public void addTable(String tableName, String asName, String joinType, String joinLogic)
+public void addTable(String tableName, String asName, int joinType, String joinLogic)
 {
-	if (joinType == null) joinType = "inner join";
-	StringBuffer sb = new StringBuffer("\n" + joinType + " ");
-	
-	if (asName == null || asName.equals(tableName)) {
-		// asName is same
-		sb.append(tableName);
-		asName = tableName;
-	} else {
-		// asName is different
-		sb.append(tableName + " as " + asName);
-	}
-	if (joinLogic != null) {
-		sb.append(" on (" + joinLogic + ")");
-	}
-	addTable(sb.toString());
+	addTable(new TableJoin(tableName, asName, joinType, joinLogic));
 }
 
 
 public boolean containsColumn(String t)
 {
 	return (colMap.get(t) != null); 
-//	for (NVPair nv : columns) {
-//		if (t == nv.name) return true;
-//		if (nv.name.equals(t)) return true;
-//	}
-//	return false;
 }
-
-public boolean containsTable(String t)
-{ return (tableSet.contains(t)); }
 
 /** Adds a where clause (used when joining tables */
 public void addWhereClause(String wc)
@@ -168,8 +207,8 @@ public void addOrderClause(String wc)
 
 
 /** Sets the "special" table (for UPDATE and INSERT, not SELECT) */
-public void setMainTable(String t)
-	{ mainTable = t; }
+public void setMainTable(String tableName)
+	{ mainTable = tableName; }
 public String getMainTable() { return mainTable; }
 
 /** Chooses whether this is SELECT, UPDATE or INSERT query.
@@ -218,21 +257,13 @@ public String getOrderClause()
 /** Builds a full-formed FROM clause */
 public String getFromClause()
 {
-	StringBuffer ret = new StringBuffer();
+	StringBuffer sb = new StringBuffer();
 	boolean first = true;
-	for (Iterator ii = tables.iterator(); ii.hasNext(); ) {
-		String s = (String)ii.next();
-		if (first) {
-			ret.append(" FROM ");
-			first = false;
-		} else {
-			if (s.indexOf("join") < 0) {
-				ret.append(", ");
-			}
-		}
-		ret.append(s);
+	for (TableJoin tj : tables) {
+		sb.append(tj.toSql(first));
+		first = false;
 	}
-	return ret.toString();
+	return sb.toString();
 }
 
 /** Returns list of columns */

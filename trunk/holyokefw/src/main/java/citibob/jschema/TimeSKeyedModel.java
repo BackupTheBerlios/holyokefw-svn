@@ -51,7 +51,7 @@ public TimeSKeyedModel(int firstHr, int firstMin, int lastHr, int lastMin, int p
 	while (dt < lastS) {
 		int hr = dt / 3600;
 		int min = (dt - hr*3600) / 60;
-		super.addItem(dt, n00.format(hr) + ":" + n00.format(min));
+		super.addItem(dt, n00.format(hr) + ":" + n00.format(min), null);
 		dt += periodS;
 	}	
 }

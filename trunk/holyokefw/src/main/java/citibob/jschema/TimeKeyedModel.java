@@ -52,7 +52,7 @@ void init(Date first, Date last, long periodMS)
 	Date dt = (Date)first.clone();
 	while (dt.getTime() <= last.getTime()) {
 		String lab = fmt.format(dt);
-		this.addItem(dt, lab);
+		this.addItem(dt, lab, null);
 System.out.println("Adding: " + lab + " (key = " + dt);
 		dt.setTime(dt.getTime() + periodMS);
 	}

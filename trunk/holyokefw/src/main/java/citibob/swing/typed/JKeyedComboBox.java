@@ -44,6 +44,7 @@ KeyedModel kmodel;
 KeyedSFormat kformatter;
 Object value;
 //JType jType;
+Object segment = null;		// Only show items from the current segment
 
 static final Object NULL = new Object();
 // ------------------------------------------------------
@@ -68,12 +69,12 @@ public JKeyedComboBox()
 public JKeyedComboBox(KeyedModel kmodel)
 {
 	this();
-	setKeyedModel(kmodel);
+	setKeyedModel(kmodel, null);
 }
 // --------------------------------------------------------------
 /** Convenience method */
 public void setKeyedModel(JEnum jenum)
-	{ setKeyedModel(jenum.getKeyedModel()); }
+	{ setKeyedModel(jenum.getKeyedModel(), jenum.getSegment()); }
 /** Convenience method: sets dropdown equal to the type of the column;
  column must be of type JEnum. */
 public void setKeyedModel(Column col)
@@ -87,25 +88,28 @@ public void setKeyedModel(SchemaSet sset, String schemaName, String colName)
 
 
 public void setKeyedModel(KeyedModel kmodel)
+	{ setKeyedModel(kmodel, null); }
+
+public void setKeyedModel(KeyedModel kmodel, Object segment)
 {
 	if (this.kmodel != null) {
 		this.kmodel.removeListener(this);
 	}
 	this.kmodel = kmodel;
+	this.segment = segment;
 	kmodel.addListener(this);
+	refreshKeyedModel();
+}
+public void setSegment(Object segment)
+{
+	this.segment = segment;
 	refreshKeyedModel();
 }
 public void refreshKeyedModel()
 {
 	Object val = getValue();
 	kformatter = new KeyedSFormat(kmodel);
-	Vector keyList = kmodel.getKeyList();
-	// Handle null specially if it is in our key list.
-	if (kmodel.containsKey(null)) {
-		keyList = (Vector)keyList.clone();
-		for (int i=0; i<keyList.size(); ++i)
-			if (keyList.get(i) == null) keyList.set(i, NULL);
-	}
+	Vector keyList = kmodel.newKeyList(segment, NULL);
 //System.out.println("keyList.size() = " + keyList.size());
 	DefaultComboBoxModel cmodel = new DefaultComboBoxModel(keyList);
 	super.setModel(cmodel);

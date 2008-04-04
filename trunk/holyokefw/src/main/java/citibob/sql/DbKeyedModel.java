@@ -64,10 +64,19 @@ String idTableName, String sql)
 public DbKeyedModel(SqlRun str, DbChangeModel change,
 String idTableName, String idFieldName,
 String nameFieldName, String orderFieldName)
+{
+	this(str, change, idTableName, idFieldName, nameFieldName, "null", orderFieldName);
+}
+public DbKeyedModel(SqlRun str, DbChangeModel change,
+String idTableName, String idFieldName,
+String nameFieldName, String segmentFieldName, String orderFieldName)
 //throws SQLException
 {
 	this(str, change, idTableName,
-		"select " + idFieldName + ", " + nameFieldName + " from " +
+		"select " + idFieldName +
+		", " + nameFieldName +
+		", " + segmentFieldName +
+		" from " +
 			idTableName + " order by " + orderFieldName);
 }
 
@@ -75,7 +84,7 @@ String nameFieldName, String orderFieldName)
 public void requery(SqlRun str)
 {
 //	clear();
-	addAllItems(str, sql, 1, 2);
+	addAllItems(str, sql, 1, 2, 3);
 	str.execUpdate(new UpdTasklet() {
 	public void run() {
 		fireKeyedModelChanged();

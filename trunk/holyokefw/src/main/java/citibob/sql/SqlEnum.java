@@ -36,7 +36,7 @@ implements SqlType
 		super(kmodel);
 		this.nullable = (nullText != null);
 		if (nullable) {
-			if (!kmodel.containsKey(null)) kmodel.addItem(null, nullText);
+			if (!kmodel.containsKey(null)) kmodel.addItem(null, nullText, null);
 		}
 	}
 	

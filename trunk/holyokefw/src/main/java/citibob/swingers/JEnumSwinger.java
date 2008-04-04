@@ -56,7 +56,7 @@ public void configureWidget(TypedWidget tw)
 {
 	JEnum tt = (JEnum)jType;
 	JKeyedComboBox w = (JKeyedComboBox)tw;
-	w.setKeyedModel(tt.getKeyedModel());
+	w.setKeyedModel(tt);
 }
 
 }
