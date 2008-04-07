@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.reflect;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,5 +97,26 @@ public static Field getField(Class klass, String name)
 	return null;
 }
 
+/** Converts a class name (with dots) to the corresponding resource we're trying to
+ * find in the classpath. */
+public static String classToResource(String className)
+	{ return className.replace('.', '/') + ".class"; }
+
+public static String classToResource(Class klass)
+	{ return classToResource(klass.getName()); }
+
+public static String resourceToClass(String resName)
+{
+	int pos = resName.lastIndexOf(".class");
+	resName = resName.substring(0,pos);
+	return resName.replace('/', '.');
+}
+
+public static String getLeaf(URL url)
+{
+	String surl = url.toString();
+	int slash = surl.lastIndexOf('/');
+	return surl.substring(slash+1);
+}
 
 }

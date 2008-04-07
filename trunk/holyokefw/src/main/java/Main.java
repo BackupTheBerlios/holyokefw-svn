@@ -7,6 +7,8 @@ import citibob.licensor.MakeNbm;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+import citibob.reflect.ClassAnalyzer;
+import citibob.reflect.ClassPathTest;
 import citibob.util.IndexSet;
 
 /**
@@ -34,6 +36,8 @@ public static void main(String[] args) throws Exception {
 //System.exit(0);
 
 	AppLauncher.launch("holyokefw", new Class[] {
+		ClassAnalyzer.class,
+		ClassPathTest.class,
 		IndexSet.class,
 		MakeNbm.class,
 //		de.jppietsch.prefedit.PrefEdit.class,
