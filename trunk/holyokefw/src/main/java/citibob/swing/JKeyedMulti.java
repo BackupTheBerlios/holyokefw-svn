@@ -78,32 +78,30 @@ static final int C_CHECK = 0;
 static final int C_VALUE = 1;
 
 
-public class MyModel extends FixedColTableModel
-{
-
-	public MyModel(String[] colNames, JType[] types, boolean[] editable)
-	{
-		super(colNames,
-			new JType[] {JavaJType.jtBoolean, valueType},
-			editable);
-	}
-
-	public int getValueAt(int row, int col)
-	{
-		switch(col) {
-			case C_CHECK : return vals.get(row);
-		}
-	}
-public int getRowCount()
-	{ return data.size(); }
-
-public void clear() {
-//	data.clear();
-	data = new ArrayList();
-	super.fireTableDataChanged();
-}
-
-	
-}
+//public class MyModel extends FixedColTableModel
+//{
+//
+//	public MyModel(String[] colNames, JType[] types, boolean[] editable)
+//	{
+//		super(colNames,
+//			new JType[] {JavaJType.jtBoolean, valueType},
+//			editable);
+//	}
+//
+//	public int getValueAt(int row, int col)
+//	{
+//		switch(col) {
+//			case C_CHECK : return vals.get(row);
+//		}
+//	}
+//public int getRowCount()
+//	{ return data.size(); }
+//
+//public void clear() {
+////	data.clear();
+//	data = new ArrayList();
+//	super.fireTableDataChanged();
+//}
+//}
 	
 }

@@ -10,6 +10,7 @@ import citibob.app.App;
 public class MyTest
 {
 	String name;// = "Hello World";
-	App app = null;
-	App app2;
+	bsh.Interpreter interp;
+//	App app = null;
+//	App app2;
 }

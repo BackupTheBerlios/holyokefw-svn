@@ -1,5 +1,13 @@
 package citibob.reflect;
-
+/** TODO: For some reason, this does not find class dependencies of
+ * declared fields.  That is, if I have:
+ * class Test {
+ *       AnotherClass var;
+ * }
+ * it will not find AnotherClass as a dependency, unless I actually
+ * use the variable somewhere.  Proposed fix: use ASM:
+ * http://asm.objectweb.org/
+ */
 /* This class borrows heavily from the original class called ListDeps. */
 /* $Log: ListDeps.java,v $
  * Revision 1.10  2000/11/25  04:26:56  stuart
@@ -377,11 +385,18 @@ Object obj)
 		// Don't record transient fields as a dependency, since they don't serialize
 		if ((ff.getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC)) != 0) continue;
 		try {
+			addClassesSeen(declaredClass);
+			fields[i].setAccessible(true);
 			Object actualObj = fields[i].get(obj);
-			Class actualClass = actualObj.getClass();
-			addObjectsSeen(actualObj);
-			addClassesSeen(actualClass);
-		} catch(Exception e) {}
+			if (actualObj != null) {
+				Class actualClass = actualObj.getClass();
+				addObjectsSeen(actualObj);
+				addClassesSeen(actualClass);
+			}
+//System.out.println("DeclaredClass is " + declaredClass);
+		} catch(Exception e) {
+//e.printStackTrace();
+		}
 	}
 }
 // ---------------------------------------------------
@@ -413,6 +428,9 @@ throws ClassAnalyzerException, IOException
 {
 	URLClassLoader loader = (URLClassLoader)ClassAnalyzer.class.getClassLoader();
 	List<URL> classPath = ClassPathTest.getClassPath(loader);
+	
+//find pocono.jar in the classpath and eliminate it witha another getClassPath() starting on it.,
+	
 	
 //	FilePub fp = new FilePub("/home/citibob/prg/nsandbox/makefile");
 //	BankWrapperPub bp = new BankWrapperPub(fp);

@@ -24,10 +24,10 @@ static final int ST_INIT = 0;
 static final int ST_INCP = 1;
 	
 /** Adds to a classpath the stuff found in the Class-Path of a manifest file. */
-public static void getClassPath(URL jarURL, List<URL> out)
+public static void getClassPath(URL jarURL, List<JarURL> out)
 throws MalformedURLException, IOException
 {
-//	List<URL> urls = new LinkedList();
+//	List<JarURL> urls = new LinkedList();
 //	URL url = clurl.findResource("META-INF/MANIFEST.MF");
 	URL manifestURL = new URL("jar:" + jarURL.toString() + "!/META-INF/MANIFEST.MF");
 	
@@ -62,32 +62,43 @@ throws MalformedURLException, IOException
 	// Parse the classpath
 	String[] sclasspath = sb.toString().trim().split(" ");
 	for (String spec : sclasspath) {
-		out.add(new URL(jarURL, spec));		
+		out.add(new JarURL(new URL(jarURL, spec)));
 	}
 	
 //	return urls;
 }
 
-/** Recursively gets classpath, looking into all MANIFEST files. */
-public static void getClassPath(URLClassLoader loader, List<URL> out)
+/** Recursively gets classpath, looking into all MANIFEST files. 
+ Starts from a base classpath of jar files. */
+public static void expandClassPath(URLClassLoader loader, List<JarURL> base, List<JarURL> out)
 throws MalformedURLException, IOException
 {
 	// Look at each item nominally on classloader's classpath
-	URL[] urls = loader.getURLs();
-	for (URL url : urls) {
+	for (JarURL url : base) {
 		out.add(url);
-		if (url.getPath().endsWith(".jar")) {
+		if (url.getUrl().getPath().endsWith(".jar")) {
 			// We have a jar URL; add in any items on the jar's classpath
-			getClassPath(url, out);
+			getClassPath(url.getUrl(), out);
 		}
 	}
 }
 
-static void eliminateDups(List<URL> urls)
+/** Recursively gets classpath, looking into all MANIFEST files. */
+public static List<JarURL> getBaseClassPath(URLClassLoader loader)
+throws MalformedURLException, IOException
 {
-	Set<URL> set = new HashSet();
-	for (Iterator<URL> ii = urls.iterator(); ii.hasNext(); ) {
-		URL url = ii.next();
+	List<JarURL> out = new LinkedList();
+	// Look at each item nominally on classloader's classpath
+	URL[] urls = loader.getURLs();
+	for (URL url : urls) out.add(new JarURL(url));
+	return out;
+}
+
+static void eliminateDups(List<JarURL> urls)
+{
+	Set<JarURL> set = new HashSet();
+	for (Iterator<JarURL> ii = urls.iterator(); ii.hasNext(); ) {
+		JarURL url = ii.next();
 		if (set.contains(url)) {
 			ii.remove();
 		} else {
@@ -96,11 +107,26 @@ static void eliminateDups(List<URL> urls)
 	}
 }
 
-static List<URL> getClassPath(URLClassLoader loader)
+///** Computes A - B */
+//static void subtractCP(List<JarURL> aa, List<JarURL> bb)
+//{
+//	Set<URL> bbset = new HashSet();
+//	for (URL url : bb) bbset.add(url);
+//	for (Iterator<URL> ii = urls.iterator(); ii.hasNext(); ) {
+//		URL url = ii.next();
+//		if (set.contains(url)) {
+//			ii.remove();
+//		} else {
+//			set.add(url);
+//		}
+//	}
+//}
+
+static List<JarURL> getClassPath(URLClassLoader loader)
 throws MalformedURLException, IOException
 {
-	List<URL> out = new LinkedList();
-	getClassPath(loader, out);
+	List<JarURL> out = new LinkedList();
+	expandClassPath(loader, getBaseClassPath(loader), out);
 	eliminateDups(out);
 	return out;
 }
@@ -124,8 +150,8 @@ public static void main(String[] args) throws Exception
 		try {
 			URLClassLoader urlcl = (URLClassLoader)loader;
 //			URL[] urls = urlcl.getURLs();
-			List<URL> urls = getClassPath(urlcl);
-			for (URL url : urls) System.out.println("      " + url);
+			List<JarURL> urls = getClassPath(urlcl);
+			for (JarURL url : urls) System.out.println("      " + url);
 		} catch(ClassCastException e) {}
 	}
 

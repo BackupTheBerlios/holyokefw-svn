@@ -60,10 +60,13 @@ public String valueToString(Object value) //throws java.text.ParseException
 
 	Day day = (Day)value;
 	long ms = day.toMS(dfmt.getCalendar());
-	return dfmt.format(new Date(ms));
+	String ret = dfmt.format(new Date(ms));
+//System.out.println("Day valueToString: " + new Date(ms) + " -> " + ret); //dfmt.getTimeZone());
+	return ret;
 }
 
 /** Should equal valueToString(null); */
 public String getNullText() { return nullText; }
 
+// ================================================================
 }

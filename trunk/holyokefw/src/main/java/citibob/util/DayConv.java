@@ -56,7 +56,10 @@ public class DayConv {
  */
 public static int midnightToDayNum(long midnightMS, TimeZone tz)
 {
-	return Math.round((midnightMS - ms1970(tz)) / (86400*1000));
+// This did not work for DST
+//	return Math.round((midnightMS - ms1970(tz)) / (86400*1000));
+
+	return Math.round((midnightMS + 3*3600*1000L - ms1970(tz)) / (86400*1000));
 }
 /** @param ms This must already be truncated to midnight in Market's time zone.
 @param cal Calendar object to use (with timezone set)
