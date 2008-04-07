@@ -78,6 +78,10 @@ public class Item {
 //	{ return nullString; }
 public Object getKey(int ix)
 	{ return itemList.get(ix).key; }
+public Object getValue(int ix)
+	{ return itemList.get(ix).obj; }
+
+
 
 public Vector newKeyList(Object segment, Object nullValue)
 {
