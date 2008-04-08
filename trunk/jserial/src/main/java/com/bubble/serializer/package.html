@@ -1,0 +1,40 @@
+<html>
+<body>
+Faster Java Serialization classes.
+
+<p>The classes in this package enable faster serialization by
+generating bytecodes on the fly to serialize objects.
+
+<p>When an object is serialized, its class is inspected and 
+a class that implements the Serializer interface is generated.
+This class is tailor made to serialize the fields of the given
+object's class directly.
+
+<p>To serialize objects to a ByteBuffer, all you have to do is 
+use the <code>SerializationContext</code> class:
+<pre>
+	...
+	SerializationContext context = new SerializationContext();
+	ByteBuffer buffer = ByteBuffer.allocate(1024);
+	context.serialize(myObject, buffer);
+	...
+</pre>
+<p>Serializes <code>myObject</code>. Note that, in order to be
+serialized, objects must implement <code>java.io.Serializable</code>
+
+<p>To reconstruct the object, all you have to do is use the 
+<code>DeserializationContext</code> class:
+
+<pre>
+	...
+	DeserializationContext context = new DeserializationContext();
+	MyObject reconstructedObject = (MyObject)context.deserialize(buffer);
+	...
+</pre>
+<p>Reads the <code>reconstructedObject</code>. In the meantime, the data
+in the ByteBuffer can easily be written to a file or sent through a network
+using Java NIO.
+
+
+</body>
+</html>
