@@ -10,11 +10,11 @@ import citibob.reflect.ClassAnalyzer;
 import citibob.reflect.ClassPathTest;
 import citibob.reflect.JarURL;
 import citibob.reflect.ReflectUtils;
-import com.bubble.serializer.SerializationContext;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.URL;
@@ -25,10 +25,10 @@ import java.util.List;
 public class MobileCodeClient {
 
 protected String[] serverClasspath;
-protected String sockFilename;
+protected File sockFile;
 
-public MobileCodeClient(String sockFilename, String... serverClasspath) {
-	this.sockFilename = sockFilename;
+public MobileCodeClient(File sockFile, String... serverClasspath) {
+	this.sockFile = sockFile;
 	this.serverClasspath = serverClasspath;
 }
 
@@ -39,16 +39,22 @@ public Socket open(Object obj) throws IOException
 	MobileClass[] classes = getRequiredClasses(obj);
 
 	// Send the request
-	NamedSocket sock = new NamedSocket(sockFilename);
-	SerializationContext scon = new SerializationContext();
-	DataOutputStream out = new DataOutputStream(sock.getOutputStream());
-//	ObjectOutputStream out = new ObjectOutputStream(
-//		new BufferedOutputStream(sock.getOutputStream()));
-//	out.writeObject(classes);
-//	out.writeObject(obj);
-	scon.serialize(classes, out);
-	scon.serialize(obj, out);
-	out.flush();
+	NamedSocket sock = new NamedSocket(sockFile);
+	
+	ObjectOutputStream oout = new ObjectOutputStream(sock.getOutputStream());
+	oout.writeObject(classes);
+	oout.writeObject(obj);
+	oout.flush();
+	
+////	SerializationContext scon = new SerializationContext();
+////	DataOutputStream out = new DataOutputStream(sock.getOutputStream());
+////	ObjectOutputStream out = new ObjectOutputStream(
+////		new BufferedOutputStream(sock.getOutputStream()));
+////	out.writeObject(classes);
+////	out.writeObject(obj);
+//	scon.serialize(classes, out);
+//	scon.serialize(obj, out);
+//	out.flush();
 	
 	return sock;
 }
@@ -107,7 +113,7 @@ System.out.println("Sending class: " + name);
 
 public static void main(String[] args) throws Exception
 {
-	MobileCodeClient client = new MobileCodeClient("c:\\sock",
+	MobileCodeClient client = new MobileCodeClient(new File("c:\\sock"),
 		"holyokefw");
 	Object obj = new TestObj();
 	Socket sock = client.open(obj);

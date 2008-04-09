@@ -17,16 +17,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.mobilecode;
 
+import citibob.io.LoaderObjectInputStream;
 import citibob.objserver.NamedServerSocket;
-import citibob.objserver.ObjQuery;
-import com.bubble.serializer.DeserializationContext;
 import java.net.*;
 import java.io.*;
+import java.lang.reflect.Constructor;
 
 public class MobileCodeServer implements Runnable
 {
 	
-	String sockFilename;
+	File sockFile;
 	MobileCodeServerMain objMain;
 	Thread thread;
 	
@@ -50,11 +50,11 @@ public class MobileCodeServer implements Runnable
 		{}
 	}
 // -------------------------------------------------------
-	public MobileCodeServer(String sockFilename) throws IOException
+	public MobileCodeServer(File sockFile) throws IOException
 	{
-		this.sockFilename = sockFilename;
+		this.sockFile = sockFile;
 		
-		serverSocket = new NamedServerSocket(sockFilename);
+		serverSocket = new NamedServerSocket(sockFile);
 		thread = new Thread(this);
 	}
 // -------------------------------------------------------
@@ -122,22 +122,30 @@ public class MobileCodeServer implements Runnable
 				in = socket.getInputStream();
 				//out = socket.getOutputStream();
 				
-				// Read the query.
-				DataInputStream oin = new DataInputStream(in);
-				
 				// Set up classloader, and deserializer no classes yet
 				MobileCodeLoader classloader = new MobileCodeLoader();
-				DeserializationContext dcon = new DeserializationContext(classloader);
+//				DeserializationContext dcon = new DeserializationContext(classloader);
+
+				// Create a deserializer relative to our classloader
+//				DataInputStream oin = new DataInputStream(in);
+//				ObjectInputStream oin = new ObjectInputStream(in);
+//				Class klass = classloader.loadClass(MCObjectInputStream.class.getName());
+//				Constructor con = klass.getConstructor(InputStream.class);
+//				ObjectInputStream oin = (ObjectInputStream)con.newInstance(in);
+
+				ObjectInputStream oin = new LoaderObjectInputStream(in, classloader);
 				
 				// Read the classes
-				MobileClass[] classes = (MobileClass[]) dcon.deserialize(oin);
+//				MobileClass[] classes = (MobileClass[]) dcon.deserialize(oin);
+				MobileClass[] classes = (MobileClass[]) oin.readObject();
 				classloader.addClasses(classes);
 
 				// Deserialize the object
-				Object obj = dcon.deserialize(oin);
+//				Object obj = dcon.deserialize(oin);
+				Object obj = oin.readObject();
 				
 				// Dispatch based on object's class
-				objMain.handleQuery(queryNo, obj, socket, oin, dcon);
+				objMain.handleQuery(queryNo, obj, socket);
 //System.out.println("writing 289");
 //oout.writeObject(new Integer(289));
 //System.out.println("Exiting query...");
@@ -154,7 +162,7 @@ public class MobileCodeServer implements Runnable
 // ==============================================================
 	public static void main(String[] args) throws Exception
 	{
-		MobileCodeServer s1 = new MobileCodeServer("c:\\sock");
+		MobileCodeServer s1 = new MobileCodeServer(new File("c:\\sock"));
 		s1.init(new ObjMain(), null);
 		s1.start();
 		s1.thread.join();
@@ -162,8 +170,8 @@ public class MobileCodeServer implements Runnable
 	
 	private static class ObjMain implements MobileCodeServerMain
 	{
-		public void handleQuery(int queryNo, Object query, Socket sock,
-				DataInputStream in, DeserializationContext dcon)
+		public void handleQuery(int queryNo, Object query, Socket sock)
+//				DataInputStream in, DeserializationContext dcon)
 		{
 			System.err.println("Query " + queryNo + ": " + query);
 		}

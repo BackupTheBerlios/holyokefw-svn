@@ -24,7 +24,6 @@ import java.io.*;
 public interface MobileCodeServerMain
 {
 //	ObjQueryContext newQueryContext();
-	void handleQuery(int queryNo, Object query, java.net.Socket sock,
-		DataInputStream in, DeserializationContext cdcon)
-		throws IOException;
+	void handleQuery(int queryNo, Object query, java.net.Socket sock)
+		throws Exception;
 }

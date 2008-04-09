@@ -22,14 +22,17 @@ import java.io.*;
 
 public class NamedSocket extends Socket
 {
-
-// private int readSockfile() throws IOException
+	
 public NamedSocket(String sockFilename) throws IOException
+{ this(new File(sockFilename)); }
+	
+// private int readSockfile() throws IOException
+public NamedSocket(File sockFile) throws IOException
 {
 	super();
 
 	// Read the socket file
-	BufferedReader in = new BufferedReader(new FileReader(sockFilename));
+	BufferedReader in = new BufferedReader(new FileReader(sockFile));
 	String sPortno = in.readLine();
 	String sCookie = in.readLine();
 	String sHost = in.readLine();
@@ -38,7 +41,7 @@ public NamedSocket(String sockFilename) throws IOException
 	try {
 		portno = Integer.parseInt(sPortno);
 	} catch(NumberFormatException e) {
-		throw new IOException("Could not read socket number in " + sockFilename);
+		throw new IOException("Could not read socket number in " + sockFile);
 	}
 	byte[] cookie = NamedServerSocket.hexDecode(sCookie);
 //System.err.println("sCookie = " + sCookie);

@@ -86,6 +86,10 @@ static public byte[] hexDecode(String s)
 
 public NamedServerSocket(String sockFilename)
 throws IOException
+	{ this(new File(sockFilename)); }
+
+public NamedServerSocket(File sockFile)
+throws IOException
 {
 	super(0);	// Create socket on any free port
 
@@ -96,10 +100,9 @@ throws IOException
 	}
 
 	// Write the socket number to out file.
-	File f = new File(sockFilename);
 	//new FileOutputStream(sockFilename).close();
 	//OS.setPrivate(sockFilename);
-	PrintWriter out = new PrintWriter(new FileOutputStream(sockFilename));
+	PrintWriter out = new PrintWriter(new FileOutputStream(sockFile));
 	out.println(getLocalPort());
 	out.println(hexEncode(cookie));
 	InetAddress thisIp = InetAddress.getLocalHost();
