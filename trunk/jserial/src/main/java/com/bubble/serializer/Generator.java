@@ -37,10 +37,12 @@ import javassist.CtNewMethod;
 import javassist.NotFoundException;
 import javassist.compiler.Javac.CtFieldWithInit;
 
-import com.bubble.utils.StringUtils;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import javassist.ClassPath;
 /**
  * Generates customized code for serialization.
  * This is where the magic happens.
@@ -99,9 +101,38 @@ public class Generator {
 	
 	private static final FieldComparator fieldComparator = new FieldComparator();
 	
+ClassPool newClassPool()
+{
+	ClassPool cpp = new ClassPool(ClassPool.getDefault()) {
+		protected CtClass createCtClass(String classname, boolean useCache)
+		{
+			CtClass cl = super.createCtClass(classname, useCache);
+			System.out.println("createCtClass: " + classname + " -> " + cl);
+			return cl;
+		}
+	};
+	ClassPath cp = new ClassPath() {
+		public void close() { }
+		public java.net.URL find(String classname) {
+			System.out.println("ClassPath classname = " + classname);
+			String slashName = classname.replace('.', '/') + ".class";
+			URL url = classloader.getResource(slashName);
+//System.out.println("ClassPath.find(" + classname + ") = " + url);
+			return url;
+		}
+		public InputStream openClassfile(String classname) {
+//System.out.println("ClassPool.openClassfile: " + classname);
+			String slashName = classname.replace('.', '/') + ".class";
+			return classloader.getResourceAsStream(slashName);			
+		}
+	};
+	cpp.appendClassPath(cp);
+	return cpp;
+}
 	private CtClass createSerializationClass(String className, boolean deserializer) {
-		ClassPool cp = ClassPool.getDefault();		
-		
+//		ClassPool cp = ClassPool.getDefault();		
+		ClassPool cp = newClassPool();
+
 		CtClass cl = cp.makeClass(className+"$__"+(deserializer?"DE":"")+"SERIALIZER__");
 		
 		String interfaceName = (deserializer?Deserializer.class.getName():Serializer.class.getName());
@@ -115,7 +146,9 @@ public class Generator {
 	}
 	
 	private void setSuperclass(CtClass cl, Class superClass, boolean deserializer) {
-		ClassPool cp = ClassPool.getDefault();
+//		ClassPool cp = ClassPool.getDefault();		
+		ClassPool cp = newClassPool();
+
 		Class sp = (deserializer?(Object)getDeserializer(superClass):(Object)getSerializer(superClass)).getClass();
 		try {
 			cl.setSuperclass(cp.get(sp.getName()));
@@ -128,14 +161,14 @@ public class Generator {
 	
 	private void addMethod(String body, CtClass cl, String className) {
 		try {
-//			System.out.println(body);
+System.out.println("body = " + body);
 			cl.addMethod(CtNewMethod.make(body, cl));
 		} catch (CannotCompileException e) {
 			throw new GeneratorRuntimeException("Could not generate serializer for class "+className, e);
 		}
 	}
 	
-	private Object createInstance(CtClass cl, String className) {
+	private Object createInstance(ClassLoader classloader, CtClass cl, String className) {
 		try {			
 			Object result = cl.toClass(classloader, null).newInstance();
 			return result;
@@ -242,7 +275,7 @@ public class Generator {
 		
 		addMethod(body, cl, className);
 		
-		return (Serializer)createInstance(cl, className);
+		return (Serializer)createInstance(clazz.getClassLoader(), cl, className);
 	}
 	
 	private String getCastName(Class clazz) {
@@ -289,7 +322,7 @@ public class Generator {
 		body += "}\n";
 		
 		addMethod(body, cl, className);
-		return (Serializer)createInstance(cl, className);				
+		return (Serializer)createInstance(clazz.getClassLoader(), cl, className);				
 	}
 	
 	private static final int bannedMods = Modifier.STATIC | Modifier.TRANSIENT | Modifier.FINAL;
@@ -414,7 +447,9 @@ public class Generator {
 	}
 	
 	public Deserializer getDeserializer(String className) throws ClassNotFoundException {
-		return getDeserializer(Class.forName(className));
+		Class klass = Class.forName(className, true, classloader);
+		return getDeserializer(klass);
+//		return getDeserializer(classloader.l.Class.forName(className));
 	}
 	
 	public Deserializer getDeserializer(Class clazz) {
@@ -479,7 +514,7 @@ public class Generator {
 //System.out.println(body);
 		addMethod(body, cl, className);
 		
-		return (Deserializer)createInstance(cl, className);
+		return (Deserializer)createInstance(clazz.getClassLoader(), cl, className);
 
 	}
 	
@@ -621,7 +656,7 @@ public class Generator {
 		body += "}\n";
 		
 		addMethod(body, cl, className);
-		return (Deserializer)createInstance(cl, className);				
+		return (Deserializer)createInstance(clazz.getClassLoader(), cl, className);				
 	}
 
 	private static class StringSerializer implements Serializer {

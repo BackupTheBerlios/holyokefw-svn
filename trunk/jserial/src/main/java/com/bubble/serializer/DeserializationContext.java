@@ -110,6 +110,7 @@ public class DeserializationContext {
 				case SerializationConstants.CLASSDEF_BLOCK: {
 					String className = buffer.readUTF(); //StringUtils.deserialize(buffer);
 					try {
+//System.out.println("Generator: className = " + className);
 						Deserializer ds = generator.getDeserializer(className);
 						idToDeserializer.put(new Integer(nextClassId++), ds);
 					} catch (ClassNotFoundException e) {

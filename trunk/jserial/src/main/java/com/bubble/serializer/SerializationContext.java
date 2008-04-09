@@ -91,7 +91,7 @@ public class SerializationContext {
 		this.nextClassId = SerializationConstants.FIRST_CLASS_ID;
 		this.nextObjectId = SerializationConstants.FIRST_OBJECT_ID;
 		this.classToId = new HashMap();
-		this.generator = new Generator(null);
+		this.generator = new Generator(getClass().getClassLoader());
 		this.objectToId = new SerMap();
 		this.sfilter = sfilter;
 	}
@@ -128,7 +128,8 @@ public class SerializationContext {
 			classId = new Integer(nextClassId++);
 			classToId.put(clazz, classId);
 			buffer.writeByte(SerializationConstants.CLASSDEF_BLOCK);
-			buffer.writeUTF(clazz.getName());	//StringUtils.serialize(clazz.getName(), buffer);
+			String className = clazz.getName();
+			buffer.writeUTF(className);	//StringUtils.serialize(clazz.getName(), buffer);
 		}
 	
 		if (sfilter.saveObj(obj)) {
