@@ -11,14 +11,17 @@ import java.net.URL;
  *
  * @author fiscrob
  */
-public class JarURL {
+public class JarURL implements Comparable<JarURL>
+{
 
 String name;
 URL url;
 
 public JarURL(URL url) {
 	this.url = url;
-	this.name = ReflectUtils.getLeaf(url);
+	name = ReflectUtils.getLeaf(url);
+	int dash = name.indexOf('-');
+	if (dash >= 0) name = name.substring(0,dash);
 }
 
 public String getName() {
@@ -27,6 +30,12 @@ public String getName() {
 
 public URL getUrl() {
 	return url;
+}
+
+public String toString() { return url.toString(); }
+
+public int compareTo(JarURL b) {
+	return getName().compareTo(b.getName());
 }
 
 }

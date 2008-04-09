@@ -56,7 +56,6 @@ package citibob.reflect;
  *
  */
 //import com.sun.org.apache.bcel.internal.util.ClassPath;
-import citibob.app.App;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -151,15 +150,15 @@ static class Pair {
 }
 // =========================================
 // ----------------------------------------------------------
-public Set getClassesFound()
+public Set<String> getClassesFound()
 {
 	return classesFound;
 }
 // ----------------------------------------------------------
-public ClassAnalyzer(ClassLoader classLoader, List<URL> xclassPath)
+public ClassAnalyzer(ClassLoader classLoader, List<JarURL> xclassPath)
 {
 	classPath = new TreeSet();
-	for (URL url : xclassPath) classPath.add(ReflectUtils.getLeaf(url));
+	for (JarURL url : xclassPath) classPath.add(url.getName());
 	this.classLoader = classLoader;
 
 	classesSeen = new TreeSet();	// Classes yet to be processed
@@ -170,7 +169,7 @@ public ClassAnalyzer(ClassLoader classLoader, List<URL> xclassPath)
 	objectsExplored = new HashSet();
 }
 // ----------------------------------------------------------
-public ClassAnalyzer(ClassLoader classLoader, List<URL> xclassPath,
+public ClassAnalyzer(ClassLoader classLoader, List<JarURL> xclassPath,
 Set<String> classesSeen)
 // Start with an initial classesSeen set...
 {
@@ -312,15 +311,19 @@ String className)
 {
 System.out.println("Analyzing class: " + className);
 	boolean found = false;
-	URL url = classLoader.getResource(ReflectUtils.classToResource(className));
-	if (url != null) {
-System.out.println("     Found URL: " + url);
+	URL uurl = classLoader.getResource(ReflectUtils.classToResource(className));
+	JarURL url = null;
+	if (uurl != null) {
+		url = new JarURL(uurl);
+System.out.println("     Found JarURL: " + url);
 		// We found the class, see if it's from a JAR file on our classpath.
 		String surl = url.toString();
 		int exp = surl.lastIndexOf('!');
 		int slash = surl.lastIndexOf('/', exp-1);
 		String jarName = surl.substring(slash+1, exp);
-		if (classPath.contains(jarName)) found = true;
+		int dash = jarName.indexOf('-');
+		String name = (dash < 0 ? jarName : jarName.substring(0,dash));
+		if (classPath.contains(name)) found = true;
 	}
 	
 	if (!found) {
@@ -329,7 +332,7 @@ System.out.println("     Found URL: " + url);
 		classesNotFound.add(className);
 	} else {
 		try {
-			InputStream in = url.openStream();
+			InputStream in = url.getUrl().openStream();
 			analyzeOneClass(in);
 			in.close();
 			classesFound.add(className);
@@ -411,7 +414,7 @@ System.out.println("Analyzing Object: " + obj);
 }
 // ---------------------------------------------------
 /** This is the main function to call by user. */
-public static Set analyzeObject(Object o, ClassLoader loader, List<URL> xclassPath)
+public static Set analyzeObject(Object o, ClassLoader loader, List<JarURL> xclassPath)
 {
 	ClassAnalyzer ca = new ClassAnalyzer(loader, xclassPath);
 	ca.addClassesSeen(o.getClass());
@@ -427,7 +430,15 @@ public static void main(String[] args)
 throws ClassAnalyzerException, IOException
 {
 	URLClassLoader loader = (URLClassLoader)ClassAnalyzer.class.getClassLoader();
-	List<URL> classPath = ClassPathTest.getClassPath(loader);
+	List<JarURL> fullCP = ClassPathTest.getClassPath(loader);
+	
+	ClassPathTest.subtractCP(loader, fullCP, "jooreports", "jasperreports");
+	
+	for (JarURL url : fullCP) {
+		System.out.println(url);
+	}
+	System.exit(0);
+//	List<JarURL> classPath = ClassPathTest.getClassPath(loader);
 	
 //find pocono.jar in the classpath and eliminate it witha another getClassPath() starting on it.,
 	
@@ -440,7 +451,8 @@ throws ClassAnalyzerException, IOException
 ////	cp.add("/home/citibob/prg/nsandbox/classes");
 //	cp.add(".");
 
-	ClassAnalyzer ca = new ClassAnalyzer(loader, classPath);
+
+	ClassAnalyzer ca = new ClassAnalyzer(loader, fullCP);
 	ca.addObjectsSeen(new MyTest());
 
 	ca.analyzeObjectsSeen();		// See what objects we will need to serialize

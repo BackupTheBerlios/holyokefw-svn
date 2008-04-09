@@ -218,6 +218,12 @@
     <version>1.4.0</version>
 </dependency>
 
+    <dependency>
+            <groupId>org.citibob</groupId>
+            <artifactId>jserial</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
 
 
 

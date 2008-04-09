@@ -7,6 +7,8 @@ import citibob.licensor.MakeNbm;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+import citibob.mobilecode.MobileCodeClient;
+import citibob.mobilecode.MobileCodeServer;
 import citibob.reflect.ClassAnalyzer;
 import citibob.reflect.ClassPathTest;
 import citibob.util.IndexSet;
@@ -36,6 +38,8 @@ public static void main(String[] args) throws Exception {
 //System.exit(0);
 
 	AppLauncher.launch("holyokefw", new Class[] {
+		MobileCodeServer.class,
+		MobileCodeClient.class,
 		ClassAnalyzer.class,
 		ClassPathTest.class,
 		IndexSet.class,

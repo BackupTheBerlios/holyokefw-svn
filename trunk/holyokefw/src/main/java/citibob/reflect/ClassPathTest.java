@@ -11,11 +11,14 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class ClassPathTest {
 	
@@ -24,7 +27,7 @@ static final int ST_INIT = 0;
 static final int ST_INCP = 1;
 	
 /** Adds to a classpath the stuff found in the Class-Path of a manifest file. */
-public static void getClassPath(URL jarURL, List<JarURL> out)
+public static void getClassPath(URL jarURL, Collection<JarURL> out)
 throws MalformedURLException, IOException
 {
 //	List<JarURL> urls = new LinkedList();
@@ -70,7 +73,7 @@ throws MalformedURLException, IOException
 
 /** Recursively gets classpath, looking into all MANIFEST files. 
  Starts from a base classpath of jar files. */
-public static void expandClassPath(URLClassLoader loader, List<JarURL> base, List<JarURL> out)
+public static void expandClassPath(URLClassLoader loader, List<JarURL> base, Collection<JarURL> out)
 throws MalformedURLException, IOException
 {
 	// Look at each item nominally on classloader's classpath
@@ -107,9 +110,36 @@ static void eliminateDups(List<JarURL> urls)
 	}
 }
 
-///** Computes A - B */
-//static void subtractCP(List<JarURL> aa, List<JarURL> bb)
-//{
+public static void subtractCP(URLClassLoader loader, List<JarURL> aa, String... jarFiles)
+throws MalformedURLException, IOException
+{
+	TreeSet<String> set = new TreeSet();
+	for (String name : jarFiles) set.add(name);
+	subtractCP(loader, aa, set);
+}
+	/** Computes A - B */
+static void subtractCP(URLClassLoader loader, List<JarURL> aa, Set<String> jarFiles)
+throws MalformedURLException, IOException
+{
+	// Find jarFiles in aa
+	List<JarURL> base = new LinkedList();
+	for (JarURL url : aa) {
+		if (jarFiles.contains(url.getName())) base.add(url);
+	}
+
+	// Expand to all dependencies
+	SortedSet<JarURL> fullJarFiles = new TreeSet();
+	expandClassPath(loader, base, fullJarFiles);
+	
+	
+	// Remove fullJarFiles from aa
+	List<JarURL> out = new LinkedList();
+	for (Iterator<JarURL> ii = aa.iterator(); ii.hasNext();) {
+		JarURL url = ii.next();
+		if (fullJarFiles.contains(url)) ii.remove();
+	}
+	
+//	
 //	Set<URL> bbset = new HashSet();
 //	for (URL url : bb) bbset.add(url);
 //	for (Iterator<URL> ii = urls.iterator(); ii.hasNext(); ) {
@@ -120,9 +150,9 @@ static void eliminateDups(List<JarURL> urls)
 //			set.add(url);
 //		}
 //	}
-//}
+}
 
-static List<JarURL> getClassPath(URLClassLoader loader)
+public static List<JarURL> getClassPath(URLClassLoader loader)
 throws MalformedURLException, IOException
 {
 	List<JarURL> out = new LinkedList();
