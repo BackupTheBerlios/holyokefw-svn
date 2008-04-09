@@ -109,7 +109,6 @@ public class SerializationContext {
 			buffer.writeByte(SerializationConstants.NULL_BLOCK);
 			return;
 		}
-		sfilter.pushObj(obj);
 		Integer objectId = (Integer)objectToId.get(obj);
 		if(objectId == null) {
 			serializeNewObject(obj, buffer);
@@ -117,10 +116,10 @@ public class SerializationContext {
 			buffer.writeByte(SerializationConstants.OBJECT_REF_BLOCK);
 			buffer.writeInt(objectId.intValue());
 		}
-		sfilter.popObj(obj);
 	}	
 	
 	private void serializeNewObject(Object obj, DataOutput buffer) throws IOException {
+		sfilter.pushObj(obj);
 		Class clazz = obj.getClass();
 		Serializer serializer = generator.getSerializer(clazz);
 		Integer classId = (Integer)classToId.get(clazz);
@@ -141,6 +140,7 @@ public class SerializationContext {
 		buffer.writeInt(classId.intValue());
 		serializer.serializeInstanceInfo(obj, buffer, this);
 		serializer.serialize(obj, buffer, this);
+		sfilter.popObj(obj);
 	}
 	
 	/**

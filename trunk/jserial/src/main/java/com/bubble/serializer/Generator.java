@@ -114,10 +114,13 @@ ClassPool newClassPool()
 	ClassPath cp = new ClassPath() {
 		public void close() { }
 		public java.net.URL find(String classname) {
-			System.out.println("ClassPath classname = " + classname);
+//			URL url = super.find(classname);
+//			if (url != null) return url;
+	
+			//System.out.println("ClassPath classname = " + classname);
 			String slashName = classname.replace('.', '/') + ".class";
 			URL url = classloader.getResource(slashName);
-//System.out.println("ClassPath.find(" + classname + ") = " + url);
+System.out.println("ClassPath.find(" + classname + ") = " + url);
 			return url;
 		}
 		public InputStream openClassfile(String classname) {
@@ -130,8 +133,9 @@ ClassPool newClassPool()
 	return cpp;
 }
 	private CtClass createSerializationClass(String className, boolean deserializer) {
-//		ClassPool cp = ClassPool.getDefault();		
-		ClassPool cp = newClassPool();
+//		ClassPool cp = (deserializer ? newClassPool() : ClassPool.getDefault());
+//		ClassPool cp = newClassPool();
+		ClassPool cp = ClassPool.getDefault();
 
 		CtClass cl = cp.makeClass(className+"$__"+(deserializer?"DE":"")+"SERIALIZER__");
 		
@@ -146,14 +150,17 @@ ClassPool newClassPool()
 	}
 	
 	private void setSuperclass(CtClass cl, Class superClass, boolean deserializer) {
-//		ClassPool cp = ClassPool.getDefault();		
-		ClassPool cp = newClassPool();
-
+//		ClassPool cp = (deserializer ? newClassPool() : ClassPool.getDefault());
+//		ClassPool cp = newClassPool();
+		ClassPool cp = ClassPool.getDefault();		
+System.out.println("setSuperclass(" + superClass + ")");
 		Class sp = (deserializer?(Object)getDeserializer(superClass):(Object)getSerializer(superClass)).getClass();
 		try {
 			cl.setSuperclass(cp.get(sp.getName()));
 		} catch (NotFoundException e) {
-			throw new NoClassDefFoundError("Could not find Serializer interface");
+			Error e2 = new NoClassDefFoundError("Could not find Serializer interface");
+			e2.initCause(e);
+			throw e2;
 		} catch (CannotCompileException e) {
 			throw new GeneratorRuntimeException("Could not generate serializer for subclass of "+superClass.getName(), e);
 		}
@@ -235,8 +242,12 @@ System.out.println("body = " + body);
 			throw new IllegalArgumentException("Class "+clazz.getName()+ " is not Serializable");
 		}
 		
-		boolean hasSerialSuper = Serializable.class.isAssignableFrom(clazz.getSuperclass()); 
-		
+		Class superClass = clazz.getSuperclass();
+//		boolean hasSerialSuper = (
+//			Serializable.class.isAssignableFrom(superClass)
+//			&& !superClass.isInterface()); 
+		boolean hasSerialSuper = Serializable.class.isAssignableFrom(superClass);
+System.out.println("hasSerialSuper(superclass " + superClass.getName() + ") = " + hasSerialSuper);
 		String className = clazz.getName();
 		
 		CtClass cl = createSerializationClass(className, false);
@@ -475,7 +486,12 @@ System.out.println("body = " + body);
 			throw new IllegalArgumentException("Class "+clazz.getName()+ " is not Serializable");
 		}
 		
-		boolean hasSerialSuper = Serializable.class.isAssignableFrom(clazz.getSuperclass()); 
+//		boolean hasSerialSuper = Serializable.class.isAssignableFrom(clazz.getSuperclass()); 
+		Class superClass = clazz.getSuperclass();
+		boolean hasSerialSuper = Serializable.class.isAssignableFrom(superClass);
+//		boolean hasSerialSuper = (
+//			Serializable.class.isAssignableFrom(superClass)
+//			&& !superClass.isInterface()); 
 		
 		String className = clazz.getName();		
 		

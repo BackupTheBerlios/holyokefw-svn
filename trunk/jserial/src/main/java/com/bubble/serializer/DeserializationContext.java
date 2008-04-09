@@ -125,11 +125,17 @@ public class DeserializationContext {
 					
 					Object result = ds.instantiate(buffer, this);					
 					sfilter.pushObj(result);
-					if (sfilter.saveObj(result)) 
-						idToObject.put(new Integer(nextObjectId++), result);					
+					boolean saved = sfilter.saveObj(result);
+					if (saved)  {
+//if (result.toString().equals("CusipExchTS(null, null)")) {
+//	System.out.println("hoi");
+//}
+						idToObject.put(new Integer(nextObjectId++), result);
+					}
 //System.out.println(result.getClass() + " " + ds.getClass());
 					ds.deserialize(result, buffer, this);										
 					sfilter.popObj(result);
+//if (saved) System.out.println("Saving Object: " + result);
 					return result;
 				}
 				
