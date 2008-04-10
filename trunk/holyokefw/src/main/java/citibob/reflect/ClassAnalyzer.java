@@ -282,7 +282,7 @@ throws ClassAnalyzerException, IOException
 	for (int i = 0; i < ia.length; i++) {
 		int idx = ia[i];
 		String s = cp.getString(idx);
-System.out.println("classInfo[" + i + "] = " + s);
+//System.out.println("classInfo[" + i + "] = " + s);
 		if (s == null) continue;
 
 		// Look for arrays. Only process arrays of objects
