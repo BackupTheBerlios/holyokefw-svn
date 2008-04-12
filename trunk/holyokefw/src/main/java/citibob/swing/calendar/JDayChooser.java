@@ -759,7 +759,7 @@ public void  mouseReleased(MouseEvent e)
      *
      * @param s The command line arguments
      */
-    public static void main(String[] s) {
+    public static void main(String[] s) throws Exception {
         JFrame frame = new JFrame("JDayChooser");
         frame.getContentPane().add(new JDayChooser());
         frame.pack();

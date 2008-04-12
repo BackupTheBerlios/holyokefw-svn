@@ -119,9 +119,11 @@ public JTypeTableModel setModelU(JTypeTableModel jtModel,
 		JType sqlType = jtModel.getJType(0,bcol);
 		if (sqlType == null) continue;
 		String colName = jtModel.getColumnName(bcol);
-		Swinger swing = smap.newSwinger(sqlType, colName);
-		if (swing == null) continue;
-		setRenderEdit(c, swing);
+		if (smap != null) {
+			Swinger swing = smap.newSwinger(sqlType, colName);
+			if (swing == null) continue;
+			setRenderEdit(c, swing);
+		}
 	}
 	
 	return jtModel;

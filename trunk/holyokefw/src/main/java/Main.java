@@ -11,6 +11,9 @@ import citibob.mobilecode.MobileCodeClient;
 import citibob.mobilecode.MobileCodeServer;
 import citibob.reflect.ClassAnalyzer;
 import citibob.reflect.ClassPathTest;
+import citibob.swing.calendar.JDayChooser;
+import citibob.swing.typed.JKeyedMulti;
+import citibob.swing.typed.JKeyedMultiPanel;
 import citibob.util.IndexSet;
 
 /**
@@ -38,6 +41,9 @@ public static void main(String[] args) throws Exception {
 //System.exit(0);
 
 	AppLauncher.launch("holyokefw", new Class[] {
+		JKeyedMulti.class,
+		JKeyedMultiPanel.class,
+		JDayChooser.class,
 		MobileCodeServer.class,
 		MobileCodeClient.class,
 		ClassAnalyzer.class,

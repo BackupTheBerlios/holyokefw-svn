@@ -46,7 +46,7 @@ Object value;
 //JType jType;
 Object segment = null;		// Only show items from the current segment
 
-static final Object NULL = new Object();
+public static final Object NULL = new Object();
 // ------------------------------------------------------
 public JKeyedComboBox()
 {

@@ -74,29 +74,33 @@ Preferences prefs;
 		bLaunchDefault.requestFocus();
 	}
 
-	void launchClass(Class klass)
+	void launchClass(final Class klass)
 	{
-		prefs.put("defaultClass", klass.getName());
-		try {
-			System.out.println(klass);
-			System.err.println(klass);
-			Method[] meths = klass.getMethods();
-			for (int i=0; ; ++i) {
-				if (i == meths.length) throw new Exception(
-					"No main() method found in " + klass);
-				if ("main".equals(meths[i].getName())) {
-					setVisible(false);
-					meths[i].invoke((Object)null, new String[]{null});
-					break;
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+			prefs.put("defaultClass", klass.getName());
+			try {
+				System.out.println(klass);
+				System.err.println(klass);
+				Method[] meths = klass.getMethods();
+				for (int i=0; ; ++i) {
+					if (i == meths.length) throw new Exception(
+						"No main() method found in " + klass);
+					if ("main".equals(meths[i].getName())) {
+						setVisible(false);
+						meths[i].invoke((Object)null, new String[]{null});
+						break;
+					}
 				}
+			} catch(Exception e) {
+				Throwable cause = e.getCause();
+				//e.printStackTrace(System.out);
+				if (cause == null) e.printStackTrace();
+				else cause.printStackTrace(System.err);
 			}
-		} catch(Exception e) {
-			Throwable cause = e.getCause();
-			//e.printStackTrace(System.out);
-			cause.printStackTrace(System.err);
-		}
-		System.out.println("====== Done running " + klass);
-		System.exit(-1);
+			System.out.println("====== Done running " + klass);
+			if (!(java.awt.Component.class.isAssignableFrom(klass))) System.exit(-1);
+		}});
 	}
 
 	

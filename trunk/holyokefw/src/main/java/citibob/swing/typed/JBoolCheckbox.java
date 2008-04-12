@@ -61,6 +61,10 @@ public void setValue(Object d)
 	Object oldVal = val;
 	val = (Boolean)d;
 	setSelected(val.booleanValue());
+//System.out.println("JBoolCheckbox.firePropertyChange(" + oldVal + ", " + val + ")");
+//if (val == true) {
+//	System.out.println("hoi");
+//}
 	firePropertyChange("value", oldVal, val);
 }
 
