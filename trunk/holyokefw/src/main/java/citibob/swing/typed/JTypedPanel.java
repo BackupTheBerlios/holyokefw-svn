@@ -38,7 +38,7 @@ extends javax.swing.JPanel implements TypedWidget, java.beans.PropertyChangeList
  Often, this will be a JTypedSelectTable. */
 private TypedWidget sub;
 
-java.beans.PropertyChangeListener listener;
+//java.beans.PropertyChangeListener listener;
 
 public TypedWidget getSubWidget() { return sub; }
 public void setSubWidget(TypedWidget xsub)
