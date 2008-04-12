@@ -27,7 +27,13 @@ This REALLY IS different from SqlEnum!!! */
 public class JEnum implements JType
 {
 	protected KeyedModel kmodel;
-	
+	protected JType baseJType = JavaJType.jtInteger;
+
+	/** nullText = string to use for null value, or else <null> if this is not nullable. */
+	public JEnum(JType baseJType, KeyedModel kmodel) {
+		this.baseJType = baseJType;
+		this.kmodel = kmodel;
+	}
 	/** nullText = string to use for null value, or else <null> if this is not nullable. */
 	public JEnum(KeyedModel kmodel) {
 		this.kmodel = kmodel;
@@ -38,6 +44,9 @@ public class JEnum implements JType
 	}
 	public KeyedModel getKeyedModel() { return kmodel; }
 	public Object getSegment() { return null; }
+
+	/** Returns the type of the elemnts of the enumeration; usually JavaJType.jtInteger. */
+	public JType getBaseJType() { return baseJType; }
 	
 	/** Java class used to represent this type */
 	public Class getObjClass()

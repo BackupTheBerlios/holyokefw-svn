@@ -142,6 +142,10 @@ Maker maker;
 	public Swinger newSwinger(JType jType) {
 		return new JEnumSwinger((JEnum)jType);
 	}});
+	this.addMaker(JEnumMulti.class, new BaseSwingerMap.Maker() {
+	public Swinger newSwinger(JType jType) {
+		return new JEnumMultiSwinger((JEnumMulti)jType);
+	}});
 	
 	// =========== SQL Types
 	// SqlNumeric
