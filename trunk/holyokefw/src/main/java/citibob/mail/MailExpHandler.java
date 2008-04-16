@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.mail;
 
 import citibob.app.App;
+import citibob.task.AppError;
+import citibob.task.FatalAppError;
 import citibob.task.*;
 import java.io.*;
 import javax.mail.*;
@@ -93,10 +95,13 @@ public class MailExpHandler implements ExpHandler
 		
 		// Let user fiddle with the stack trace
 		boolean askUser = app.props().getProperty("mail.bugs.askuser").toLowerCase().equals("true");
+		askUser = askUser && !(e instanceof AppError);
 		final MailExpDialog dialog = new MailExpDialog(null, programName,
 			e, msgText, askUser,
 			app.userRoot().node("MailExpDialog"));
 		dialog.setVisible(true);
+
+		if (e instanceof FatalAppError) System.exit(-1);
 		if (askUser && !dialog.isReportError()) return;
 		
 

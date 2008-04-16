@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.mail;
 
+import citibob.task.AppError;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.prefs.*;
@@ -44,20 +45,25 @@ public String getMsg() { return taMessage.getText(); }
 	{
         super(parent, true);
         initComponents();
-		
+
 		if (!askUser) this.bReportError.setVisible(false);
 		
 		summary.setBackground(jPanel4.getBackground());
 		taMessage.setText(expText);
-		
-		summary.setText(
-			"<p>" + progName + " has encountered an error.  " +
-			(askUser ? "Please press \"Report Error\"" +
-			" below to help improve this application." :
-			"Details will be reported, to help improve this application.") +
-			"</p><br>" +
-			"<b>" + exp.getClass().getSimpleName() + "</b>: " + exp.getMessage() +
-			"<br>");
+
+		if (exp instanceof AppError) {
+			summary.setText(
+				"<p>" + exp.getMessage() + "</p>");
+		} else {
+			summary.setText(
+				"<p>" + progName + " has encountered an error.  " +
+				(askUser ? "Please press \"Report Error\"" +
+				" below to help improve this application." :
+				"Details will be reported, to help improve this application.") +
+				"</p><br>" +
+				"<b>" + exp.getClass().getSimpleName() + "</b>: " + exp.getMessage() +
+				"<br>");
+		}
 		pack();
 		
 		// Mess with preferences
