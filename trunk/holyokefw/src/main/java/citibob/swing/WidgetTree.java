@@ -31,6 +31,8 @@ public class WidgetTree
 
 public static Component getRoot(Component c)
 {
+	if (c == null) return null;
+	
     // Get root parent
     Component root = c;
     while (root.getParent() != null) root = root.getParent();
