@@ -169,7 +169,7 @@ public static File getMavenProjectRoot()
 	String surl = urls[0].toString();
 	surl = surl.substring("file:/".length());
 	int target = surl.indexOf("/target/");
-	surl = surl.substring(0,target);
+	surl = "/" + surl.substring(0,target);
 	return new File(surl.replace('/', File.separatorChar));
 }
 public static void main(String[] args) throws Exception
