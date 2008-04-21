@@ -44,7 +44,8 @@ DBPrefsTableModel model;
 boolean okPressed;
 
     /** Creates new form DBPrefsDialog */
-    public DBPrefsDialog(java.awt.Frame parent, Preferences pref, Preferences guiPref)
+    public DBPrefsDialog(java.awt.Frame parent, Preferences pref,
+		SwingPrefs swingPrefs, Preferences guiPref)
 	throws BackingStoreException {
         super(parent, "Database Connection", true);
         initComponents();
@@ -67,7 +68,7 @@ boolean okPressed;
 		}});
 
 		// Save GUI Preferences preferences
-		new SwingPrefs().setPrefs(this, "", guiPref);
+		swingPrefs.setPrefs(this, guiPref);
 
     }
 

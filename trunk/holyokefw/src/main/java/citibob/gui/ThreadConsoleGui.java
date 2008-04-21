@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.gui;
 
+import citibob.swing.prefs.SwingPrefs;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.text.*;
@@ -60,7 +61,7 @@ public class ThreadConsoleGui extends javax.swing.JFrame {
 Thread thread;
 DocumentWriter logWriter;
 
-public void initRuntime(Thread thread, String title)
+public void initRuntime(Thread thread, SwingPrefs swingPrefs, String title)
 {
 	setTitle(title);
 	this.thread = thread;
@@ -84,7 +85,7 @@ public void initRuntime(Thread thread, String title)
 	
 	
 	Preferences prefs = Preferences.userNodeForPackage(thread.getClass());
-	new citibob.swing.prefs.SwingPrefs().setPrefs(this, "", prefs);
+	swingPrefs.setPrefs(this, prefs);
 }
 	/** This method is called from within the constructor to
 	 * initialize the form.

@@ -48,7 +48,7 @@ public class SwingWizard extends Wizard {
 protected java.awt.Frame frame;
 //protected App app;
 java.util.prefs.Preferences wizardPref;		// Root node for this wizard
-SwingPrefs swingPrefs = new SwingPrefs();	// Could change this if we like
+SwingPrefs swingPrefs; // = new SwingPrefs();	// Could change this if we like
 
 
 
@@ -78,6 +78,7 @@ public SwingWizard(String wizardName, App app, java.awt.Frame frame)
 //	this.startState = startState;
 //	states = new HashMap();
 	wizardPref = app.userRoot().node("wizard").node(wizardName);
+	swingPrefs = app.swingPrefs();
 //	this.app = app;
 }
 
@@ -86,7 +87,7 @@ public Wiz createWiz(WizState state, Wizard.Context con) throws Exception
 	// Overridden to post-process wiz after it's created
 	Wiz wiz = super.createWiz(state, con);
 	Preferences wizPref = wizardPref.node(state.getName());
-	swingPrefs.setPrefs((Component)wiz, "", wizPref);
+	swingPrefs.setPrefs((Component)wiz, wizPref);
 	return wiz;
 }
 

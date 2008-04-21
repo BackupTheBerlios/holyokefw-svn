@@ -33,5 +33,5 @@ import java.util.prefs.*;
  */
 public interface SwingPrefSetter {
 	/** Use prefix.xxx as name for our preferences. */
-	void setPrefs(Component c, String prefix, Preferences prefs);
+	void setPrefs(Component c, Preferences prefs);
 }

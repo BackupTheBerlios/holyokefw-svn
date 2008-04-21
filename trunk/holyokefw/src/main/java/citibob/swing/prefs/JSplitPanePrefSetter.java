@@ -29,26 +29,29 @@ import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.table.*;
 import java.beans.*;
+import java.util.Map;
 
 /**
  *
  * @author citibob
  */
-public class JSplitPanePrefSetter implements SwingPrefSetter {
+public class JSplitPanePrefSetter extends BasePrefSetter {
+public JSplitPanePrefSetter(Map<String,String> baseVals)
+	{ super(baseVals); }
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component comp, final String prefix, final Preferences prefs)
+public void setPrefs(Component comp, final Preferences prefs)
 {
 	final JSplitPane pane = (JSplitPane)comp;
 
 	pane.setDividerLocation(
-		prefs.getInt(prefix + ".dividerLocation",
+		getInt(prefs, "dividerLocation",
 		pane.getDividerLocation()));
 
 	pane.addPropertyChangeListener(
 	new PropertyChangeListener() {
 	public void propertyChange(PropertyChangeEvent e) {
 		if ("dividerLocation".equals(e.getPropertyName())) {
-			prefs.putInt(prefix + ".dividerLocation",
+			putInt(prefs, "dividerLocation",
 				pane.getDividerLocation());
 		}
 	}});

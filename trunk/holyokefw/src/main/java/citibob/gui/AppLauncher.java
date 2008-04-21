@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.gui;
 
 
+import citibob.swing.prefs.SwingPrefs;
 import citibob.text.ClassSFormat;
 import java.awt.Dimension;
 import java.lang.reflect.Method;
@@ -63,7 +64,7 @@ Preferences prefs;
 		prefs = Preferences.userRoot().node("AppLauncher").node(projectName);
 //			userNodeForPackage(getClass()).node("AppLauncher");
 		this.setSize(new Dimension(400, 600));
-		new citibob.swing.prefs.SwingPrefs().setPrefs(this, "", prefs);
+		new SwingPrefs(null).setPrefs(this, prefs);
 		
 		// Populate our default class from last time...
 		lDefaultClass.setJType(Class.class, new ClassSFormat());

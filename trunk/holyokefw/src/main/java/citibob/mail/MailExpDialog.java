@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.mail;
 
+import citibob.swing.prefs.SwingPrefs;
 import citibob.task.AppError;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -41,7 +42,8 @@ public String getMsg() { return taMessage.getText(); }
 
     /** Creates new form AuthenticatorDialog */
     public MailExpDialog(java.awt.Frame parent, String progName,
-	Throwable exp, String expText, boolean askUser, Preferences prefNode)
+	Throwable exp, String expText, boolean askUser,
+	SwingPrefs swingPrefs, Preferences prefNode)
 	{
         super(parent, true);
         initComponents();
@@ -68,7 +70,8 @@ public String getMsg() { return taMessage.getText(); }
 		
 		// Mess with preferences
 		this.setName("dialog");
-		if (prefNode != null) new citibob.swing.prefs.SwingPrefs().setPrefs(this, prefNode);
+		if (prefNode != null) swingPrefs.setPrefs(this, prefNode);
+//		if (prefNode != null) new citibob.swing.prefs.SwingPrefs().setPrefs(this, prefNode);
     }
 
 	/** Really primitive version, for before we're fully initialized. */

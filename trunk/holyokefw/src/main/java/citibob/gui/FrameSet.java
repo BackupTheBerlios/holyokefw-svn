@@ -53,9 +53,9 @@ public FrameSet(SwingPrefs swingPrefs, Preferences prefsRoot) {
 	this.prefsRoot = prefsRoot;
 	map = new TreeMap();
 }
-public FrameSet(Preferences prefsRoot) {
-	this(new SwingPrefs(), prefsRoot);		// Use default SwingPrefs
-}
+//public FrameSet(Preferences prefsRoot) {
+//	this(new SwingPrefs(), prefsRoot);		// Use default SwingPrefs
+//}
 
 public void addMaker(String frameName, Maker frameMaker)
 {
@@ -113,7 +113,7 @@ public JFrame getFrame(String frameName) throws Exception
 	rec.frame = newFrame(rec);
 	rec.frame.pack();
 	if (swingPrefs != null) {
-		swingPrefs.setPrefs(rec.frame, "", prefsRoot.node("frame-" + rec.name));
+		swingPrefs.setPrefs(rec.frame, prefsRoot.node("frame-" + rec.name));
 	}
 	return rec.frame;
 }

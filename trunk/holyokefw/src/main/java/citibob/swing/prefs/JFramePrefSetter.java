@@ -27,21 +27,24 @@ import java.awt.*;
 import java.util.prefs.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.Map;
 
 /**
  *
  * @author citibob
  */
-public class JFramePrefSetter implements SwingPrefSetter {
+public class JFramePrefSetter extends BasePrefSetter {
+public JFramePrefSetter(Map<String,String> baseVals)
+	{ super(baseVals); }
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component c, final String prefix, final Preferences prefs)
+public void setPrefs(Component c, final Preferences prefs)
 {
 	final JFrame cc = (JFrame)c;
 
 	// Set our own parameters from the preferences
 	Dimension sz = cc.getSize();
-	sz.width = prefs.getInt(prefix + ".size.width", sz.width);
-	sz.height = prefs.getInt(prefix + ".size.height", sz.height);
+	sz.width = getInt(prefs, "size.width", sz.width);
+	sz.height = getInt(prefs, "size.height", sz.height);
 	cc.setSize(sz);
 //System.out.println("JFrame: got size = " + sz);
     
@@ -49,8 +52,8 @@ public void setPrefs(Component c, final String prefix, final Preferences prefs)
 	cc.addComponentListener(new ComponentAdapter() {
 	public void componentResized(ComponentEvent e) {
 		Dimension sz = cc.getSize();
-		prefs.putInt(prefix + ".size.width", sz.width);
-		prefs.putInt(prefix + ".size.height", sz.height);
+		putInt(prefs, "size.width", sz.width);
+		putInt(prefs, "size.height", sz.height);
 //System.out.println("Setting size: " + prefix + " = " + sz);
 	}});
 }

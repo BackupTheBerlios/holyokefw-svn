@@ -28,17 +28,22 @@ import java.util.prefs.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Map;
 
 /**
  *
  * @author citibob
  */
-public class JFileChooserPrefSetter implements SwingPrefSetter {
+public class JFileChooserPrefSetter extends BasePrefSetter {
+public JFileChooserPrefSetter(Map<String,String> baseVals)
+	{ super(baseVals); }
+
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component comp, final String prefix, final Preferences prefs)
+public void setPrefs(Component comp, final Preferences prefs)
 {
 	final JFileChooser chooser = (JFileChooser)comp;
-	String curDir = prefs.get(prefix + ".currentDirectory", null);
+//	String curDir = prefs.get("currentDirectory", null);
+	String curDir = getString(prefs, "currentDirectory", null);
 	if (curDir != null) chooser.setCurrentDirectory(new File(curDir));
 
 	// Hack: save the preferences whenever mouse enters this component.	
@@ -46,7 +51,7 @@ public void setPrefs(Component comp, final String prefix, final Preferences pref
 	chooser.addMouseListener(new MouseAdapter() {
 	public void mouseExited(MouseEvent e) {
 		File fCurDir = chooser.getCurrentDirectory();
-		prefs.put(prefix + ".currentDirectory", fCurDir.toString());
+		putString(prefs, "currentDirectory", fCurDir.toString());
 	}});
 }
 

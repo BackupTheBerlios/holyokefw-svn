@@ -29,7 +29,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import citibob.exception.*;
 import java.util.prefs.*;
-import citibob.swing.prefs.*;
 import java.util.*;
 
 /**
@@ -42,23 +41,22 @@ HashMap settersType;		// type --> SwingPrefSetter
 //HashMap objs;		// Individual objects --> SwingPrefSetter; however, we might need to use a HashMap that compares actual pointers.
 HashMap nullCount;	// component type --> # we've seen; to generate names	
 
-public SwingPrefs()
+public SwingPrefs(Map<String,String> baseVals)
 {
+	if (baseVals == null) baseVals = new TreeMap();
+	
 	settersType = new HashMap();
-	settersType.put(JFrame.class, new JFramePrefSetter());
-	settersType.put(JDialog.class, new JDialogPrefSetter());
-	settersType.put(JTable.class, new JTablePrefSetter());
-	settersType.put(JSplitPane.class, new JSplitPanePrefSetter());
-	settersType.put(JFileChooser.class, new JFileChooserPrefSetter());
+	settersType.put(JFrame.class, new JFramePrefSetter(baseVals));
+	settersType.put(JDialog.class, new JDialogPrefSetter(baseVals));
+	settersType.put(JTable.class, new JTablePrefSetter(baseVals));
+	settersType.put(JSplitPane.class, new JSplitPanePrefSetter(baseVals));
+	settersType.put(JFileChooser.class, new JFileChooserPrefSetter(baseVals));
 }
 
 public void setPrefs(Component c, Preferences prefs)
-{ setPrefs(c, "", prefs); }
-
-public void setPrefs(Component c, String prefix, Preferences prefs)
 {
 	nullCount = new HashMap();
-	setPrefsRecurse(c, prefix + ".", prefs);
+	setPrefsRecurse(c, prefs);
 }
 
 public SwingPrefSetter getSetter(Class c)
@@ -73,7 +71,7 @@ public SwingPrefSetter getSetter(Class c)
 
 /** Loads preferences for an entire widget tree.  Also sets listeners
  * so they will be saved as they change. */
-private void setPrefsRecurse(Component c, String prefix, Preferences prefs)
+private void setPrefsRecurse(Component c, Preferences prefs)
 {
 	SwingPrefSetter setter = getSetter(c.getClass());
 	if (setter != null || c instanceof PrefWidget) {
@@ -97,19 +95,18 @@ private void setPrefsRecurse(Component c, String prefix, Preferences prefs)
 		}
 
 		prefs = prefs.node(name);
-		prefix = "";
 
 		// Take care of yourself
 //System.out.println("Setting Pref (node = " + prefs.absolutePath() + ") for " + c);
-		if (setter != null) setter.setPrefs(c, prefix, prefs);
-		else ((PrefWidget)c).setPrefs(prefix, prefs);
+		if (setter != null) setter.setPrefs(c, prefs);
+		else ((PrefWidget)c).setPrefs(prefs);
 	}
 
 	// Take care of your children
 	if (c instanceof Container) {
 	    Component[] child = ((Container)c).getComponents();
 	    for (int i = 0; i < child.length; ++i) {
-			setPrefsRecurse(child[i], prefix, prefs);
+			setPrefsRecurse(child[i], prefs);
 		}
 	}
 }

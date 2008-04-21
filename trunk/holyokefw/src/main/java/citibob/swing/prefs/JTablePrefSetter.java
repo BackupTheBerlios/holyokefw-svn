@@ -26,6 +26,7 @@ package citibob.swing.prefs;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Map;
 import java.util.prefs.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -34,24 +35,26 @@ import javax.swing.table.*;
  *
  * @author citibob
  */
-public class JTablePrefSetter implements SwingPrefSetter {
+public class JTablePrefSetter extends BasePrefSetter {
+public JTablePrefSetter(Map<String,String> baseVals)
+	{ super(baseVals); }
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component comp, final String prefix, final Preferences prefs)
+public void setPrefs(Component comp, final Preferences prefs)
 {
 	final JTable table = (JTable)comp;
 
 	TableColumnModel cols = table.getColumnModel();
 	for (int i = 0; i < cols.getColumnCount(); ++i) {
 		TableColumn c = cols.getColumn(i);
-		final String propName = prefix + ".column[" + i + "]";
-		int w = prefs.getInt(propName + ".width", c.getWidth());
+		final String propName = "column[" + i + "]";
+		int w = getInt(prefs, propName + ".width", c.getWidth());
 		c.setPreferredWidth(w);
 //		c.setWidth(w);
 
 		c.addPropertyChangeListener(new PropertyChangeListener() {
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (!evt.getPropertyName().equals("width")) return;
-			prefs.putInt(propName + ".width", (Integer)evt.getNewValue());
+			putInt(prefs, propName + ".width", (Integer)evt.getNewValue());
 //			System.out.println(evt.getPropertyName() + "   " + evt.getNewValue());
 		}});
 
@@ -65,8 +68,8 @@ public void setPrefs(Component comp, final String prefix, final Preferences pref
 //		TableColumnModel cols = table.getColumnModel();
 //		for (int i = 0; i < cols.getColumnCount(); ++i) {
 //			TableColumn c = cols.getColumn(i);
-//			String propName = prefix + ".column[" + i + "]";
-//			prefs.putInt(propName + ".width", c.getWidth());
+//			String propName = "column[" + i + "]";
+//			putInt(prefs, propName + ".width", c.getWidth());
 //System.out.println("Changed pref: " + prefs.name() + " % " + propName + " to " + c.getWidth());
 //		}
 //	}};

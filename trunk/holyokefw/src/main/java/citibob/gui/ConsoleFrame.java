@@ -57,13 +57,13 @@ Document doc;
 
 public Document getDocument() { return doc; }
 
-public void initRuntime(String title, String guiNodePath)
+public void initRuntime(String title, SwingPrefs swingPrefs, String guiNodePath)
 {
 	Preferences guiPrefs = Preferences.userRoot();
 	guiPrefs = guiPrefs.node(guiNodePath);
-	initRuntime(title, guiPrefs);
+	initRuntime(title, swingPrefs, guiPrefs);
 }
-public void initRuntime(String title, Preferences guiPrefs)
+public void initRuntime(String title, SwingPrefs swingPrefs, Preferences guiPrefs)
 {
 	setTitle(title);
 	doc = new CircularPlainDocument(20000);
@@ -89,7 +89,7 @@ public void initRuntime(String title, Preferences guiPrefs)
 	
 	
 	// Save GUI Preferences preferences
-	new SwingPrefs().setPrefs(this, "", guiPrefs);
+	swingPrefs.setPrefs(this, guiPrefs);
 
 }
 	/** This method is called from within the constructor to
