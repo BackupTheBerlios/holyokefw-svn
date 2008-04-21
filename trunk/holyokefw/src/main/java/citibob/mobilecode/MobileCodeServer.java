@@ -21,7 +21,6 @@ import citibob.io.LoaderObjectInputStream;
 import citibob.objserver.NamedServerSocket;
 import java.net.*;
 import java.io.*;
-import java.lang.reflect.Constructor;
 
 public class MobileCodeServer implements Runnable
 {
@@ -154,6 +153,10 @@ public class MobileCodeServer implements Runnable
 			{
 				// Do nothing, just exit this query.
 				e.printStackTrace(System.out);
+				
+				try { socket.close(); } catch(IOException ioe) {
+//					ioe.printStackTrace(System.out);
+				}
 			}
 		}
 	}	// ObjNServerThread

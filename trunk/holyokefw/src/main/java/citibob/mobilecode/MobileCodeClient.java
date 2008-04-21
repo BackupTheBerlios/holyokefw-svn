@@ -7,7 +7,7 @@ package citibob.mobilecode;
 
 import citibob.objserver.NamedSocket;
 import citibob.reflect.ClassAnalyzer;
-import citibob.reflect.ClassPathTest;
+import citibob.reflect.ClassPathUtils;
 import citibob.reflect.JarURL;
 import citibob.reflect.ReflectUtils;
 import java.io.BufferedInputStream;
@@ -65,8 +65,8 @@ throws IOException
 {
 	// Get the classpath that the client does NOT share with the server.
 	URLClassLoader loader = (URLClassLoader)ClassAnalyzer.class.getClassLoader();
-	List<JarURL> classpath = ClassPathTest.getClassPath(loader);
-	ClassPathTest.subtractCP(loader, classpath, serverClasspath);
+	List<JarURL> classpath = ClassPathUtils.getClassPath(loader);
+	ClassPathUtils.subtractCP(loader, classpath, serverClasspath);
 
 System.out.println("Classpath...");
 for (JarURL jurl : classpath) System.out.println("    " + jurl.getName() + " = " + jurl.toString());

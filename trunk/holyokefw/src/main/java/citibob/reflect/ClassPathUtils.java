@@ -6,6 +6,7 @@
 package citibob.reflect;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -20,7 +21,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class ClassPathTest {
+public class ClassPathUtils {
 	
 
 static final int ST_INIT = 0;
@@ -160,9 +161,20 @@ throws MalformedURLException, IOException
 	eliminateDups(out);
 	return out;
 }
+
+public static File getMavenProjectRoot()
+{
+	URLClassLoader cl = (URLClassLoader)ClassPathUtils.class.getClassLoader();
+	URL[] urls = cl.getURLs();
+	String surl = urls[0].toString();
+	surl = surl.substring("file:/".length());
+	int target = surl.indexOf("/target/");
+	surl = surl.substring(0,target);
+	return new File(surl.replace('/', File.separatorChar));
+}
 public static void main(String[] args) throws Exception
 {
-	ClassLoader clMain = ClassPathTest.class.getClassLoader();
+	ClassLoader clMain = ClassPathUtils.class.getClassLoader();
 	System.out.println("====== Parent Classloaders");
 	for (ClassLoader loader = clMain; loader != null; loader = loader.getParent()) {
 		// Main classloader
@@ -193,6 +205,8 @@ public static void main(String[] args) throws Exception
 	System.out.println(clurl.findResource("META-INF/MANIFEST.MF"));
 	System.out.println(clurl.getResource("META-INF/MANIFEST.MF"));
 	
+	
+	System.out.println("Project Root = " + getMavenProjectRoot());
 	// Get the project directory from the URL of the main classpath
 	
 //	// Parse the manifest 

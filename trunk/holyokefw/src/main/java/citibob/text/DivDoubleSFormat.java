@@ -58,10 +58,11 @@ public DivDoubleSFormat(String fmtString)
 	{ this(fmtString, 1.0); }
 
 public DivDoubleSFormat()
-	{ this("#.0000", 1.0); }
+	{ this("#.####", 1.0); }
 
 public Object stringToValue(String text)  throws java.text.ParseException
 {
+	text = text.trim();
 	if (nullText.equals(text)) return null;
 	if (nanText.equals(text)) return Double.NaN;
 	if (infText.endsWith(text)) return Double.POSITIVE_INFINITY;

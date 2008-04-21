@@ -10,7 +10,7 @@ import citibob.licensor.MakeNbm;
 import citibob.mobilecode.MobileCodeClient;
 import citibob.mobilecode.MobileCodeServer;
 import citibob.reflect.ClassAnalyzer;
-import citibob.reflect.ClassPathTest;
+import citibob.reflect.ClassPathUtils;
 import citibob.swing.calendar.JDayChooser;
 import citibob.swing.typed.JKeyedMulti;
 import citibob.swing.typed.JKeyedMultiPanel;
@@ -47,7 +47,7 @@ public static void main(String[] args) throws Exception {
 		MobileCodeServer.class,
 		MobileCodeClient.class,
 		ClassAnalyzer.class,
-		ClassPathTest.class,
+		ClassPathUtils.class,
 		IndexSet.class,
 		MakeNbm.class,
 //		de.jppietsch.prefedit.PrefEdit.class,

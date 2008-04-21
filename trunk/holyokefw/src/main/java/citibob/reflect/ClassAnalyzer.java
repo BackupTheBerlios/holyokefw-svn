@@ -430,9 +430,9 @@ public static void main(String[] args)
 throws ClassAnalyzerException, IOException
 {
 	URLClassLoader loader = (URLClassLoader)ClassAnalyzer.class.getClassLoader();
-	List<JarURL> fullCP = ClassPathTest.getClassPath(loader);
+	List<JarURL> fullCP = ClassPathUtils.getClassPath(loader);
 	
-	ClassPathTest.subtractCP(loader, fullCP, "jooreports", "jasperreports");
+	ClassPathUtils.subtractCP(loader, fullCP, "jooreports", "jasperreports");
 	
 	for (JarURL url : fullCP) {
 		System.out.println(url);
