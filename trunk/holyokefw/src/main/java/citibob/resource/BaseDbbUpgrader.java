@@ -26,11 +26,14 @@ import citibob.sql.ConnPool;
 import citibob.sql.RemoveSqlCommentsReader;
 import citibob.sql.SqlRun;
 import citibob.sql.pgsql.SqlString;
+import java.sql.Statement;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  *
@@ -113,6 +116,30 @@ throws Exception
 	str.flush();
 }
 
+protected void execSqlIgnoreError(ConnPool pool, String sql)
+throws SQLException
+{
+	Connection dbb = pool.checkout();
+	try {
+		Statement st = dbb.createStatement();
+		try {
+			st.execute(sql);
+		} catch(SQLException e) {
+			// Ignore
+		} finally {
+			st.close();
+		}
+	} finally {
+		pool.checkin(dbb);
+	}
+}
+
+protected void dropTable(ConnPool pool, String tableName, boolean cascade)
+throws SQLException
+{
+	execSqlIgnoreError(pool, "drop table " + tableName +
+		(cascade ? " cascade;" : ";"));
+}
 public String toString()
 {
 	return getClass().getSimpleName() + "(" + version0 + " -> " + version1 + ")";

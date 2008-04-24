@@ -44,6 +44,14 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
       <SubComponents>
+        <Component class="javax.swing.JButton" name="bExit">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Exit Application"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bExitActionPerformed"/>
+          </Events>
+        </Component>
         <Component class="javax.swing.JButton" name="bReportError">
           <Properties>
             <Property name="text" type="java.lang.String" value="Report Error"/>

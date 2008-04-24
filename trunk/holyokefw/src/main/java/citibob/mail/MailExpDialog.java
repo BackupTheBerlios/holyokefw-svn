@@ -117,6 +117,7 @@ public String getMsg() { return taMessage.getText(); }
 
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
+        bExit = new javax.swing.JButton();
         bReportError = new javax.swing.JButton();
         bOK = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -142,6 +143,16 @@ public String getMsg() { return taMessage.getText(); }
 
         jPanel2.setLayout(new java.awt.BorderLayout());
         getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
+
+        bExit.setText("Exit Application");
+        bExit.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                bExitActionPerformed(evt);
+            }
+        });
+        jPanel1.add(bExit);
 
         bReportError.setText("Report Error");
         bReportError.addActionListener(new java.awt.event.ActionListener()
@@ -208,6 +219,12 @@ public String getMsg() { return taMessage.getText(); }
         reportErrorPressed=true;
         hide();
 }//GEN-LAST:event_bReportErrorActionPerformed
+
+	private void bExitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_bExitActionPerformed
+	{//GEN-HEADEREND:event_bExitActionPerformed
+		System.exit(-1);
+		// TODO add your handling code here:
+}//GEN-LAST:event_bExitActionPerformed
     
     /**
      * @param args the command line arguments
@@ -217,6 +234,7 @@ public String getMsg() { return taMessage.getText(); }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bExit;
     private javax.swing.JButton bOK;
     private javax.swing.JButton bReportError;
     private javax.swing.JPanel jPanel1;

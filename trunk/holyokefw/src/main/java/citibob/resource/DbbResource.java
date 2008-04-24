@@ -24,6 +24,7 @@ package citibob.resource;
 
 import citibob.sql.ConnPool;
 import citibob.sql.SqlRun;
+import java.sql.SQLException;
 
 /**
  *
