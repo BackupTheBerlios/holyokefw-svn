@@ -31,7 +31,7 @@ import citibob.text.*;
 import citibob.sql.*;
 import java.io.*;
 import citibob.types.JType;
-import com.Ostermiller.util.*;
+//import com.Ostermiller.util.*;
 import javax.swing.table.*;
 
 /**

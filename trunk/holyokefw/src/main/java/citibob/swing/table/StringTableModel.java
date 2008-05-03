@@ -24,16 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * and open the template in the editor.
  */
 
-package citibob.reports;
+package citibob.swing.table;
 
-import bsh.This;
 import citibob.swing.table.*;
 import java.sql.*;
 import citibob.text.*;
 import citibob.sql.*;
 import java.io.*;
-import citibob.types.JType;
-import com.Ostermiller.util.*;
 import javax.swing.table.*;
 
 /**

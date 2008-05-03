@@ -27,7 +27,6 @@ import citibob.swing.table.*;
 import citibob.swing.typed.*;
 import citibob.swingers.*;
 import citibob.types.*;
-import org.eclipse.jdt.internal.compiler.ast.SuperReference;
 //import de.chka.swing.components.*;
 
 public class CitibobJTable extends JTable

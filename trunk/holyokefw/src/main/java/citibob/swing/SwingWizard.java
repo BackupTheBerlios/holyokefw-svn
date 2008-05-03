@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.swing;
 
-import citibob.swing.html.*;
+//import citibob.swing.html.*;
 import citibob.wizard.*;
 import javax.swing.*;
 import java.util.*;

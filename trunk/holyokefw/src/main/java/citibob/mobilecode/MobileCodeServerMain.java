@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.mobilecode;
 
 import citibob.objserver.*;
-import com.bubble.serializer.DeserializationContext;
+//import com.bubble.serializer.DeserializationContext;
 import java.io.*;
 
 public interface MobileCodeServerMain

@@ -470,7 +470,7 @@ throws ClassAnalyzerException, IOException
 
 
 	ClassAnalyzer ca = new ClassAnalyzer(loader, fullCP);
-	ca.addObjectsSeen(new MyTest());
+//	ca.addObjectsSeen(new MyTest());
 
 	ca.analyzeObjectsSeen();		// See what objects we will need to serialize
 	ca.analyzeClassesSeen();		// Find classes required for those objects

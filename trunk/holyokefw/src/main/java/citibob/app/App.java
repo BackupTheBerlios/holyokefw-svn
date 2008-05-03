@@ -24,7 +24,7 @@ import citibob.task.*;
 import citibob.mail.*;
 import citibob.jschema.*;
 import citibob.jschema.log.QueryLogger;
-import citibob.reports.Reports;
+//import citibob.reports.Reports;
 import citibob.resource.ResData;
 import citibob.resource.ResSet;
 import citibob.swing.prefs.*;
@@ -142,10 +142,6 @@ public citibob.jschema.log.QueryLogger queryLogger() { return queryLogger; }
 protected MailSender mailSender;
 /** Send email */
 public MailSender mailSender() { return mailSender; }
-
-protected Reports reports;
-/** Object for report generation */
-public citibob.reports.Reports reports() { return reports; }
 
 protected TimeZone timeZone;
 /** Default time zone for desktop application */
