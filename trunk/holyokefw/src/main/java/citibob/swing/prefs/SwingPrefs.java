@@ -51,6 +51,7 @@ public SwingPrefs(Map<String,String> baseVals)
 	settersType.put(JTable.class, new JTablePrefSetter(baseVals));
 	settersType.put(JSplitPane.class, new JSplitPanePrefSetter(baseVals));
 	settersType.put(JFileChooser.class, new JFileChooserPrefSetter(baseVals));
+	settersType.put(JTabbedPane.class, new JTabbedPanePrefSetter(baseVals));
 }
 
 public void setPrefs(Component c, Preferences prefs)
