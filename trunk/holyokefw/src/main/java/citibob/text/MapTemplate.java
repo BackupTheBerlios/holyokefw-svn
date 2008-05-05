@@ -19,6 +19,33 @@ public MapTemplate(File file) throws MalformedURLException
 	this.url = file.toURI().toURL();
 }
 
+public Reader getReader()
+{
+	StringWriter out = new StringWriter();
+	try {
+		write(out);
+	} catch(IOException e) {}
+	return new StringReader(out.toString());
+}
+public InputStream getInputStream()
+{
+	StringWriter out = new StringWriter();
+	try {
+		write(out);
+	} catch(IOException e) {}
+	byte[] bytes = out.toString().getBytes();
+	return new ByteArrayInputStream(bytes);
+}
+
+public void write(File fout) throws IOException
+{
+	Writer out = new BufferedWriter(new FileWriter(fout));
+	try {
+		write(out);
+	} finally {
+		out.close();
+	}
+}
 public void write(Writer out) throws IOException
 {
 	Reader in = new BufferedReader(new InputStreamReader(url.openStream()));

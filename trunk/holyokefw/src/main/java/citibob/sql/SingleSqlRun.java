@@ -47,7 +47,7 @@ System.out.println("SingleSqlRun: " + sql);
 		if (sql != null) {
 			dbb = pool.checkout();
 			st = dbb.createStatement();
-			rs = st.executeQuery(sql);
+			if (handler != null) rs = st.executeQuery(sql);
 //			boolean hasRS = st.execute(sql);
 //			if (hasRS) rs = st.getResultSet();
 		}

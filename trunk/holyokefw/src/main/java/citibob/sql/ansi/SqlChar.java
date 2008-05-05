@@ -65,6 +65,8 @@ the input is null, the string "null" is returned. */
 	}
 	public static String sql(Character s)
 		{ return sql(s, true); }
+	public static String sql(char s)
+		{ return sql(s, true); }
 
 	public static String sql(char ch, boolean quotes)
 	{
