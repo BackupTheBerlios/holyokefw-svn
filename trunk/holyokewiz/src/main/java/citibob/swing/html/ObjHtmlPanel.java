@@ -30,9 +30,7 @@ package citibob.swing.html;
 import citibob.swing.typed.Swinger;
 import java.io.*;
 import java.net.URL;
-import java.net.URLConnection;
 
-import org.w3c.dom.Document;
 import org.xamjwg.html.*;
 import org.xamjwg.html.parser.*;
 import org.xamjwg.html.gui.*;
@@ -46,6 +44,7 @@ import citibob.swing.typed.*;
 import org.xamjwg.html.domimpl.*;
 import citibob.text.*;
 import citibob.types.*;
+import java.awt.Component;
 
 /**
  *
@@ -55,6 +54,19 @@ public class ObjHtmlPanel extends ObjHtmlPanelMVC
 {
 	Map widgetMap = new HashMap();
 	public Map getMap() { return widgetMap; }
+
+
+	/** This allows the auto pref setter to work properly. */
+	public Component[] getComponents()
+	{
+		Component[] ret = new Component[widgetMap.size()];
+		int i=0;
+		for (Object obj : widgetMap.values()) {
+			ret[i++] = (Component)obj;
+		}
+		return ret;
+	}
+
 	
 //	public HtmlPanel(Reader htmlIn, Map widgetMap)
 //	throws org.xml.sax.SAXException, java.io.IOException
