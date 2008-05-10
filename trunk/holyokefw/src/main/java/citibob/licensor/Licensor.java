@@ -53,7 +53,7 @@ public Licensor() throws IOException
 	license = "/*\n" + readLicenseFile(getClass(), "license.txt") + "\n*/";
 }
 
-static String readLicenseFile(Class klass, String licenseResourceName)
+public static String readLicenseFile(Class klass, String licenseResourceName)
 throws java.io.IOException
 {
 	String resourceName = klass.getPackage().getName().replace('.', '/') + "/" + licenseResourceName;
