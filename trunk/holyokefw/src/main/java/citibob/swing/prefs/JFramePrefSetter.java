@@ -46,16 +46,33 @@ public void setPrefs(Component c, final Preferences prefs)
 	sz.width = getInt(prefs, "size.width", sz.width);
 	sz.height = getInt(prefs, "size.height", sz.height);
 	cc.setSize(sz);
+	
+	// Center the window by default
+	Point loc = new Point();
+	Dimension scSize = Toolkit.getDefaultToolkit().getScreenSize();
+	loc.x = (scSize.width - sz.width) / 2;
+	loc.y = (scSize.height - sz.height) / 2;
+
+	loc.x = getInt(prefs, "_location.x", loc.x);
+	loc.y = getInt(prefs, "_location.y", loc.y);
+	cc.setLocation(loc);
+	
 //System.out.println("JFrame: got size = " + sz);
     
     // Set up listener(s) to save preferences as our geometry changes.
 	cc.addComponentListener(new ComponentAdapter() {
-	public void componentResized(ComponentEvent e) {
-		Dimension sz = cc.getSize();
-		putInt(prefs, "size.width", sz.width);
-		putInt(prefs, "size.height", sz.height);
-//System.out.println("Setting size: " + prefix + " = " + sz);
-	}});
+		public void componentResized(ComponentEvent e) {
+			Dimension sz = cc.getSize();
+			putInt(prefs, "size.width", sz.width);
+			putInt(prefs, "size.height", sz.height);
+	//System.out.println("Setting size: " + prefix + " = " + sz);
+		}
+		public void componentMoved(ComponentEvent e) {
+			Point point = cc.getLocation();
+			putInt(prefs, "_location.x", point.x);
+			putInt(prefs, "_location.y", point.y);
+		}
+	});
 }
 
 }

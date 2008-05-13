@@ -32,18 +32,37 @@ public class JarURL implements Comparable<JarURL>
 {
 
 String name;
+String version;
 URL url;
 
 public JarURL(URL url) {
 	this.url = url;
-	name = ReflectUtils.getLeaf(url);
-	int dash = name.indexOf('-');
-	if (dash >= 0) name = name.substring(0,dash);
+	version = "";
+	String leaf = ReflectUtils.getLeaf(url);
+	name = leaf;
+System.out.println(name);
+	int dash = -1;
+	for (;;) {
+		dash = leaf.indexOf('-', dash+1);
+		if (dash < 0) break;
+		if (dash == leaf.length() - 1) break;
+		char ch = leaf.charAt(dash+1);
+		if (ch >= '0' && ch <= '9') {
+			name = leaf.substring(0,dash);
+			int dot = leaf.lastIndexOf('.');	// .jar
+			if (dot < 0) dot = leaf.length();
+//System.out.println(dash+1);
+//System.out.println(dot);
+			version = leaf.substring(dash+1, dot);
+			break;
+		}
+	}
 }
 
 public String getName() {
 	return name;
 }
+public String getVersion() { return version; }
 
 public URL getUrl() {
 	return url;

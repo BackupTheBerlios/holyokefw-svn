@@ -179,6 +179,12 @@ throws MalformedURLException, IOException
 	return out;
 }
 
+public static List<JarURL> getClassPath()
+throws MalformedURLException, IOException
+{
+	return getClassPath((URLClassLoader)ClassPathUtils.class.getClassLoader());
+}
+
 public static File getMavenProjectRoot()
 {
 	URLClassLoader cl = (URLClassLoader)ClassPathUtils.class.getClassLoader();
