@@ -4,7 +4,7 @@
   <groupId>org.citibob</groupId>
   <artifactId>holyokewiz</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>holyokewiz</name>
   <url>http://maven.apache.org</url>
   <build>
@@ -20,22 +20,16 @@
         </plugins>
     </build>
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
 <dependency>
             <groupId>org.citibob</groupId>
             <artifactId>objcobra</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
 <dependency>
             <groupId>org.citibob</groupId>
             <artifactId>holyokefw</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
   </dependencies>
