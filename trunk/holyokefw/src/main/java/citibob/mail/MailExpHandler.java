@@ -41,7 +41,7 @@ import javax.swing.text.*;
  *
  * @author citibob
  */
-public class MailExpHandler implements ExpHandler
+public class MailExpHandler extends BaseExpHandler
 {
 //	MailSender sender;
 	InternetAddress bugRecipient;
@@ -60,6 +60,8 @@ public class MailExpHandler implements ExpHandler
 	}
 	public void consume(Throwable e)
 	{
+		e = getRootCause(e);
+
 		// Get the last bit of the Java console stdout
 		String outMsg = "";
 		if (stdoutDoc != null) {

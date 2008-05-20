@@ -56,16 +56,16 @@ public Connection checkout() throws SQLException
 		DbbDate dd = reserves.removeFirst();
 		if (ms - dd.lastUsedMS < 60 * 1000L) {
 			// Good connection, less than 1 minute stale
-System.out.println("Re-using good connection: " + dd.dbb);
+//System.out.println("Re-using good connection: " + dd.dbb);
 			return dd.dbb;
 		}
 		// Throw out connections > 1 minute stale
-System.out.println("Throwing out connection: " + dd.dbb);
+//System.out.println("Throwing out connection: " + dd.dbb);
 		try { dd.dbb.close(); } catch(SQLException e) {}
 	}
 	
 	// No reserves left; create a new connection
-System.out.println("Creating new connection");
+System.out.println("RealConnPool: Creating new database connection");
 	return create();
 //TODO: Keep track of lastused date --- throw out connections after 10 minutes
 //Also.... in Exception handler, an SQLException should cause that connection to be closed and NOT returned.

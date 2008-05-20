@@ -24,6 +24,10 @@ import java.text.*;
 public class SqlTimestamp extends citibob.sql.ansi.SqlTimestamp
 {
 
+public static final SqlTimestamp gmt = new SqlTimestamp(
+	TimeZone.getTimeZone("GMT"), true);
+public static final SqlTimestamp gmtNotNull = new SqlTimestamp(
+	TimeZone.getTimeZone("GMT"), false);
 // -----------------------------------------------------
 protected void setFmt() {
 	sqlFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

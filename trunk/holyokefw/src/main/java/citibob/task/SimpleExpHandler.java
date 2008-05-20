@@ -17,13 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.task;
 
-import citibob.task.ExpHandler;
-
-public class SimpleExpHandler implements ExpHandler
+public class SimpleExpHandler extends BaseExpHandler
 {
 
 public void consume(Throwable e)
 {
+	e = getRootCause(e);
+	
 	e.printStackTrace(System.out);
 	System.exit(-1);
 }

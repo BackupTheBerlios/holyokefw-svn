@@ -65,6 +65,8 @@ public String toSql(Object o)
 	java.util.Date ts = (java.util.Date)o;
 	return ts == null ? "null" : ("TIMESTAMP '" + sqlFmt.format(ts) + '\'');
 }
+public String toSql(long ms)
+{ return toSql(new java.util.Date(ms)); }
 // ==================================================	
 /** Reads the date with the appropriate timezone. */
 public Object get(java.sql.ResultSet rs, int col) throws SQLException
