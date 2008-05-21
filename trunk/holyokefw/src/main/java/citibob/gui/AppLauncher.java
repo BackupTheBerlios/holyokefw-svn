@@ -90,7 +90,7 @@ Preferences prefs;
 						"No main() method found in " + klass);
 					if ("main".equals(meths[i].getName())) {
 						setVisible(false);
-						meths[i].invoke((Object)null, new String[]{null});
+						meths[i].invoke((Object)null, new String[]{});
 						break;
 					}
 				}
