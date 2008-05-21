@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.licensor;
 
 import beans2nbm.gen.*;
+import citibob.reflect.ClassPathUtils;
 import java.io.File;
 
 public class MakeNbm {
@@ -36,10 +37,11 @@ public class MakeNbm {
 		Beans2Nbm.Params prm = new Beans2Nbm.Params();
 		
 		prm.version = "1.0";		// Must be numeric for NetBeans
-		prm.projectHome = "../.."; // Works for NetBeans running Maven project
+//		prm.projectHome = "../.."; // Works for NetBeans running Maven project
 //		prm.projectHome = "c:\\fiscrob\\mvn\\holyokefw";
+		prm.projectHome = ClassPathUtils.getMavenProjectRoot().getPath();
 		prm.jarFolder = "target";		// For Maven
-		prm.jarName = "holyokefw-1.0-SNAPSHOT";
+		prm.jarName = "holyokefw-1.0.1";
 		
 		prm.description = "Typed Widgets and other advanced Swing components" +
 			" for database applications";
