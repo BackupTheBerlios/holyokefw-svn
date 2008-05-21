@@ -116,6 +116,9 @@ public JTypeTableModel setModelU(JTypeTableModel jtModel,
 //	for (int c=0; c<sColMap.length; ++c) {
 	for (int c=0; c<this.getColumnCount(); ++c) {
 		int bcol = model.getColMap(c);
+		if (bcol < 0) {
+			System.out.println("ERROR: Column " + sColMap[c] + " is undefined!!!");
+		}
 		JType sqlType = jtModel.getJType(0,bcol);
 		if (sqlType == null) continue;
 		String colName = jtModel.getColumnName(bcol);

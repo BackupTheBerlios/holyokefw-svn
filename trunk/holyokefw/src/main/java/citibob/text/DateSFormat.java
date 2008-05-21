@@ -66,6 +66,7 @@ public DateSFormat(String fmtString, String nullText, TimeZone displayTZ)
 public DateSFormat(String[] sfmts, String nullText, TimeZone displayTZ)
 {
 	super(new DateFlexiFormat(sfmts, displayTZ), nullText);
+	cal = ((DateFlexiFormat)fmt).getCalendar();
 }
 
 public TimeZone getDisplayTZ() { return cal.getTimeZone(); }
