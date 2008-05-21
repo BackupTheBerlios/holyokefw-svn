@@ -35,8 +35,6 @@ import javax.swing.JFrame;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-
-
 /**
  
  @author  fiscrob
@@ -90,7 +88,10 @@ Preferences prefs;
 						"No main() method found in " + klass);
 					if ("main".equals(meths[i].getName())) {
 						setVisible(false);
-						meths[i].invoke((Object)null, new String[]{});
+						Object[] args = new Object[] {
+							new String[]{}
+						};
+						meths[i].invoke(null, args);
 						break;
 					}
 				}
