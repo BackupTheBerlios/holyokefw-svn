@@ -27,8 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.swing.typed;
 
-import citibob.swing.CitibobJTable;
 import citibob.types.*;
+import java.util.Comparator;
 import javax.swing.table.*;
 
 /**
@@ -47,6 +47,9 @@ public interface Swinger {
 	/** The type this Swinger is associated with. */
 	public JType getJType();
 
+	/** Tells us how to sort this widget */
+	public Comparator getComparator();
+	
 	/** Returns an SFormat associated with this Swinger. */
 	public citibob.text.SFormat getSFormat();
 	

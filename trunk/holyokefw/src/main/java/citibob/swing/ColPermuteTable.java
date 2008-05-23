@@ -47,7 +47,8 @@ public class ColPermuteTable extends CitibobJTable
 
 //TableModel uModel;		// The underlying model
 
-public void setModelU(CitibobTableModel uModel, String[] colNames, String[] sColMap, boolean[] editable)
+public void setModelU(CitibobTableModel uModel, String[] colNames,
+String[] sColMap, boolean[] editable)
 {
 //	this.uModel = uModel;
 	
@@ -74,9 +75,7 @@ public int findColumnU(String s)
 //}
 
 public CitibobTableModel getModelU()
-{
-	return ((ColPermuteTableModel)getModel()).getModelU();	
-}
+{ return ((ColPermuteTableModel)getModel()).getModelU(); }
 
 /** Sets a render/edit on a colum, by UNDERLYING column name. */
 public void setFormatU(String underlyingName, Swinger swinger)
@@ -105,8 +104,10 @@ public int rowOfValueU(Object val, String underlyingName)
 
 public void setSelectedRowU(Object val, int col_u)
 	{ setSelectedRow(val, col_u, getModelU()); }
+//public void setSelectedRowU(Object val, String underlyingName)
+//	{ setSelectedRow(val, getModelU().findColumn(underlyingName), getModelU()); }
 public void setSelectedRowU(Object val, String underlyingName)
-	{ setSelectedRow(val, getModelU().findColumn(underlyingName), getModelU()); }
+	{ setSelectedRowU(val, getModelU().findColumn(underlyingName)); }
 
 
 /** Sets a renderer on a colum, by UNDERLYING column name.  Only sets

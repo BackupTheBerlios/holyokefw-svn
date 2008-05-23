@@ -130,11 +130,11 @@ public Object getValue(int colU)
 {
 	int selRow = this.getSelectedRow();
 	if (selRow < 0) return null;
-	return getModelU().getValueAt(selRow, colU);
+	return getSortModelU().getValueAt(selRow, colU);
 }
 public Object getValue(String colName)
 {
-	int colU = getModelU().findColumn(colName);
+	int colU = getSortModelU().findColumn(colName);
 	return getValue(colU);
 }
 // ================================================================
@@ -147,7 +147,7 @@ public void valueChanged(ListSelectionEvent e) {
 	
 	int selRow = this.getSelectedRow();
 	if (selRow < 0) val = null;
-	else val = getModelU().getValueAt(selRow, valueColU);
+	else val = getSortModelU().getValueAt(selRow, valueColU);
 	firePropertyChange("value", oldval, val);
 	inSelect = false;
 }

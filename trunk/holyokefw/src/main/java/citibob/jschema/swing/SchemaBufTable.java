@@ -44,10 +44,10 @@ SchemaBufDbModel dbModel;
 
 public void setDbModelU(SchemaBufDbModel dbModel,
 String[] colNames, String[] sColMap, boolean[] editable,
-citibob.swing.typed.SwingerMap swingers)
+boolean sortable, citibob.swing.typed.SwingerMap swingers)
 {
 	this.dbModel = dbModel;
-	super.setModelU(dbModel.getSchemaBuf(), colNames, sColMap, editable, swingers);
+	super.setModelU(dbModel.getSchemaBuf(), colNames, sColMap, editable, sortable, swingers);
 }
 
 /** Creates a SubSchema & SchemaBuf for this table.
@@ -56,11 +56,11 @@ citibob.swing.typed.SwingerMap swingers)
  @param sColMap Name of each column in the SqlSchema. */
 public SchemaBuf setSubSchema(SqlSchema schema,
 String[] colNames, String[] sColMap, boolean[] editable,
-citibob.swing.typed.SwingerMap swingers)
+boolean sortable, citibob.swing.typed.SwingerMap swingers)
 {	
 	SqlSchema subSchema = new SubSchema(schema, sColMap);
 	SchemaBuf buf = new SchemaBuf(subSchema);
-	super.setModelU(buf, colNames, sColMap, editable, swingers);
+	super.setModelU(buf, colNames, sColMap, editable, sortable, swingers);
 	return buf;
 }
 
@@ -70,9 +70,9 @@ citibob.swing.typed.SwingerMap swingers)
  @param sColMap Name of each column in the SqlSchema. */
 public SchemaBufDbModel setSubSchemaDm(SqlSchema schema,
 String[] colNames, String[] sColMap, boolean[] editable,
-citibob.swing.typed.SwingerMap swingers)
+boolean sortable, citibob.swing.typed.SwingerMap swingers)
 {
-	SchemaBuf sb = setSubSchema(schema, colNames, sColMap, editable, swingers);
+	SchemaBuf sb = setSubSchema(schema, colNames, sColMap, editable, sortable, swingers);
 	return new SchemaBufDbModel(sb, sb.getDefaultTable(), null);
 }
 

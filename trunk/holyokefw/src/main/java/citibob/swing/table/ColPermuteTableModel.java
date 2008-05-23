@@ -76,7 +76,7 @@ boolean[] editable)			// Is each column editable?
  @param colNames Display names -- Null if you wish to just use names of underlying columns
  @param sColMap Names of underlying columns --- Null if wish to use all underlying columns
  @param editable Is each column editable?  If null, use underlying table's isEditable() function. */
-public void init(CitibobTableModel model_u,
+protected void init(CitibobTableModel model_u,
 String[] colNames,			// Display names
 String[] sColMap,			// Underlying names
 boolean[] editable)			// Is each column editable?

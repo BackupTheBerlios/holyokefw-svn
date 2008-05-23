@@ -40,6 +40,8 @@ implements JTypeTableModel
 
 protected citibob.types.JType[] jTypes;		// JType of each column
 
+public JTypeTableModel getModelU() { return null; }
+
 // -----------------------------------------------------------
 public DefaultJTypeTableModel(Object[][] data, Object[] columnNames, JType[] jTypes)
 {

@@ -60,6 +60,14 @@ public AbstractSwinger(JType jType, SFormat sformat, boolean renderWithWidget)
 	this.renderWithWidget = renderWithWidget;
 }
 
+protected static final Comparator COMPARABLE_COMAPRATOR = new Comparator() {
+	public int compare(Object o1, Object o2) {
+		return ((Comparable) o1).compareTo(o2);
+	}
+};
+public Comparator getComparator() {
+	return COMPARABLE_COMAPRATOR;
+}
 
 public void setRenderWithWidget(boolean b) { this.renderWithWidget = b; }
 public boolean isRenderWithWidget() { return this.renderWithWidget; }

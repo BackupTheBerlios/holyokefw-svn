@@ -37,5 +37,8 @@ public interface CitibobTableModel extends TableModel
 	public Object getValueAt(int row, String col);
 	public void setValueAt(Object val, int row, String col);
 
+	/** If this wraps another CitibobTableModel, return the model being wrapped. */
+	public CitibobTableModel getModelU();
+	
 
 }

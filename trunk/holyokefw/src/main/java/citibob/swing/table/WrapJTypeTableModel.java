@@ -19,8 +19,7 @@ protected JTypeTableModel sub;
 	
 public WrapJTypeTableModel(JTypeTableModel sub)
 { this.sub = sub; }
-	
-	
+
 // =========================== TableModel
 public int getRowCount() { return sub.getRowCount(); }
 
@@ -73,6 +72,7 @@ public JType getJType(int row, int col)
 public JType getJType(int row, String col)
 { return sub.getJType(row, col); }
 	
+public JTypeTableModel getModelU() { return sub; }
 
 }
 

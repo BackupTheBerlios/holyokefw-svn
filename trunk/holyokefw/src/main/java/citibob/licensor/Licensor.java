@@ -138,6 +138,10 @@ outer :
 //		System.out.println("    No relicensing needed for " + f);
 		return;		// Nothing to do, file already up to date
 	}
+	if (scom.contains("NOTE: Third Party Code")) {
+		// Licensed by someone else --- don't do anything.
+		return;
+	}
 	
 	System.out.println("Relicensing " + f);
 	File fnew = new File(f.getPath() + ".__tmp");

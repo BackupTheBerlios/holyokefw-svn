@@ -190,8 +190,9 @@ public void setRows(SqlRun str, String sql)
 {
 	str.execSql(sql,new RsTasklet2() {
 	public void run(SqlRun str, ResultSet rs) throws SQLException {
-		clear();
-		addAllRows(rs);
+		clearNoFire();
+		addAllRowsNoFire(rs);
+		fireTableDataChanged();
 	}});
 }
 public void setCols(SqlRun str, String sql,
