@@ -58,4 +58,9 @@ public abstract class SchemaSet {
 	{
 		return ((JEnum)getJType(schemaName, colName)).getKeyedModel();
 	}
+	
+	public int getEnumInt(String schemaName, String colName, String enumVal)
+	{
+		return getKeyedModel(schemaName, colName).getIntKey(enumVal);
+	}
 }
