@@ -40,7 +40,7 @@ double div = 1;
 /** @param div Divide by this amount when displaying the number. */
 public DivIntegerSFormat(NumberFormat fmt, String nullText, double div)
 {
-	super(fmt, nullText);
+	super(fmt, nullText, SFormat.RIGHT);
 	this.div = div;
 }
 public DivIntegerSFormat(String fmtString, double div)
@@ -66,5 +66,6 @@ public String valueToString(Object value) throws java.text.ParseException
 	double val = ((Number)value).doubleValue();
 	return fmt.format(val / div);
 }
+//public int getHorizontalAlignment() { return SFormat.RIGHT; }
 
 }

@@ -26,17 +26,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.text;
 
+import javax.swing.SwingConstants;
+
 /**
  * SFormat = Simple Format or String Format.  A subset of the JFormattedTextString.AbstractFormatter functionality.
  * @author citibob
  */
 public interface SFormat
 {
+	public static int LEFT = SwingConstants.LEFT;
+	public static int CENTER = SwingConstants.CENTER;
+	public static int RIGHT = SwingConstants.RIGHT;
+	public static int LEADING = SwingConstants.LEADING;
+	public static int TRAILING = SwingConstants.TRAILING;
+	
 	public Object stringToValue(String text) throws java.text.ParseException;
 	public String valueToString(Object value) throws java.text.ParseException;
 
 	/** Should equal valueToString(null); */
 	public String getNullText();
 	
-	/** TODO: Add right-or-left justification information here... */
+	/** Returns how we prefer this text to be aligned. */
+	public int getHorizontalAlignment();
 }

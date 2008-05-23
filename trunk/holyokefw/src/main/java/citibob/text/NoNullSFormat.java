@@ -50,4 +50,6 @@ public String valueToString(Object value) throws java.text.ParseException
 /** Should equal valueToString(null); */
 public String getNullText() { return fmt.getNullText(); }
 
+public int getHorizontalAlignment() { return fmt.getHorizontalAlignment(); }
+
 }

@@ -187,7 +187,12 @@ public void setFormat(int colNo, SFormat sformat)
 }
 
 public void setFormat(int colNo, java.text.Format fmt)
-	{ setFormat(colNo, new FormatSFormat(fmt)); }
+{
+	SFormat sfmt = (fmt instanceof NumberFormat ?
+		new FormatSFormat(fmt, "", SFormat.RIGHT) :
+		new FormatSFormat(fmt, "", SFormat.LEFT));
+	setFormat(colNo, sfmt);
+}
 
 /** Sets up a renderer and editor based on a format string.  Works for a small
 number of well-known types, this is NOT general. */

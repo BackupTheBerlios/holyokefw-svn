@@ -36,11 +36,11 @@ import javax.swing.*;
  * @author citibob
  */
 public class KeyedMultiSFormat
-implements citibob.text.SFormat
+extends BaseSFormat
 {
 
 KeyedModel kmodel;
-String nullText;
+//String nullText;
 
 void setKmodel(KeyedModel kmodel)
 {
@@ -49,12 +49,12 @@ void setKmodel(KeyedModel kmodel)
 
 /** Creates a new instance of KeyedFormatter */
 public KeyedMultiSFormat(KeyedModel kmodel, String nullText) {
+	super(nullText);
 	setKmodel(kmodel);
-	this.nullText = nullText;
 }
 public KeyedMultiSFormat(KeyedModel kmodel) { this(kmodel, ""); }
 
-public String getNullText() { return nullText; }
+//public String getNullText() { return nullText; }
 
 final String separator = ",";
 final String subNullText = "null";

@@ -90,6 +90,7 @@ public void setJType(JType jt, SFormat sformat)
 {
 	this.jType = jt;
 	this.sformat = sformat;
+	this.setHorizontalAlignment(sformat.getHorizontalAlignment());
 }
 public void setJType(JType jt, Format fmt)
 	{ setJType(jt, new FormatSFormat(fmt)); }

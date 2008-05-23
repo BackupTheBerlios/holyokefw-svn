@@ -57,6 +57,7 @@ extends DefaultTableCellRenderer
 	public void setValue(Object o) {
 		try {
 			setText(sfmt.valueToString(o));
+			setHorizontalAlignment(sfmt.getHorizontalAlignment());
 		} catch(java.text.ParseException e) {
 			setText("x" + e.toString());		// Should not happen
 		}

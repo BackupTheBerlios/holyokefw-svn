@@ -42,13 +42,13 @@ Calendar cal;
 /** Creates a new instance of DateSFormat */
 public DateSFormat(DateFormat fmt, String nullText)
 {
-	super(fmt, nullText);
+	super(fmt, nullText, SFormat.LEFT);
 	cal = fmt.getCalendar();
 	//displayTZ = fmt.getTimeZone();
 }
 public DateSFormat(DateFlexiFormat fmt, String nullText)
 {
-	super(fmt, nullText);
+	super(fmt, nullText, SFormat.LEFT);
 	cal = fmt.getCalendar();
 //	displayTZ = fmt.getTimeZone();
 }
@@ -65,7 +65,7 @@ public DateSFormat(String fmtString, String nullText, TimeZone displayTZ)
 /** Convenience */
 public DateSFormat(String[] sfmts, String nullText, TimeZone displayTZ)
 {
-	super(new DateFlexiFormat(sfmts, displayTZ), nullText);
+	super(new DateFlexiFormat(sfmts, displayTZ), nullText, SFormat.LEFT);
 	cal = ((DateFlexiFormat)fmt).getCalendar();
 }
 

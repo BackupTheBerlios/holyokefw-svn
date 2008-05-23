@@ -32,12 +32,12 @@ import java.text.*;
  *
  * @author citibob
  */
-public class ToStringSFormat implements SFormat
+public class ToStringSFormat extends BaseSFormat
 {
 //	Format fmt;
-	String nullText = "";
+//	String nullText = "";
 	
-	public String getNullText() { return nullText; }
+//	public String getNullText() { return nullText; }
 	public String  valueToString(Object value) throws java.text.ParseException
 	{
 		return (value == null ? nullText : value.toString());

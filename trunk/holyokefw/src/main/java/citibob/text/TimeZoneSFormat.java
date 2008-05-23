@@ -35,7 +35,7 @@ import java.util.*;
  *
  * @author citibob
  */
-public class TimeZoneSFormat extends AbstractSFormat
+public class TimeZoneSFormat extends BaseSFormat
 {
 
 public TimeZoneSFormat() { super(""); }

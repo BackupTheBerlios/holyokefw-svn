@@ -24,7 +24,7 @@ package citibob.resource;
 
 import citibob.app.App;
 import citibob.swing.table.BaseJTypeTableModel;
-import citibob.text.AbstractSFormat;
+import citibob.text.BaseSFormat;
 import citibob.types.JType;
 import citibob.types.JavaJType;
 import citibob.types.JavaJType;
@@ -210,7 +210,7 @@ public static class UPlanModel extends BaseJTypeTableModel<UpgradePlan>
 		return null;
 	}
 }
-public static class PathSFormat extends AbstractSFormat
+public static class PathSFormat extends BaseSFormat
 {
 	public String valueToString(Object val)
 	{

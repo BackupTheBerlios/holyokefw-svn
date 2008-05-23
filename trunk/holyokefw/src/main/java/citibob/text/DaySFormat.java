@@ -32,16 +32,17 @@ import java.util.Date;
  * Computes days since 1970
  * @author fiscrob
  */
-public class DaySFormat implements SFormat
+public class DaySFormat extends BaseSFormat
 {
-String nullText;
+//String nullText;
 DateFormat dfmt;
 
 public DaySFormat(String fmtString)
 	{ this(fmtString, ""); }
 public DaySFormat(String fmtString, String nullText)
 {
-	this.nullText = nullText;
+	super(nullText);
+//	this.nullText = nullText;
 	dfmt = new SimpleDateFormat(fmtString);
 	dfmt.setTimeZone(Day.gmt);
 }
@@ -65,8 +66,8 @@ public String valueToString(Object value) //throws java.text.ParseException
 	return ret;
 }
 
-/** Should equal valueToString(null); */
-public String getNullText() { return nullText; }
+///** Should equal valueToString(null); */
+//public String getNullText() { return nullText; }
 
 // ================================================================
 }

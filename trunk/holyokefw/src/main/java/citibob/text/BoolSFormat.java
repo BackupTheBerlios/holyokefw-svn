@@ -36,11 +36,11 @@ import java.util.*;
  * @author citibob
  */
 public class BoolSFormat
-implements citibob.text.SFormat
+extends BaseSFormat
 {
 
 int limit;
-String nullText;
+//String nullText;
 
 static TreeMap<String, Boolean> vals;
 static {
@@ -55,8 +55,8 @@ static {
 	vals.put("y", Boolean.TRUE);
 }
 
-public BoolSFormat(String nullText) { this.nullText = nullText; }
-public String getNullText() { return nullText; }
+public BoolSFormat(String nullText) { super(nullText); }
+//public String getNullText() { return nullText; }
 public BoolSFormat() { this(""); }
 
 /** Not to be used */

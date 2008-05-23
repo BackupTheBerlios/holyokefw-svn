@@ -29,7 +29,7 @@ package citibob.text;
 import static citibob.jschema.RowStatusConst.*;
 
 /** Used to format the status column */
-public class StatusSFormat extends AbstractSFormat
+public class StatusSFormat extends BaseSFormat
 {
 	public String valueToString(Object value) throws java.text.ParseException {
 		if (value instanceof Integer) {

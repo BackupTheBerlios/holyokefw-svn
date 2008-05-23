@@ -43,7 +43,7 @@ double div = 1;
 /** @param div Divide by this amount when displaying the number. */
 public DivDoubleSFormat(NumberFormat fmt, String nullText, double div)
 {
-	super(fmt, nullText);
+	super(fmt, nullText, SFormat.RIGHT);
 	this.div = div;
 }
 public DivDoubleSFormat(String fmtString, double div)
@@ -79,5 +79,6 @@ public String valueToString(Object value) throws java.text.ParseException
 	if (val == Double.NEGATIVE_INFINITY) return ninfText;
 	return fmt.format(val / div);
 }
+//public int getHorizontalAlignment() { return SFormat.RIGHT; }
 
 }

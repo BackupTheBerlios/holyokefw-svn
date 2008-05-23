@@ -32,23 +32,26 @@ import java.text.*;
  *
  * @author citibob
  */
-public class FormatSFormat implements SFormat
+public class FormatSFormat extends BaseSFormat
 {
 	Format fmt;
-	String nullText;
+	int horizAlign;
+//	String nullText;
 
-	public String getNullText() { return nullText; }
+//	public String getNullText() { return nullText; }
 	public Format getFormat() { return fmt; }
 
 	public FormatSFormat(Format fmt)
-		{ this(fmt, ""); }
+		{ this(fmt, "", SFormat.LEFT); }
 
 	/** Creates a new instance of FormatSFormat */
-	public FormatSFormat(Format fmt, String nullText)
+	public FormatSFormat(Format fmt, String nullText, int horizAlign)
 	{
+		super(nullText);
 		this.fmt = fmt;
 		if (nullText == null) nullText = "";
-		this.nullText = nullText;
+		this.horizAlign = horizAlign;
+//		this.nullText = nullText;
 	}
 	public Object stringToValue(String text)  throws java.text.ParseException
 	{
@@ -61,6 +64,7 @@ public class FormatSFormat implements SFormat
 		return fmt.format(value);
 	}
 
+	public int getHorizontalAlignment() { return horizAlign; }
 
 
 	

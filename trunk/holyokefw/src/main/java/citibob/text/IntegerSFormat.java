@@ -36,7 +36,7 @@ public class IntegerSFormat extends FormatSFormat
 {
 
 public IntegerSFormat(NumberFormat fmt, String nullText)
-	{ super(fmt, nullText); }
+	{ super(fmt, nullText, SFormat.RIGHT); }
 public IntegerSFormat(NumberFormat fmt)
 	{ this(fmt, ""); }
 public IntegerSFormat()
@@ -51,5 +51,6 @@ public Object stringToValue(String text)  throws java.text.ParseException
 	Number n = (Number)fmt.parseObject(text);
 	return new Integer(n.intValue());
 }
+//public int getHorizontalAlignment() { return SFormat.RIGHT; }
 
 }

@@ -26,7 +26,7 @@ package citibob.text;
  *
  * @author fiscrob
  */
-public class ClassSFormat extends AbstractSFormat
+public class ClassSFormat extends BaseSFormat
 {
 	public String valueToString(Object value) throws java.text.ParseException
 		{ return ((Class)value).getSimpleName(); }

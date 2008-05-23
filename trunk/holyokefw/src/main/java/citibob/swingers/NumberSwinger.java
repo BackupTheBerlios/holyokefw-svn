@@ -32,7 +32,7 @@ public class NumberSwinger extends TypedTextSwinger
 {
 
 public NumberSwinger(JType jType, NumberFormat nf)
-	{ super(jType, nf); }
+	{ super(jType, new FormatSFormat(nf, "", SFormat.RIGHT)); }
 public NumberSwinger(JType jType, SFormat fmt)
 	{ super(jType, fmt); }
 

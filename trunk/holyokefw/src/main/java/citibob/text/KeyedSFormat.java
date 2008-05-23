@@ -36,12 +36,12 @@ import javax.swing.*;
  * @author citibob
  */
 public class KeyedSFormat
-implements citibob.text.SFormat
+extends BaseSFormat
 {
 
 KeyedModel kmodel;
 //HashMap<String,Object> imap;		// Inverse map from what kmodel has
-String nullText;
+//String nullText;
 
 void setKmodel(KeyedModel kmodel)
 {
@@ -56,12 +56,12 @@ void setKmodel(KeyedModel kmodel)
 
 /** Creates a new instance of KeyedFormatter */
 public KeyedSFormat(KeyedModel kmodel, String nullText) {
+	super(nullText);
 	setKmodel(kmodel);
-	this.nullText = nullText;
 }
 public KeyedSFormat(KeyedModel kmodel) { this(kmodel, ""); }
 
-public String getNullText() { return nullText; }
+//public String getNullText() { return nullText; }
 
 /** Not to be used */
 public Object  stringToValue(String text)

@@ -59,13 +59,14 @@ public void setModel(CalModel model) {
 public void setJType(JType jt, SFormat sformat, CalModel cmod)
 {
 	JDateType jdt = (JDateType)jt;
-	this.setJType(jdt, newFormatterFactory(sformat));
+	this.setJType(jdt, newFormatterFactory(sformat), sformat.getHorizontalAlignment());
 	setModel(cmod);
 }
 public void setJType(JType jt, String[] sfmts, TimeZone displayTZ, String nullText, CalModel cmod)
 {
 	this.setJType(jt,
-		new FormatSFormat(new DateFlexiFormat(sfmts, displayTZ), nullText),
+		new FormatSFormat(new DateFlexiFormat(sfmts, displayTZ),
+			nullText, SFormat.LEFT),
 		cmod);
 }
 public void setValue(Object o)

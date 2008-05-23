@@ -26,26 +26,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.text;
 
+import javax.swing.JLabel;
+
 /**
  *
  * @author citibob
  */
-public abstract class AbstractSFormat implements SFormat
+public abstract class BaseSFormat implements SFormat
 {
 
 protected String nullText;
 
 
-public AbstractSFormat()
+public BaseSFormat()
 	{ this(""); }
 
 /** Creates a new instance of AbstractSFormat */
-public AbstractSFormat(String nullText) {
+public BaseSFormat(String nullText) {
 	this.nullText = nullText;
 }
 public String getNullText() { return nullText; }
 
 /** This is OK for read-only SFormats */
 public Object stringToValue(String text) throws java.text.ParseException { return null; }
+
+public int getHorizontalAlignment() { return JLabel.LEFT; }
 
 }

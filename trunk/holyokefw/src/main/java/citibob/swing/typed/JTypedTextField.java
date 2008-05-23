@@ -64,14 +64,18 @@ public JTypedTextField()
 public void setDisplayValue(Object val, String display) {}
 
 // --------------------------------------------------------------
-public void setJType(JType jt, javax.swing.text.DefaultFormatterFactory ffactory)
+public void setJType(JType jt, javax.swing.text.DefaultFormatterFactory ffactory,
+int horizAlign)
 {
 	jType = jt;
 	super.setFormatterFactory(ffactory);	
+	super.setHorizontalAlignment(horizAlign);
 }
 public void setJType(JType jt, SFormat sformat)
 {
-	setJType(jt, new DefaultFormatterFactory(new SFormatAbsFormatter(sformat)));
+	setJType(jt,
+		new DefaultFormatterFactory(new SFormatAbsFormatter(sformat)),
+		sformat.getHorizontalAlignment());
 }
 public void setJType(Class klass, SFormat sformat)
 {

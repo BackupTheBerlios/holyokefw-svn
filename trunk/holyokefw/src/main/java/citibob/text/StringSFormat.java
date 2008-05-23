@@ -35,18 +35,19 @@ import javax.swing.*;
  * @author citibob
  */
 public class StringSFormat
-implements citibob.text.SFormat
+extends BaseSFormat
 {
 
 protected int limit = -1;
-protected String nullText;
+//protected String nullText;
 
 /** Creates a new instance of KeyedFormatter */
 public StringSFormat(int limit, String nullText) {
+	super(nullText);
 	this.limit = limit;
-	this.nullText = nullText;
+//	this.nullText = nullText;
 }
-public String getNullText() { return nullText; }
+//public String getNullText() { return nullText; }
 
 public StringSFormat()
 	{ this(-1, ""); }

@@ -44,9 +44,9 @@ public SqlNumericSwinger(SqlNumeric sqlType) {
 	super(sqlType, sqlType.newNumberFormat());
 }
 
-/** Create a widget suitable for editing this type of data. */
-protected citibob.swing.typed.TypedWidget createWidget()
-	{ return new JTypedTextField(); }
+///** Create a widget suitable for editing this type of data. */
+//protected citibob.swing.typed.TypedWidget createWidget()
+//	{ return new JTypedTextField(); }
 
 ///** Creates an AbstractFormatterFactory for a JFormattedTextField.  If this
 // SqlType is never to be edited with a JFormattedTextField, it can just

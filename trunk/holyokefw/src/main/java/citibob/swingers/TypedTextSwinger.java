@@ -73,7 +73,8 @@ public void configureWidget(TypedWidget tw)
 {
 	if (tw instanceof JTypedTextField) {
 		// This is the only class of widgets we know how to configure.
-		((JTypedTextField)tw).setJType(jType, newFormatterFactory());
+		((JTypedTextField)tw).setJType(jType, newFormatterFactory(),
+			getSFormat().getHorizontalAlignment());
 	} else if (tw instanceof TextTypedWidget) {
 		((TextTypedWidget)tw).setJType(jType, getSFormat());
 

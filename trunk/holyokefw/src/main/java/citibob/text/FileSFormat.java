@@ -33,8 +33,7 @@ import java.io.File;
  *
  * @author citibob
  */
-public class FileSFormat extends AbstractSFormat
-implements citibob.text.SFormat
+public class FileSFormat extends BaseSFormat
 {
 
 public Object stringToValue(String text)
