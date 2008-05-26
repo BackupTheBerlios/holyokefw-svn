@@ -43,6 +43,8 @@ import org.apache.poi.hssf.model.*;
 public class PoiXlsWriter
 {
 
+static final int NOROWCHANGE = -17;
+	
 HSSFWorkbookExt wb;
 ExcelSerialDate xlserial;
 
@@ -150,7 +152,6 @@ System.out.println(r + ", " + pr + ", " + prows);
 			HSSFRow row = sheet.getRow(r);
 			if (row == null) continue;
 			++pr;
-
 			int pcells = row.getPhysicalNumberOfCells();
 			int pc = 0;
 			for (int c=0; pc<pcells; ++c) {
@@ -167,7 +168,7 @@ System.out.println(r + ", " + pr + ", " + prows);
 				String rsname = value.substring(2,value.length()-1);
 			
 				int n = replaceOneHolder(sheet, r, c, models, rsname);
-				if (n > 0) {
+				if (n != NOROWCHANGE) {
 					r += n;
 					break;		// We just deleted the whole line!
 				}
@@ -237,7 +238,7 @@ int replaceOneHolder(HSSFSheet sheet, int row, int col, Map<String,Object> model
 	Object mod = (models.size() == 1
 		? models.values().iterator().next()
 		: models.get(rsname));
-	if (mod == null) return 0;
+	if (mod == null) return NOROWCHANGE;
 	if (mod instanceof TableModel) return replaceOneHolder(sheet, row, col, (TableModel)mod);
 	
 	// It's just a simple item; put it in
@@ -250,7 +251,7 @@ int replaceOneHolder(HSSFSheet sheet, int row, int col, Map<String,Object> model
 	if (comment != null) c1.setCellComment(comment);
 	if (style != null) c1.setCellStyle(style);
 	setValue(c1, mod);
-	return 0;
+	return NOROWCHANGE;
 }
 /** @returns net number of rows inserted */
 int replaceOneHolder(HSSFSheet sheet, int row, int col, TableModel mod)

@@ -238,14 +238,15 @@ com.lowagie.text.DocumentException
 	viewPdf(writeJodPdf(map, templateDir, templateName, uversionid, null));
 }
 // ===================================================================
-public File viewPdf(File file)
+public File viewPdf(File file) throws IOException
 {
 	if (file == null) {
 		javax.swing.JOptionPane.showMessageDialog(null,
 			"The report has no pages.");
 		return null;
 	} else {
-		citibob.gui.BareBonesPdf.view(file);
+		citibob.gui.BareBonesOpen.open(file);
+//		citibob.gui.BareBonesPdf.view(file);
 		return file;
 	}
 }
@@ -390,7 +391,7 @@ String templateName, int uversionid)
 throws IOException
 {
 	File f = writeXls(models, templateDir, templateName, uversionid, null);
-	citibob.gui.BareBonesXls.view(f);
+	citibob.gui.BareBonesOpen.open(f);
 }
 
 }
