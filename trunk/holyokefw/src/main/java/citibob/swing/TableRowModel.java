@@ -156,6 +156,7 @@ public void tableChanged(TableModelEvent e)
 			}
 		} break;
 		case TableModelEvent.UPDATE :
+			if (getRowCount() > 0 && (curRow < 0 || curRow >= getRowCount())) curRow = 0;
 			if (e.getFirstRow() <= curRow && curRow <= e.getLastRow()) {
 				// Our row has changed.
 				if (e.getColumn() == TableModelEvent.ALL_COLUMNS) {
