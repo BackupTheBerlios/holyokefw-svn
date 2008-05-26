@@ -47,6 +47,8 @@ implements TextTypedWidget, ActionListener
 TypedWidget popupWidget;		// The widget we display in the popup to change the value.
 String colName;
 
+public void setHorizontalAlignment(int align) { label.setHorizontalAlignment(align); }
+
 /** Creates new form JAdultLabel */
 public JTypedDropdown() {
 	initComponents();

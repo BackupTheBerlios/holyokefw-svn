@@ -29,4 +29,7 @@ public interface TextTypedWidget extends TypedWidget
 	 query to format an item.  Only need to implement this method if we're
 	 planning on making a "DB" subclass of this widget. */
 	public void setDisplayValue(Object val, String display);
+	
+	/** Also for DBFormatter. */
+	public void setHorizontalAlignment(int align);
 }
