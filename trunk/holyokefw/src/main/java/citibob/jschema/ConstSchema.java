@@ -53,13 +53,13 @@ public int findCol(String name)
 	}
 	return -1;
 }
-public int findColByLabel(String label)
-{
-	for (int i = 0; i < cols.length; ++i) {
-		if (cols[i].label.equals(label)) return i;
-	}
-	return -1;
-}
+//public int findColByLabel(String label)
+//{
+//	for (int i = 0; i < cols.length; ++i) {
+//		if (cols[i].label.equals(label)) return i;
+//	}
+//	return -1;
+//}
 
 /** Used to subclass schemas and append columns to them. */
 protected void appendCols(Column[] add)

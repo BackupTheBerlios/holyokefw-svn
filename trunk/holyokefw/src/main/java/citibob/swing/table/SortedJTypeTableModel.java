@@ -197,12 +197,13 @@ public void tableChanged(TableModelEvent e)
 				dirty = true;
 			} else {
 				// See if we're changing any sorted columns
-				for (SortCol sc : spec.getSortCols()) {
-					if (sc.col == col) {
-						dirty = true;
-						break;
-					}
-				}
+				if (spec.getSortDir(col) != 0) dirty = true;
+//				for (SortCol sc : spec.getSortCols()) {
+//					if (sc.col == col) {
+//						dirty = true;
+//						break;
+//					}
+//				}
 			}
 		} else {
 			// It's INSERT or DELETE --- set dirty bit!

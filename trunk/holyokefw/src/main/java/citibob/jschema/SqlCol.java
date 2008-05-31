@@ -23,18 +23,15 @@ import citibob.sql.SqlType;
 public class SqlCol extends Column
 {
 
-protected boolean key;
+//protected boolean key;
 
 public SqlCol(String name, SqlType type)
-	{ this(type, name, name, false); }
-public SqlCol(SqlType type, String name, boolean key)
-	{ this(type, name, name, key); }
+	{ this(type, name, false); }
 public SqlCol(SqlType type, String name)
-	{ this(type, name, name, false); }
-public SqlCol(SqlType type, String name, String label, boolean key)
+	{ this(type, name, false); }
+public SqlCol(SqlType type, String name, boolean key)
 {
-	super(type, name, label);
-	this.key = key;
+	super(name, type, key);
 }
 // --------------------------------------------------------------------
 /** Copies pertinent information from another column. */
@@ -49,9 +46,9 @@ public void copyFrom(Column col)
 public SqlType getSqlType()
 	{ return (SqlType)jType; }
 
-/** Is this a key column? */
-public boolean isKey()
-	{ return key; }
+///** Is this a key column? */
+//public boolean isKey()
+//	{ return key; }
 
 /** Default value for column when inserting new row in buffers. 
  This method will be overridden. */

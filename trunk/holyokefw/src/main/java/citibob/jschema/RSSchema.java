@@ -46,7 +46,7 @@ throws SQLException
 	for (int i=0; i<md.getColumnCount(); ++i) {
 		int i1 = i+1;
 		cols[i] = new SqlCol(tset.getSqlType(md, i1),
-			md.getColumnName(i1), md.getColumnLabel(i1), false);
+			md.getColumnName(i1), false);
 	}
 	
 	// Set up data types (and key fields)

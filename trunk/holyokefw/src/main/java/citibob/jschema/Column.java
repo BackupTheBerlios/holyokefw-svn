@@ -27,26 +27,35 @@ public class Column
 
 protected JType jType;
 protected String name;
-protected String label;		// "Suggested label" --- built-in mapping in some cases.
+protected boolean key;
+	
+public boolean isKey() { return key; }
 
 /** Copies pertinent information from another column. */
 public void copyFrom(Column scol)
 {
 	jType = scol.getType();
-	//key = scol.isKey();
-	label = scol.getLabel();
+	key = scol.isKey();
 }
 
 public Column(String name, JType type)
-	{ this(type, name); }
+	{ this(type, name, false); }
 public Column(JType type, String name)
-	{ this(type, name, name); }
-public Column(JType type, String name, String label)
+	{ this(type, name, false); }
+public Column(String name, JType type, boolean key)
+	{ this(type, name, key); }
+public Column(JType type, String name, boolean key)
 {
 	this.jType = type;
 	this.name = name;
-	this.label = label;
+	this.key = key;
 }
+//public Column(JType type, String name, String label)
+//{
+//	this.jType = type;
+//	this.name = name;
+////	this.label = label;
+//}
 // --------------------------------------------------------------------
 /** Type of this column */
 public JType getType()
@@ -56,8 +65,8 @@ public JType getType()
 public String getName()
 	{ return name; }
 
-public String getLabel()
-	{ return label; }
+//public String getLabel()
+//	{ return label; }
 
 
 // ====================================================================
