@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.jangomail</groupId>
+  <artifactId>jangomail</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-LATEST</version>
+  <name>jangomail</name>
+  <url>http://maven.apache.org</url>
+  <profiles>
+        <profile>
+            <id>netbeans-public</id>
+            <activation>
+                <property>
+                    <name>netbeans.execution</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <classpathPrefix>lib</classpathPrefix>
+                                    <mainClass>Test</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>nb</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>directory</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptor>${basedir}/src/main/assemblies/netbeans-run.xml</descriptor>
+                                    <finalName>executable</finalName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+  <dependencies>
+<dependency>
+    <groupId>org.citibob</groupId>
+    <artifactId>holyokefw</artifactId>
+    <version>1.0.1</version>
+</dependency>
+<!-- Apache Axis -->
+<dependency>
+    <groupId>org.apache.axis</groupId>
+    <artifactId>axis</artifactId>
+    <version>1.4</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.axis</groupId>
+    <artifactId>axis-jaxrpc</artifactId>
+    <version>1.4</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.axis</groupId>
+    <artifactId>axis-saaj</artifactId>
+    <version>1.4</version>
+</dependency>
+<dependency>
+    <groupId>wsdl4j</groupId>
+    <artifactId>wsdl4j</artifactId>
+    <version>1.5.1</version>
+</dependency>
+
+<dependency>
+            <groupId>commons-discovery</groupId>
+            <artifactId>commons-discovery</artifactId>
+            <version>0.2</version>
+            <scope>compile</scope>
+        </dependency>
+  </dependencies>
+</project>
