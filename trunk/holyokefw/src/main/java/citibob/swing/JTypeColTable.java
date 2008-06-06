@@ -77,6 +77,13 @@ public String getTooltip(int row, int col)
 	}
 }
 
+public void setModelU(CitibobTableModel uModel, String[] colNames,
+String[] sColMap, boolean[] editable)
+{
+	super.setModelU(uModel, colNames, sColMap, editable);
+	this.modelU = uModel;
+	this.sortModelU = uModel;
+}
 public JTypeTableModel setModelU(JTypeTableModel jtModel,
 		citibob.swing.typed.SwingerMap smap)
 {

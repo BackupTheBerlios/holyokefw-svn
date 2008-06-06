@@ -140,11 +140,13 @@ protected void finishContext(Context con) throws Exception
 public boolean runWizard() throws Exception
 { return runWizard(startState); }
 
+
 /** Returns true if wizard was not cancelled */
 public boolean runWizard(String startState) throws Exception
 {
 	stateName = (startState == null ? this.startState : startState);
-	String prevState = null;
+	Map<String,String> prevState = new TreeMap();
+	String prevOneState = null;
 	String curState;
 	try {
 		// v = (xv == null ? new TypedHashMap() : xv);
@@ -161,6 +163,9 @@ public boolean runWizard(String startState) throws Exception
 				if (wiz.getCacheWiz()) wizCache.put(stateName, wiz);
 			}
 			curState = stateName;	// State now becomes (semantically) nextState
+			if (prevOneState != null) {
+				prevState.put(curState, prevOneState);
+			}
 			stateRec.pre(con);		// Prepare the Wiz...
 			finishContext(con);
 			
@@ -175,22 +180,26 @@ public boolean runWizard(String startState) throws Exception
 			// Do default navigation; process() can change this.
 			String submit = v.getString("submit");
 	System.out.println("submit = " + submit);
-			if ("next".equals(submit)) stateName = navigator.getNext(stateRec);
-			else if ("back".equals(submit)) {
+			prevOneState = curState;
+			if ("next".equals(submit)) {
+				stateName = navigator.getNext(stateRec);
+			} else if ("back".equals(submit)) {
 				// Remove it from the cache so we re-make
 				// it going "forward" in the Wizard
 				if (!wiz.getCacheWizFwd()) wizCache.remove(stateName);
 				String prevName = navigator.getBack(stateRec);
-				if (prevName == null) prevName = prevState;
+				if (prevName == null) {
+					prevName = prevState.get(stateRec.getName());
+				}
 				if (prevName == null && reallyCancel()) return false;
 				stateName = prevName;
+				prevOneState = null;
 				continue;
 			} else if ("cancel".equals(submit) && reallyCancel()) return false;
-
+			
 			// Do screen-specific processing
 			stateRec.process(con);
 			finishContext(con);
-			prevState = curState;
 		}
 	} finally {
 		wizCache = null;		// Free memory...
