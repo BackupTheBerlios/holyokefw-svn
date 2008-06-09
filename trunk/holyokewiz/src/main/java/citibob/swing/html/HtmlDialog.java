@@ -122,6 +122,32 @@ public TypedWidget addWidget(String instanceName, String colName, SqlSchema sche
 	return w;
 }
 
+public JTypedLabel addLabel(String instanceName, String colName, SqlSchema schema)
+{
+	JTypedLabel w = addLabel(instanceName);
+	
+	JType jt = schema.getCol(colName).getType();
+	SFormat sfmt = swingers.newSFormat(jt);
+	w.setJType(jt, sfmt);
+	return w;
+}
+
+public JTypedLabel addLabel(String instanceName)
+{
+	JTypedLabel w = new JTypedLabel();
+		w.setText("X");
+		w.setSize(w.getPreferredSize());
+	addComponent(instanceName, w);
+	return w;
+}
+
+public TypedWidget addWidget(String instanceName, String colName, SqlSchema schema, boolean editable)
+{
+	return editable ?
+		addWidget(instanceName, colName, schema) :
+		addLabel(instanceName, colName, schema);
+}
+
 public void addWidgetRecursive(Component c)
 {
 	// Take care of yourself
