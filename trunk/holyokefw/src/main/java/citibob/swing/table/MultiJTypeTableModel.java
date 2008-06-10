@@ -85,7 +85,7 @@ int[] tabStart;		// Starting column in super-table of each sub-table
 
 /** Creates a new instance of MultiJTypeTableModel
  @param sub-models to glom together; all column names must be unique across sub-models. */
-public MultiJTypeTableModel(JTypeTableModel[] models)
+public MultiJTypeTableModel(JTypeTableModel... models)
 {
 //	prefixes = makePrefixes(xprefixes, models.length);
 //	this.tabNames = tabNames;
@@ -210,7 +210,7 @@ class MyListener implements TableModelListener
 		switch(type) {
 		case TableModelEvent.UPDATE :
 			if (col_u == TableModelEvent.ALL_COLUMNS) {
-				MultiJTypeTableModel.this.fireTableRowsUpdated(e_u.getFirstRow(), e_u.getLastRow());
+				fireTableRowsUpdated(e_u.getFirstRow(), e_u.getLastRow());
 			} else {
 				fireTableChanged(new TableModelEvent(MultiJTypeTableModel.this,
 					e_u.getFirstRow(), e_u.getLastRow(),

@@ -193,6 +193,8 @@ public int findColumnU(String s)
 /** Column map: i in this table --> colMap[i] in underlying */
 public int getColMap(int col) { return colMap[col]; }
 
+public int getIColMap(int col_u) { return iColMap[col_u]; }
+
 /** Gets the column class of a column named ``name'' in the underlying model. */
 public Class getColumnClassU(String s)
 	{ return model_u.getColumnClass(model_u.findColumn(s)); }

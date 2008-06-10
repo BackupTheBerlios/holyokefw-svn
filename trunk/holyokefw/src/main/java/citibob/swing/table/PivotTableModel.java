@@ -7,17 +7,18 @@ package citibob.swing.table;
 
 import citibob.text.SFormat;
 import citibob.types.JType;
-import citibob.types.KeyedModel;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 /**
  * NOTE: dataU should always be updated first, before mainU.
  * @author citibob
  */
-public abstract class PivotTableModel extends AbstractJTypeTableModel
+public abstract class PivotTableModel extends AbstractJTypeTableModel implements TableModelListener
 {
 
 protected JTypeTableModel mainU;		// The main table (provides the rows)
@@ -26,8 +27,9 @@ protected JTypeTableModel mainU;		// The main table (provides the rows)
 protected JTypeTableModel dataU;		
 protected int[] keyColsM;			// The key columns in the main table; used to populate the rows
 protected int[] keyColsD;			// Corresponding key columns in the data table
-protected int pivotColD;			// The pivot column in the data table; used to populate the columns
-Object[] pivotVals;			// Value of each pivot column
+protected int pivotKeyColD;			// The pivot column in the data table; used to populate the columns
+protected int pivotValColD;			// The pivot column in the data table; used to populate the columns
+protected Object[] pivotKeyVals;			// Value of each pivot column
 HashMap<Object, Integer> iPivotVals;	// Inverse of pivotVals
 SFormat pivotValsFmt;			// Converts pivot values to something more presentable (could be KeyedSFormat)
 
@@ -35,9 +37,10 @@ SFormat pivotValsFmt;			// Converts pivot values to something more presentable (
 ArrayList<int[]> dataRows;		// Row in the dataU that each element corresponds to
 
 
-public void setModelU(JTypeTableModel mainU, JTypeTableModel dataU,
+public PivotTableModel(JTypeTableModel mainU, JTypeTableModel dataU,
 String[] sKeyCols,
-String sPivotColD, Object[] pivotVals, SFormat pivotValsFmt)
+String sPivotKeyColD, String sPivotValColD,
+List xpivotVals, SFormat pivotValsFmt)
 {
 	this.mainU = mainU;
 	this.dataU = dataU;
@@ -47,20 +50,25 @@ String sPivotColD, Object[] pivotVals, SFormat pivotValsFmt)
 		keyColsM[i] = mainU.findColumn(sKeyCols[i]);
 		keyColsD[i] = dataU.findColumn(sKeyCols[i]);
 	}
-	pivotColD = dataU.findColumn(sPivotColD);
+	pivotKeyColD = dataU.findColumn(sPivotKeyColD);
+	pivotValColD = dataU.findColumn(sPivotValColD);
 	
 	// Set up our columns
-	this.pivotVals = pivotVals;
+	pivotKeyVals = new Object[xpivotVals.size()];
+	xpivotVals.toArray(pivotKeyVals);
 	iPivotVals = new HashMap();
-	for (int i=0; i<pivotVals.length; ++i) iPivotVals.put(pivotVals[i], i);
+	for (int i=0; i<pivotKeyVals.length; ++i) iPivotVals.put(pivotKeyVals[i], i);
 	
 	this.pivotValsFmt = pivotValsFmt;
+	refresh();
+	
+	mainU.addTableModelListener(this);
 }
 
 
 private int[] newDataRow()
 {
-	int[] rows = new int[pivotVals.length];
+	int[] rows = new int[pivotKeyVals.length];
 	for (int j=0; j<rows.length; ++j) rows[j] = -1;
 	return rows;
 }
@@ -101,10 +109,18 @@ static class HKey {
 			ret = ret * 7 + val[i].hashCode();
 		return ret;
 	}
-	public boolean equals(HKey b) {
+	public boolean equals(Object o) {
+		HKey b = (HKey)o;
 		for (int i=0; i<val.length; ++i)
 			if (!eq(val[i], b.val[i])) return false;
 		return true;
+	}
+	public String toString()
+	{
+		StringBuffer ret = new StringBuffer("HKey(");
+		for (int i=0; i<val.length; ++i) ret.append(val[i].toString() + " ");
+		ret.append(")");
+		return ret.toString();
 	}
 }
 
@@ -125,16 +141,16 @@ protected void refresh()
 	
 	
 	// Match up each row in dataU to a row/col in mainU
-	HKey hkey = new HKey(keyColsM.length);
+	HKey hkey = new HKey(keyColsD.length);
 	for (int i=0; i<dataU.getRowCount(); ++i) {
 		// Match to a row in dataRow
-		for (int j=0; j<keyColsM.length; ++j)
-			hkey.val[j] = dataU.getValueAt(i, keyColsM[j]);
+		for (int j=0; j<keyColsD.length; ++j)
+			hkey.val[j] = dataU.getValueAt(i, keyColsD[j]);
 		int[] row = mainMap.get(hkey);
 		if (row == null) continue;		// Row does not exist in mainU
 		
 		// Figure out which column
-		Integer Col = iPivotVals.get(dataU.getValueAt(i, pivotColD));
+		Integer Col = iPivotVals.get(dataU.getValueAt(i, pivotKeyColD));
 		if (Col == null) continue;
 		
 		// set...
@@ -169,7 +185,7 @@ protected void refresh()
 	
 	
 public int getColumnCount() {
-	return pivotVals.length;
+	return pivotKeyVals.length;
 }
 
 public int getRowCount() {
@@ -180,19 +196,19 @@ public Object getValueAt(int rowIndex, int columnIndex)
 {
 	int row_d = dataRows.get(rowIndex)[columnIndex];
 	if (row_d < 0) return null;
-	return dataU.getValueAt(row_d, pivotColD);
+	return dataU.getValueAt(row_d, pivotValColD);
 }
 
 public JType getJType(int row, int col) {
-	return dataU.getJType(0, pivotColD);
+	return dataU.getJType(0, pivotValColD);
 }
 
 @Override
 public int findColumn(String columnName)
 {
 	try {
-		for (int i=0; i<pivotVals.length; ++i) {
-			String name = pivotValsFmt.valueToString(pivotVals[i]);
+		for (int i=0; i<pivotKeyVals.length; ++i) {
+			String name = pivotValsFmt.valueToString(pivotKeyVals[i]);
 			if (name.equals(columnName)) return i;
 		}
 		return -1;
@@ -203,13 +219,13 @@ public int findColumn(String columnName)
 
 @Override
 public Class<?> getColumnClass(int columnIndex) {
-	return dataU.getColumnClass(pivotColD);
+	return dataU.getColumnClass(pivotValColD);
 }
 
 @Override
 public String getColumnName(int column) {
 	try {
-		return pivotValsFmt.valueToString(pivotVals[column]);
+		return pivotValsFmt.valueToString(pivotKeyVals[column]);
 	} catch(ParseException e) {
 		return null;
 	}
@@ -217,13 +233,13 @@ public String getColumnName(int column) {
 
 @Override
 public boolean isCellEditable(int rowIndex, int columnIndex) {
-	return dataU.isCellEditable(0, pivotColD);
+	return dataU.isCellEditable(0, pivotValColD);
 }
 
 @Override
 public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 	int row_d = getCreateCell(rowIndex, columnIndex);
-	dataU.setValueAt(aValue, row_d, pivotColD);
+	dataU.setValueAt(aValue, row_d, pivotValColD);
 	fireTableCellUpdated(rowIndex, columnIndex);
 }
 

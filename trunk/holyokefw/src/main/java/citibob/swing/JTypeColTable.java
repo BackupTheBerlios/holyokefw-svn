@@ -131,6 +131,9 @@ public SortedJTypeTableModel getSortModel()
 
 //public boolean isSorted() { return getSorter() != null; }
 
+public ColPermuteTableModel getPermuteModel()
+	{ return permuteModel; 	 }
+
 /** @param jtModel Underling data buffer to use
  * @param typeCol Name of type column in the schema
  * @param xColNames Columns (other than type and status) from schema to display
