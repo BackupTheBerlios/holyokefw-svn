@@ -69,8 +69,17 @@ public SqlBufDbModel(App app, String... sTypeSchemas)
 {
 	this(app.sqlRun(), app, sTypeSchemas, (String[])null, (String[])null);
 }
+
+protected SqlBufDbModel() {}
+
 /** Convenience method.  Takes schemas as strings, looks them up in App */
 public SqlBufDbModel(SqlRun str, App app,
+String[] sTypeSchemas, String[] updateKeyFields, String[] sUpdateSchemas)
+{
+	this.init(str, app, sTypeSchemas, updateKeyFields, sUpdateSchemas);
+}
+/** Convenience method.  Takes schemas as strings, looks them up in App */
+public void init(SqlRun str, App app,
 String[] sTypeSchemas, String[] updateKeyFields, String[] sUpdateSchemas)
 {
 	SqlSchema[] typeSchemas = null;

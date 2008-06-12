@@ -50,7 +50,8 @@ protected String stateName;
 protected WizState stateRec;
 protected Wiz wiz;			// The current Wizard for the current state
 protected TypedHashMap v;		// Info we get out of the wizard screens
-protected HashMap states;
+protected HashMap states;		// Set of states in this Wizard
+protected HashMap<String,ComputeAction> computeActions;	// Allows computation inbetween states.
 protected String wizardName;
 protected Navigator navigator;
 //protected SqlBatch str;		// Batch SQL queries service used by Wiz constructors & State.process()
@@ -77,6 +78,7 @@ public Wizard(String wizardName, App app)
 	this.app = app;
 	this.v = new TypedHashMap();
 	states = new HashMap();
+	computeActions = new HashMap();
 	navigator = new Navigator() {
 		public String getNext(WizState stateRec) { return stateRec.getNext(); }
 		public String getBack(WizState stateRec) { return stateRec.getBack(); }
@@ -96,6 +98,17 @@ protected void addState(WizState st)
 	states.put(st.getName(), st);
 	if (states.size() == 1) addStartState(st);
 }
+
+/** Adds all the states from another wizard */
+protected void addStates(Wizard w)
+{
+	for (Object ostate : w.states.values()) addState((WizState)ostate);
+}
+protected void addComputeAction(String name, ComputeAction action)
+{
+	computeActions.put(name, action);
+}
+
 protected void addStartState(WizState st)
 {
 	states.put(st.getName(), st);
@@ -122,7 +135,7 @@ protected Wiz createWiz(WizState stateRec, Context con) throws Exception {
 /** Override this to create context for Wiz's and WizState's */
 protected Context newContext() throws Exception
 {
-	return new Context(app.sqlRun(), v);
+	return new Context(this, app.sqlRun(), v);
 //	// TODO: Review this!!!
 //	
 //	throw new NullPointerException();
@@ -200,6 +213,16 @@ public boolean runWizard(String startState) throws Exception
 			// Do screen-specific processing
 			stateRec.process(con);
 			finishContext(con);
+			
+			// ====================================================
+			// Run any Compute Actions
+			for (;;) {
+				ComputeAction action = computeActions.get(stateName);
+				if (action == null) break;
+				action.process(con);
+			}
+			
+			finishContext(con);
 		}
 	} finally {
 		wizCache = null;		// Free memory...
@@ -210,7 +233,9 @@ public boolean runWizard(String startState) throws Exception
 public static class Context {
 	public SqlRun str;		// Access to database
 	public TypedHashMap v;		// Values passed around
-	public Context(SqlRun str, TypedHashMap v) {
+	public Wizard wizard;
+	public Context(Wizard wizard, SqlRun str, TypedHashMap v) {
+		this.wizard = wizard;
 		this.str = str;
 		this.v = v;
 	}

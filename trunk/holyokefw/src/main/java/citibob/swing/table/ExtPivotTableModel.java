@@ -5,6 +5,7 @@
 
 package citibob.swing.table;
 
+import citibob.jschema.DbBuf;
 import citibob.swing.JTypeColTable;
 import citibob.swing.typed.SwingerMap;
 import citibob.text.SFormat;
@@ -13,13 +14,15 @@ import citibob.text.SFormat;
  * Glues together a main table and a pivot table
  * @author citibob
  */
-public class ExtPivotTableModel extends MultiJTypeTableModel
+public class ExtPivotTableModel
+extends MultiJTypeTableModel implements DbBuf
 {
-JTypeTableModel mainU;
+DbBuf mainU;
 PivotTableModel pivotU;
 				// Also: setdisplay status to edited when either part of the table is edited.
 
-public ExtPivotTableModel(JTypeTableModel mainU, PivotTableModel pivotU)
+
+public ExtPivotTableModel(DbBuf mainU, PivotTableModel pivotU)
 {
 	super(mainU, pivotU);
 	this.mainU = mainU;
@@ -69,4 +72,23 @@ SwingerMap smap)
 	
 	table.setModelU(this, colNames, sColMap, ttColMap, editable, smap);
 }
+
+
+
+	/** Mark a row for deletion. */
+	public void deleteRow(int rowIndex)
+		{ mainU.deleteRow(rowIndex); }
+
+	/** Mark all rows for deletion. */
+	public void deleteAllRows()
+		{ mainU.deleteAllRows(); }
+
+	public void undeleteRow(int rowIndex)
+		{ mainU.undeleteRow(rowIndex); }
+
+	/** Mark all rows for deletion. */
+	public void undeleteAllRows()
+		{ mainU.undeleteAllRows(); }
+
+
 }

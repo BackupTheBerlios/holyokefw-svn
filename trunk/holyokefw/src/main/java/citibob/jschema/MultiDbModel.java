@@ -33,7 +33,7 @@ public boolean inSelect() { return inSelect; }
 
 public MultiDbModel() {}
 public MultiDbModel(DbModel... mm) {init(mm); }
-public void init(DbModel[] mm)
+public void init(DbModel... mm)
 {
 	for (DbModel m : mm) add(m);
 }

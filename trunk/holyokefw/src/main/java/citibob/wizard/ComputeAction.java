@@ -15,37 +15,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*
- * BaseSchemaSet.java
- *
- * Created on January 19, 2007, 9:54 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
+package citibob.wizard;
 
-package citibob.jschema;
+import citibob.sql.SqlRun;
 
-import java.util.*;
-
-/**
- *
- * @author citibob
- */
-public class BaseSchemaSet extends SchemaSet
+public interface ComputeAction
 {
+	/** Runs after the Wiz */
+	public abstract void process(Wizard.Context con) throws Exception;
 
-protected TreeMap<String,SqlSchema> map = new TreeMap();
-
-public SqlSchema get(String name) {
-	SqlSchema sc = map.get(name);
-	if (sc == null) throw new NullPointerException("Schema " + name + " not in SchemaSet");
-	return sc;
-}
-
-public void add(SqlSchema schema)
-{
-	map.put(schema.getDefaultTable(), schema);
-}
+// =============================================================
 
 }

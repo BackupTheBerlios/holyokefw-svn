@@ -31,7 +31,7 @@ import citibob.sql.SqlTypeSet;
 import citibob.types.JavaJType;
 
 public class SchemaBuf extends AbstractJTypeTableModel
-implements OrigTableModel
+implements OrigTableModel, DbBuf
 {
 
 // Extra columns at end (so col #'s match between SqlSchema and Model): __status__ and __rowno__

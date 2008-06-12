@@ -61,6 +61,11 @@ public abstract class SchemaSet {
 	
 	public int getEnumInt(String schemaName, String colName, String enumVal)
 	{
-		return getKeyedModel(schemaName, colName).getIntKey(enumVal);
+		KeyedModel km = getKeyedModel(schemaName, colName);
+		Integer ret = km.getIntKey(enumVal);
+		if (ret == null) {
+			System.err.println("getEnum(" + schemaName + ", " + colName + ", " + enumVal + ") is null");
+		}
+		return ret;
 	}
 }

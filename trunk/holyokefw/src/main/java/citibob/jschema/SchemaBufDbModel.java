@@ -147,7 +147,13 @@ public void setSelectKeyFields(String... keyFieldNames)
 	for (int i=0; i<schema.size(); ++i) invKeyFields[i] = -1;
 	for (int i=0; i<keyFields.length; ++i) invKeyFields[keyFields[i]] = i;
 		
-	keys = new Object[keyFields.length];
+//	keys = new Object[keyFields.length];
+	setNumKeys(keyFields.length);
+}
+
+public void setNumKeys(int n)
+{
+	keys = new Object[n];
 }
 
 ///** Sets all key fields at once */
@@ -392,17 +398,21 @@ public void setInsertBlankRow(boolean b) { insertBlankRow = b; }
 public boolean getInsertBlankRow() { return insertBlankRow; }
 
 // -----------------------------------------------------------
+public String getSelectSql()
+{
+	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.SELECT);
+	sbuf.getSelectCols(q, selectTable);
+	q.addTable(selectTable);
+	setSelectWhere(q);
+	return q.getSql();
+}
 /** Get Sql query to re-select current records
 * from database.  When combined with an actual
 * database and the SqlDisplay.setSqlValue(), this
 * has the result of refreshing the current display. */
 public void doSelect(SqlRun str)
 {
-	ConsSqlQuery q = new ConsSqlQuery(ConsSqlQuery.SELECT);
-	sbuf.getSelectCols(q, selectTable);
-	q.addTable(selectTable);
-	setSelectWhere(q);
-	sbuf.setRows(str, q.getSql());
+	sbuf.setRows(str, getSelectSql());
 }
 // -----------------------------------------------------------
 /** Get Sql query to insert record into database,
