@@ -52,7 +52,7 @@ public SqlTableModel(SqlTypeSet tset, String sql)
 
 public void executeQuery(SqlRun str)
 {
-	executeQuery(str, sql);
+	executeQuery(str, getSql());
 }
 
 }

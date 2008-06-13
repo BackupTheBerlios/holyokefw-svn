@@ -85,9 +85,15 @@ public SwingWizard(String wizardName, App app, java.awt.Frame frame)
 public Wiz createWiz(WizState state, Wizard.Context con) throws Exception
 {
 	// Overridden to post-process wiz after it's created
-	Wiz wiz = super.createWiz(state, con);
-	Preferences wizPref = wizardPref.node(state.getName());
-	swingPrefs.setPrefs((Component)wiz, wizPref);
+	final Wiz wiz = super.createWiz(state, con);
+	final Preferences wizPref = wizardPref.node(state.getName());
+	
+	// Run later to make sure Swing stuff is initialized before we save prefs.
+	
+	con.str.execUpdate(new UpdTasklet() {
+	public void run() {
+		swingPrefs.setPrefs((Component)wiz, wizPref);
+	}});
 	return wiz;
 }
 

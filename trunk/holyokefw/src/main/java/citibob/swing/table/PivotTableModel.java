@@ -7,6 +7,7 @@ package citibob.swing.table;
 
 import citibob.text.SFormat;
 import citibob.types.JType;
+import citibob.util.ObjectUtil;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,12 +92,6 @@ protected int getCreateCell(int row, int col)
 	return row_d;
 }
 
-static boolean eq(Object a, Object b)
-{
-	if (a == b) return true;
-	if (a == null || b == null) return false;
-	return a.equals(b);
-}
 
 static class HKey {
 	public Object[] val;
@@ -112,7 +107,7 @@ static class HKey {
 	public boolean equals(Object o) {
 		HKey b = (HKey)o;
 		for (int i=0; i<val.length; ++i)
-			if (!eq(val[i], b.val[i])) return false;
+			if (!ObjectUtil.eq(val[i], b.val[i])) return false;
 		return true;
 	}
 	public String toString()
