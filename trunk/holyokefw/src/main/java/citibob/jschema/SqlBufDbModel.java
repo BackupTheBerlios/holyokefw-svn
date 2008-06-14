@@ -99,7 +99,7 @@ String[] sTypeSchemas, String[] updateKeyFields, String[] sUpdateSchemas)
 	init(str, app, typeSchemas, updateKeyFields, updateSchemas);
 }
 
-public void setKey(int ix, Object val) {}
+//public void setKey(int ix, Object val) {}
 
 //public void setKey(Object[] key)
 //{
