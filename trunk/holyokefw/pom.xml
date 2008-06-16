@@ -63,13 +63,13 @@
         </profile>
     </profiles>
   <dependencies>
-    <dependency>
+<!--    <dependency>
       <groupId>org.citibob.jar</groupId>
       <artifactId>MVCGen</artifactId>
       <version>0</version>
       <scope>compile</scope>
       <type>jar</type>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
