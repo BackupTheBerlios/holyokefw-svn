@@ -67,7 +67,7 @@ extends WrapJTypeTableModel implements TableModelListener
 	public void refresh()
 	{
 		setSorted();
-		super.fireTableChanged(new TableModelEvent(this, 0, getRowCount()-1));
+		fireTableChanged(new TableModelEvent(this)); //, 0, getRowCount()-1));
 	}
 
 	

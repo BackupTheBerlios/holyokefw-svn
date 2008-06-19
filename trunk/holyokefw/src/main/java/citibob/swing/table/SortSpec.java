@@ -21,7 +21,7 @@ public class SortSpec {
 	int[] dirs;
 	int[] sortIndex;		// The order of sort in the sortCols array
 	
-	SortSpec(int ncol)
+	public SortSpec(int ncol)
 	{
 		dirs = new int[ncol];
 		sortIndex = new int[ncol];

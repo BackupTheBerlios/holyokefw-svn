@@ -21,12 +21,12 @@ import citibob.types.JType;
 import java.util.*;
 import javax.swing.table.*;
 
-public abstract class BaseJTypeTableModel<TT> extends FixedColTableModel
+public abstract class ArrayListTableModel<TT> extends FixedColTableModel
 {
 
 protected ArrayList<TT> data = new ArrayList();	// ArrayList<Record>
 
-public BaseJTypeTableModel(String[] colNames, JType[] types, boolean[] editable)
+public ArrayListTableModel(String[] colNames, JType[] types, boolean[] editable)
 {
 	super(colNames, types, editable);
 }

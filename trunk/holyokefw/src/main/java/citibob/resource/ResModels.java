@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.resource;
 
 import citibob.app.App;
-import citibob.swing.table.BaseJTypeTableModel;
+import citibob.swing.table.ArrayListTableModel;
 import citibob.text.BaseSFormat;
 import citibob.types.JType;
 import citibob.types.JavaJType;
@@ -97,7 +97,7 @@ public AvailModel newAvailModel(RtResKey rk)
 // =======================================================================
 static final String[] resNames = {"RtRes", "name", "reqversion"};
 static final JType[] resTypes = {new JavaJType(RtRes.class), JavaJType.jtString, JavaJType.jtInteger};
-public class ResModel extends BaseJTypeTableModel<RtRes>
+public class ResModel extends ArrayListTableModel<RtRes>
 {
 	public ResModel()
 	{
@@ -125,7 +125,7 @@ public class ResModel extends BaseJTypeTableModel<RtRes>
 // =======================================================================
 static final String[] rkNames = {"ResKey", "name"};
 static final JType[] rkTypes = {new JavaJType(RtResKey.class), JavaJType.jtString};
-public class ResKeyModel extends BaseJTypeTableModel<RtResKey>
+public class ResKeyModel extends ArrayListTableModel<RtResKey>
 {
 	public ResKeyModel() {
 		super(rkNames, rkTypes, null);		
@@ -148,7 +148,7 @@ public class ResKeyModel extends BaseJTypeTableModel<RtResKey>
 // =======================================================================
 String[] availNames;		// Set above in constructor
 JType[] availTypes;
-public class AvailModel extends BaseJTypeTableModel<RtVers>
+public class AvailModel extends ArrayListTableModel<RtVers>
 {
 	public AvailModel() {
 		super(availNames, availTypes, null);
@@ -182,7 +182,7 @@ static final JType[] uplanTypes = {new JavaJType(UpgradePlan.class),
 	JavaJType.jtInteger, JavaJType.jtString,
 	JavaJType.jtInteger, JavaJType.jtString,
 	JavaJType.jtBoolean, JavaJType.jtBoolean, JavaJType.jtString};
-public static class UPlanModel extends BaseJTypeTableModel<UpgradePlan>
+public static class UPlanModel extends ArrayListTableModel<UpgradePlan>
 {
 	public UPlanModel() {
 		super(uplanNames, uplanTypes, null);
