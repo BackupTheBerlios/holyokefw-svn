@@ -77,6 +77,12 @@ public Schema getSchema()
 public void setSchema(Schema schema)
 	{ this.schema = schema; }
 
+/** Parses a series of (name,jtype) pairs */
+public void setSchema(Object... objs)
+{
+	Schema schema = ConstSqlSchema.newSchema(objs);
+	setSchema(schema);
+}
 public String getDefaultTable()
 	{ return ((SqlSchema)schema).getDefaultTable(); }
 // --------------------------------------------------

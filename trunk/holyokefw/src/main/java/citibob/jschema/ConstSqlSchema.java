@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.jschema;
 
+import citibob.types.JType;
 import java.util.*;
 
 public class ConstSqlSchema
@@ -44,10 +45,36 @@ public ConstSqlSchema(Column[] cols, String table)
 {
 	this(table, cols);
 }
+
 public ConstSqlSchema(String table, Column... cols)
 {
 	this.table = table;
 	this.cols = cols;
+}
+
+public ConstSqlSchema(Column... cols)
+{
+	this.table = null;
+	this.cols = cols;
+}
+
+/** Give it a series of (name,jtype) pairs */
+public static ConstSqlSchema newSchema(Object... objs)
+{
+	Column[] cols = new Column[objs.length / 2];
+	for (int i=0; i<objs.length; i += 2) {
+		String name;
+		JType jtype;
+		if (objs[i] instanceof String) {
+			name = (String)objs[i];
+			jtype = (JType)objs[i+1];
+		} else {
+			jtype = (JType)objs[i];			
+			name = (String)objs[i+1];
+		}
+		cols[i/2] = new Column(name, jtype);
+	}
+	return new ConstSqlSchema(cols);
 }
 
 public String getDefaultTable()

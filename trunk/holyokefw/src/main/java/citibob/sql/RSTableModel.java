@@ -34,7 +34,8 @@ public class RSTableModel extends SchemaBuf
 		this.tset = tset;
 		autoSchema = true;
 	}
-	/** Schema must be set manually before query. */
+	/** Schema must be set manually before query.
+	 @see SchemaBuf.setSchema() */
 	public RSTableModel()
 	{
 		autoSchema = false;
