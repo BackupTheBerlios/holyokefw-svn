@@ -42,7 +42,7 @@ public void setKey(Object key)
 	{ setKey(0,key); }
 
 public void setKey(int ix, Object key)
-	{ keys[ix] = key; }
+	{ if (keys != null) keys[ix] = key; }
 
 //public Object[] getKeys() { return keys; }
 public Object getKey(int ix) { return keys[ix]; }
