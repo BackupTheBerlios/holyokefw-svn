@@ -35,7 +35,7 @@ public abstract class SwingJobRun extends JobRun
 {
 
 /** This call must be reentrant.  In other words, actionRunner.doRun() can be called recursively.  The recursive
- call to doRun() must execute and finish BEFORE the outer call.  It is incorrect for duRun() to simply put
+ call to doRun() must execute and finish BEFORE the outer call.  It is incorrect for doRun() to simply put
  the runnable on a queue without checking first, as this would cause deadlock. */
 public abstract void run(java.awt.Component component, CBTask r);
 
