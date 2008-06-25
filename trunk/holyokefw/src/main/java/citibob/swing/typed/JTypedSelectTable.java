@@ -29,6 +29,7 @@ package citibob.swing.typed;
 import citibob.swing.*;
 import citibob.swing.table.*;
 import citibob.types.JType;
+import citibob.util.ObjectUtil;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.table.*;
@@ -43,10 +44,14 @@ public class JTypedSelectTable extends JTypeColTable
 implements TypedWidget, ListSelectionListener
 {
 
-int valueColU = 0;		// This column in the selected row will be returned as the value
-Object val = null;
-protected boolean inSelect;		// Are we in the middle of having the user change the value?
+protected boolean clearValueOnClearTable = true;	// Flag: Should we clear the valuewhen the table is cleared?
 
+
+int valueColU = 0;		// This column in the selected row will be returned as the value
+protected Object val = null;
+Object lastVal = null;		// The last non-null value we had.
+protected boolean inSelect;		// Are we in the middle of having the user change the value?
+protected boolean disableUpdateOnSelect;	// Are we in the middle of a program-initiated setValue()?
 /** Are we in the middle of having the user change the value? */
 public boolean isInSelect() { return inSelect; }
 
@@ -55,6 +60,15 @@ public JTypedSelectTable()
 	super();
 	setHighlightMouseover(true);
 }
+
+public boolean isClearValueOnClearTable() {
+	return clearValueOnClearTable;
+}
+
+public void setClearValueOnClearTable(boolean clearValueOnClearTable) {
+	this.clearValueOnClearTable = clearValueOnClearTable;
+}
+
 
 /** Controls which column in selected row will be returned as the value */
 public void setValueColU(String name)
@@ -75,22 +89,43 @@ public Object getValue()
 //	return -1;
 //}
 
+
 /** Sets the value.  Same as method in JFormattedTextField.  Fires a
  * propertyChangeEvent("value") when calling setValue() changes the value. */
-public void setValue(Object val)
+public void setValue(Object newVal)
 {
-	super.setSelectedRowU(val, valueColU);
-//	if (o == null) {
+//if (newVal == null) {
+//	System.out.println("hoi");
+//}
+System.out.println("setValue(" + newVal + ")");
+	// Disable event processing on display update
+	disableUpdateOnSelect = true;
+
+	// Set the new value
+	Object oldVal = val;
+	val = newVal;
+	
+	// Update the graphic display
+	setSelectedRowU(val, valueColU);
+//	if (val == null) {
 //		getSelectionModel().clearSelection();
-//		return;
-//	}
-//	int row = rowOfValue(o);
-//	if (row >= 0) {
-//		this.getSelectionModel().setSelectionInterval(row,row);
-//		return;
 //	} else {
-//		getSelectionModel().clearSelection();
-//	}
+//		int row = rowOfValue(val, valueColU, getModel());
+//		if (row >= 0 && row < getRowCount()) {
+//			// Graphically show the selected row
+//			getSelectionModel().setSelectionInterval(row,row);		
+//		} else {
+//			// We cannot represent the value as a selection; no matter,
+//			// keep it anyway, but clear the table selection.
+//			getSelectionModel().clearSelection();		
+//		}
+//	}	
+	
+	// Fire property change if needed
+	if (!ObjectUtil.eq(oldVal, val))
+		firePropertyChange("value", oldVal, val);
+	
+	disableUpdateOnSelect = false;
 }
 
 
@@ -125,32 +160,80 @@ public void setColName(String col) { colName = col; }
 //public Object clone() throws CloneNotSupportedException { return super.clone(); }
 // ---------------------------------------------------
 
-/** Non-standard way to access any column of the selected row. */
-public Object getValue(int colU)
-{
-	int selRow = this.getSelectedRow();
-	if (selRow < 0) return null;
-	return getSortModelU().getValueAt(selRow, colU);
-}
-public Object getValue(String colName)
-{
-	int colU = getSortModelU().findColumn(colName);
-	return getValue(colU);
-}
+
 // ================================================================
 // ListSelectionListener
 /** JTable implements ListSelectionListener.  This method overrides that implementation. */
 public void valueChanged(ListSelectionEvent e) {
+	if (disableUpdateOnSelect) return;
+
 	super.valueChanged(e);
 	inSelect = true;
 	Object oldval = val;
 	
 	int selRow = this.getSelectedRow();
 	if (selRow < 0) val = null;
-	else val = getSortModelU().getValueAt(selRow, valueColU);
+	else val = getModelU().getValueAt(selRow, valueColU);
 	firePropertyChange("value", oldval, val);
 	inSelect = false;
 }
+///** JTable implements ListSelectionListener.  This method overrides that implementation. */
+//public void valueChanged(ListSelectionEvent e) {
+//	if (disableUpdateOnSelect) return;
+//	
+//	super.valueChanged(e);
+//	inSelect = true;
+//	Object oldval = val;
+//	if (oldval != null) lastVal = oldval;
+//
+//	int selRow = this.getSelectedRow();
+////	if (selRow < 0) val = null;
+////	else 
+//	/** Do not set to null on lack of selection... */
+//	if (selRow >= 0) {
+//		Object newVal = getModelU().getValueAt(selRow, valueColU);
+//if (newVal == null) {
+//	System.out.println("newVal is null, selRow = " + selRow + ", valueColU = " + valueColU + ", val = " + val);
+//}
+//		val = newVal;
+//	}
+//	
+//	if (!ObjectUtil.eq(val, oldval)) {
+//		firePropertyChange("value", oldval, val);
+//	}
+//	inSelect = false;
+//}
 
-	
+// ===================================================================
+// TableModelListener
+/** JTable implements TableModelListener.  This method overrides that implementation. */
+public void tableChanged(TableModelEvent e)
+{
+	Object curVal = val;
+System.out.println("tableChanged: val = " + val);
+
+	disableUpdateOnSelect = true;
+	super.tableChanged(e);
+	if (e.getType() != e.UPDATE || e.getLastRow() != e.getFirstRow()) {
+		// We've done a major change -- could involve display refresh
+		// or change in value
+		
+		// Set value to null if we've cleared the table.  This is in
+		// preparation (in HolyokeFW) for loading in a new ResultSet
+		// in which it's generally appropriate to clear things.
+		if (clearValueOnClearTable && getModel().getRowCount() == 0) {
+			if (val != null) {
+				Object oldVal = val;
+				val = null;
+				firePropertyChange("value", oldVal, val);
+			}
+		}
+		
+		// Refresh the display
+		setSelectedRowU(val, valueColU);
+	}
+	disableUpdateOnSelect = false;
+
 }
+}
+

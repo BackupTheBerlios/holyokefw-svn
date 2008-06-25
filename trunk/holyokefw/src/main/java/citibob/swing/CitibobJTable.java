@@ -28,6 +28,7 @@ import citibob.swing.typed.*;
 import citibob.swingers.*;
 import citibob.types.*;
 //import de.chka.swing.components.*;
+import citibob.util.ObjectUtil;
 
 public class CitibobJTable extends JTable
 implements MouseListener, MouseMotionListener
@@ -109,11 +110,18 @@ protected void setSelectedRow(Object val, int col)
  selection if val == null. */
 protected void setSelectedRow(Object val, int col, TableModel model)
 {
+	
 	if (val == null) {
 		getSelectionModel().clearSelection();
 		return;
 	}
-	int row = rowOfValue(val, col, model);
+	
+	// Test if we're already set correctly.
+	int row = getSelectedRow();
+	if (row >= 0 && ObjectUtil.eq(model.getValueAt(row, col), val)) return;
+	
+	// Find the row and set it.
+	row = rowOfValue(val, col, model);
 	setSelectedRow(row);
 //	if (row >= 0) {
 //		this.getSelectionModel().setSelectionInterval(row,row);

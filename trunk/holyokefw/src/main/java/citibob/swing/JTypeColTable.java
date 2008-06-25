@@ -16,13 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
- * JTypeColTable.java
- *
- * Created on March 13, 2006, 9:28 PM
- *
- * To change this template, choose Tools | Options and locate the template under
- * the Source Creation and Management node. Right-click the template and choose
- * Open. You can then make changes to the template in the Source Editor.
+ * Model structure:
+x * A. modelU <- sortModel <- colPermuteModel <- JTypeColTable
+x *		Here, sortModelU == sortModel
+ * B. modelU <- permuteModel <- JTypeColTable
+ *		modelU may be an instance of SortableTableModel
+x *		Here, sortModelU == modelU, sortModel == null
  */
 
 package citibob.swing;
@@ -40,6 +39,7 @@ import citibob.swing.typed.*;
 import citibob.types.JType;
 import java.awt.*;
 import citibob.text.*;
+import citibob.types.KeyedModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Comparator;
@@ -50,17 +50,20 @@ import java.util.Comparator;
  * @author citibob
  */
 public class JTypeColTable
-extends ColPermuteTable
+extends CitibobJTable
 {
 
 ColPermuteTableModel ttModel;	// Tooltips for each column (in view)
 SFormat[] ttFmt;				// Formatter for each tooltip (in view)
 
-// In wrapping order:
+JTypeTableModel modelU;			// Could be instance of SortableTableModel
+	SortableTableModel sortModel;	// The sorter model (if modelU is instance)
 ColPermuteTableModel permuteModel;	// The permuter model
-SortedJTypeTableModel sortModel;	// The sorter model (if there is one)
-CitibobTableModel modelU;		// Model the user gave us.
-CitibobTableModel sortModelU;		// Model the user gave us, sorted...
+
+
+// In wrapping order:
+//CitibobTableModel modelU;		// Model the user gave us.
+//CitibobTableModel sortModelU;		// Model the user gave us, sorted...
 
 
 /** Override this to do tooltips in custom manner.  For now, we return the "tooltip column" */
@@ -69,98 +72,69 @@ public String getTooltip(int row, int col)
 	if (ttModel == null) return null;
 	try {
 		if (ttFmt[col] == null) return null;
-		int row_u = row;
-		if (sortModel != null) row_u = sortModel.viewToModel(row);
-		return ttFmt[col].valueToString(ttModel.getValueAt(row_u, col)); // + "\nHoi";
+		Object val = ttModel.getValueAt(row, col);
+		return ttFmt[col].valueToString(ttModel.getValueAt(row, col));
+
+//		if (ttFmt[col] == null) return null;
+//		int row_u = row;
+//		if (sortModel != null) row_u = sortModel.viewToModel(row);
+//		return ttFmt[col].valueToString(ttModel.getValueAt(row_u, col)); // + "\nHoi";
 	} catch(java.text.ParseException e) {
 		return "<JTypeColTable: ParseException>\n" + e.getMessage();
 	}
 }
 
-public void setModelU(CitibobTableModel uModel, String[] colNames,
-String[] sColMap, boolean[] editable)
-{
-	super.setModelU(uModel, colNames, sColMap, editable);
-	this.modelU = uModel;
-	this.sortModelU = uModel;
-}
-public JTypeTableModel setModelU(JTypeTableModel jtModel,
-		citibob.swing.typed.SwingerMap smap)
-{
-	return setModelU(jtModel, false, smap);
-}
-public JTypeTableModel setModelU(JTypeTableModel modelU,
-		String[] colNames, String[] sColMap, boolean[] editable,
-		citibob.swing.typed.SwingerMap smap)
-{
-	return setModelU(modelU, colNames, sColMap, editable, false, smap);
-}		
-public void setModelU(JTypeTableModel jtModel,
-		String[] colNames, String[] sColMap, String[] ttColMap, boolean[] editable,
-		citibob.swing.typed.SwingerMap smap)
-{
-	setModelU(jtModel, colNames, sColMap, ttColMap, editable, false, smap);
-}		
-
-		
-		
-		
-public JTypeTableModel setModelU(JTypeTableModel jtModel,
-		boolean sortable, citibob.swing.typed.SwingerMap smap)
-{
-	JTypeTableModel jtmod = setModelU(jtModel, null,null,null, sortable, smap);
-	setAllEditable(false);
-	return jtmod;
-}
-///** @param jtModel Underling data buffer to use
-// * @param typeCol Name of type column in the schema
-// * @param xColNames Columns (other than type and status) from schema to display
-// */
-//public JTypeTableModel setModelU(JTypeTableModel jtModel,
-//		String[] colNames, String[] sColMap, boolean[] editable,
-//		citibob.swing.typed.SwingerMap smap)
+//public void setModelU(CitibobTableModel uModel, String[] colNames,
+//String[] sColMap, boolean[] editable)
 //{
-//	setModelU(jtModel, colNames, sColMap, editable, true, smap);
+//	super.setModelU(uModel, colNames, sColMap, editable);
+//	this.modelU = uModel;
+//	this.sortModelU = uModel;
 //}
 
-/** Returns the TableModel that does sorting, if we have one */
-public CitibobTableModel getSortModelU()
-{ return sortModelU; }
-public SortedJTypeTableModel getSortModel()
-{ return sortModel; }
+public void setModelU(JTypeTableModel modelU, SwingerMap smap)
+{
+	setModelU(modelU, null,null,null, smap);
+	setAllEditable(false);
+}
 
-//public boolean isSorted() { return getSorter() != null; }
-
-public ColPermuteTableModel getPermuteModel()
-	{ return permuteModel; 	 }
-
-/** @param jtModel Underling data buffer to use
+/** @param modelU Underling data buffer to use.  If it's an instance of
+ * SortableTableModel, sortable features will be used.
  * @param typeCol Name of type column in the schema
  * @param xColNames Columns (other than type and status) from schema to display
  */
-public JTypeTableModel setModelU(JTypeTableModel modelU,
+public void setModelU(JTypeTableModel modelU,
 		String[] colNames, String[] sColMap, boolean[] editable,
-		boolean sortable, citibob.swing.typed.SwingerMap smap)
+		citibob.swing.typed.SwingerMap smap)
 {
-//	jtModel = wrapModel(jtModel, sColMap);
+//	modelU = wrapModel(modelU, sColMap);
 	
-	// Set up model wrapping structure
+	// Set underlying model
 	this.modelU = modelU;
-	if (sortable) {
-		sortModel = new SortedJTypeTableModel(modelU);
-		sortModelU = sortModel;
-		super.setModelU(sortModel, colNames, sColMap, editable);
-	} else {
-		sortModelU = modelU;
-		super.setModelU(modelU, colNames, sColMap, editable);		
-	}
-	permuteModel = (ColPermuteTableModel)getModel();
 	
+	// Set up column selection on top of modelU
+	permuteModel = new ColPermuteTableModel(
+		modelU, colNames, sColMap, editable);
 	if (editable != null) permuteModel.setEditable(editable);
+
+	
+	// Set up table sorting stuff
+	if (modelU instanceof SortableTableModel) {
+		sortModel = (SortableTableModel)modelU;
+		
+		JTableHeader head = getTableHeader();
+		head.addMouseListener(new MouseHandler());
+		head.setDefaultRenderer(
+			new SortableHeaderRenderer(
+			head.getDefaultRenderer()));
+	}
+
+	// Now go!
+	super.setModel(permuteModel);
 	
 	// Set the RenderEdit for each column, according to that column's SqlType.
 //	for (int c=0; c<sColMap.length; ++c) {
-	for (int col=0; col<this.getColumnCount(); ++col) {
+	for (int col=0; col<getColumnCount(); ++col) {
 		int col_u = permuteModel.getColMap(col);
 		if (col_u < 0) {
 			System.out.println("ERROR: Column " + sColMap[col] + " is undefined!!!");
@@ -173,48 +147,52 @@ public JTypeTableModel setModelU(JTypeTableModel modelU,
 			if (swing == null) continue;
 			setRenderEdit(col, swing);
 			Comparator comp = swing.getComparator();
-//if (comp == null) {
-//	System.out.println("hoi");
-//}
+if (comp == null) {
+	System.out.println("hoi");
+}
 			if (sortModel != null) sortModel.setComparator(col_u, comp);
 		}
 	}
 
-	// Set up table sorting stuff
-	if (sortable) {
-		JTableHeader head = getTableHeader();
-		head.addMouseListener(new MouseHandler());
-		head.setDefaultRenderer(
-			new SortableHeaderRenderer(
-			head.getDefaultRenderer()));
-	}
-	
-	return modelU;
 }
 
-/** @param jtModel Underling data buffer to use
+/** @param modelU Underling data buffer to use
  * @param typeCol Name of type column in the schema
  * @param xColNames Columns (other than type and status) from schema to display
  * @param ttColMap Column in underlying table to display as tooltip for each column in displayed table.
  */
-public void setModelU(JTypeTableModel jtModel,
+public void setModelU(JTypeTableModel modelU,
 		String[] colNames, String[] sColMap, String[] ttColMap, boolean[] editable,
-		boolean sortable, citibob.swing.typed.SwingerMap smap)
+		citibob.swing.typed.SwingerMap smap)
 {
-	jtModel = this.setModelU(jtModel, colNames, sColMap, editable, sortable, smap);
+	this.setModelU(modelU, colNames, sColMap, editable, smap);
 	
 	// Come up with model for all the tooltips
-	ttModel = new ColPermuteTableModel(jtModel, colNames, ttColMap, editable);
+	ttModel = new ColPermuteTableModel(modelU, colNames, ttColMap, editable);
 	ttFmt = new SFormat[ttModel.getColumnCount()];
 	for (int i=0; i<ttModel.getColumnCount(); ++i) {
 		int colU = ttModel.getColMap(i);
 		if (colU < 0) continue;
-		JType jt = jtModel.getJType(0, colU);
-		String colName = jtModel.getColumnName(colU);
+		JType jt = modelU.getJType(0, colU);
+		String colName = modelU.getColumnName(colU);
 		if (jt == null) continue;
 		ttFmt[i] = smap.newSwinger(jt, colName).getSFormat();
 	}
 }
+
+
+
+/** Returns the TableModel that does sorting, if we have one */
+//public CitibobTableModel getModelU()
+//{ return sortModelU; }
+public SortableTableModel getSortModel()
+{ return sortModel; }
+
+//public boolean isSorted() { return getSorter() != null; }
+
+public ColPermuteTableModel getPermuteModel()
+	{ return permuteModel; 	 }
+
 
 ///** Convenience function --- allows us to set formatter for common
 // data types based soley on a format string. */
@@ -238,50 +216,126 @@ public void setModelU(JTypeTableModel jtModel,
 //public void setFormatU(String scol, Format fmt)
 
 
-/** Returns the UNDERLYING table model set by the user in setModelU(). */
+///** Returns the UNDERLYING table model set by the user in setModelU(). */
+//public CitibobTableModel getModelU()
+//{
+//	return modelU;
+////	
+////	CitibobTableModel model = ((CitibobTableModel)getModel());
+////	
+////	if (model instanceof SortedJTypeTableModel) {
+////		// JTypeColTable -> SortedJTypeTableModel -> ColPermuteTableModel -> Underlying Table Model
+////		return model.getModelU().getModelU();
+////	} else {
+////		// JTypeColTable -> ColPermuteTableModel -> Underlying Table Model
+////		return model.getModelU();
+////	}
+//}
+
+
+///** Returns the value of a column (in the underlying table) of the first selected row. */
+//public Object getOneSelectedValU(String colU)
+//{
+//	int row = getSelectedRow();
+//	if (row < 0) return null;
+//
+//	int row_u = row;
+////	if (sortModel != null) row_u = sortModel.viewToModel(row);
+//	CitibobTableModel modelU = getSortModelU();
+//	int col = modelU.findColumn(colU);
+//	return modelU.getValueAt(row, col);	
+//}
+
+
+/** Non-standard way to access any column of the selected row. */
+public Object getValue(int colU)
+{
+	int selRow = this.getSelectedRow();
+	if (selRow < 0) return null;
+	return getModelU().getValueAt(selRow, colU);
+}
+public Object getValue(String colName)
+{
+	int colU = getModelU().findColumn(colName);
+	return getValue(colU);
+}
+
+
+//public int rowOfValueU(Object val, int col_u)
+//	{ return rowOfValue(val, col_u, getSortModelU()); }
+//public int rowOfValueU(Object val, String underlyingName)
+//	{ return rowOfValue(val, getSortModelU().findColumn(underlyingName), getModelU()); }
+//
+//public void setSelectedRowU(Object val, int col_u)
+//	{ setSelectedRow(val, col_u, getSortModelU()); }
+////public void setSelectedRowU(Object val, String underlyingName)
+////	{ setSelectedRow(val, getModelU().findColumn(underlyingName), getModelU()); }
+//public void setSelectedRowU(Object val, String underlyingName)
+//	{ setSelectedRowU(val, getSortModelU().findColumn(underlyingName)); }
+
+
+
+// =====================================================
+// From the old ColPermuteTable
+public void setAllEditable(boolean edit)
+{
+	((ColPermuteTableModel)getModel()).setAllEditable(edit);
+}
+
+/** Convenience function, to be used by subclasses:
+ * finds the column number in THIS table model based on a column name, not display name. */
+public int findColumnU(String s)
+{
+	return ((ColPermuteTableModel)getModel()).findColumnU(s);
+}
+//public int getColumnU(int col_u)
+//{
+//	return ((ColPermuteTableModel)getModel()).getColumnU(col_u);
+//}
+
 public CitibobTableModel getModelU()
-{
-	return modelU;
-//	
-//	CitibobTableModel model = ((CitibobTableModel)getModel());
-//	
-//	if (model instanceof SortedJTypeTableModel) {
-//		// JTypeColTable -> SortedJTypeTableModel -> ColPermuteTableModel -> Underlying Table Model
-//		return model.getModelU().getModelU();
-//	} else {
-//		// JTypeColTable -> ColPermuteTableModel -> Underlying Table Model
-//		return model.getModelU();
-//	}
-}
+{ return modelU; }
+//{ return ((ColPermuteTableModel)getModel()).getModelU(); }
 
+/** Sets a render/edit on a colum, by UNDERLYING column name. */
+public void setFormatU(String underlyingName, Swinger swinger)
+	{ setRenderEdit(findColumnU(underlyingName), swinger); }
 
-/** Returns the value of a column (in the underlying table) of the first selected row. */
-public Object getOneSelectedValU(String colU)
-{
-	int row = getSelectedRow();
-	if (row < 0) return null;
+public void setFormatU(String underlyingName, Swinger.RenderEdit re)
+	{ setRenderEdit(findColumnU(underlyingName), re); }
 
-	int row_u = row;
-//	if (sortModel != null) row_u = sortModel.viewToModel(row);
-	CitibobTableModel modelU = getSortModelU();
-	int col = modelU.findColumn(colU);
-	return modelU.getValueAt(row, col);	
-}
+public void setFormatU(String underlyingName, KeyedModel kmodel)
+	{ setRenderEdit(findColumnU(underlyingName), kmodel); }
+
+/** Sets a render/edit on a colum, by UNDERLYING column name. */
+public void setFormatU(String underlyingName, SFormat sfmt)
+	{ setFormat(findColumnU(underlyingName), sfmt); }
+
+public void setFormatU(String underlyingName, java.text.Format fmt)
+	{ setFormat(findColumnU(underlyingName), fmt); }
+
+public void setFormatU(String underlyingName, String fmtString)
+	{ setFormat(findColumnU(underlyingName), fmtString); }
 
 public int rowOfValueU(Object val, int col_u)
-	{ return rowOfValue(val, col_u, getSortModelU()); }
+	{ return rowOfValue(val, col_u, getModelU()); }
 public int rowOfValueU(Object val, String underlyingName)
-	{ return rowOfValue(val, getSortModelU().findColumn(underlyingName), getModelU()); }
+	{ return rowOfValue(val, getModelU().findColumn(underlyingName), getModelU()); }
 
 public void setSelectedRowU(Object val, int col_u)
-	{ setSelectedRow(val, col_u, getSortModelU()); }
+	{ setSelectedRow(val, col_u, getModelU()); }
 //public void setSelectedRowU(Object val, String underlyingName)
 //	{ setSelectedRow(val, getModelU().findColumn(underlyingName), getModelU()); }
 public void setSelectedRowU(Object val, String underlyingName)
-	{ setSelectedRowU(val, getSortModelU().findColumn(underlyingName)); }
+	{ setSelectedRowU(val, getModelU().findColumn(underlyingName)); }
 
 
-
+/** Sets a renderer on a colum, by UNDERLYING column name.  Only sets
+renderer, not editor; only used in special cases. */
+public void setRendererU(String underlyingName, TableCellRenderer renderer)
+{
+	setRenderer(findColumnU(underlyingName), renderer);
+}
 
 
 
@@ -301,12 +355,6 @@ public void setSelectedRowU(Object val, String underlyingName)
 //	RenderEdit re = res.getRenderEdit(model.getColumnJType(col));
 //	setRenderEdit(col, re);
 //}
-// ======================================================================
-void refresh()
-{
-	sortModel.refresh();
-	getTableHeader().repaint();
-}
 // ======================================================================
 /** NOTE: Third Party Code.
  * Mouse Handler is Copyright (c) 1995 - 2008 by Sun Microsystems.
@@ -332,8 +380,10 @@ public void mouseClicked(MouseEvent e) {
 		dir = (dir + 4) % 3 - 1; // signed mod, returning {-1, 0, 1}
 		spec.setSortDir(col_u, dir);
 System.out.println("Sort by column " + col_u + " direction " + dir);
+
 		// Do the refresh
-		refresh();
+		sortModel.resort();
+		getTableHeader().repaint();
 	}
 }}
 // ======================================================================

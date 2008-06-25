@@ -62,6 +62,8 @@ public Class getColumnClass(int col)
 {
 	return getJType(0, col).getObjClass();
 }
+public boolean isVisible(int col)
+{ return true; }
 // -----------------------------------------------------------
 // ================= Basic convenience functions implemented
 public DefaultJTypeTableModel() { super(); }

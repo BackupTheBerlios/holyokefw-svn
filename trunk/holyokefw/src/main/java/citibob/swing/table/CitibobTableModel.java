@@ -33,6 +33,9 @@ public interface CitibobTableModel extends TableModel
 	 Returns -1 if column names doesn't exist or is null. */
 	int findColumn(String name);
 
+	/** Should this column be displayed by default? */
+	public boolean isVisible(int col);
+	
 	/** Gets the value at a specific column and row, with column referenced by name */
 	public Object getValueAt(int row, String col);
 	public void setValueAt(Object val, int row, String col);

@@ -34,7 +34,7 @@ import javax.swing.event.*;
 import java.sql.*;
 
 /**
- *
+ * @deprecated
  * @author citibob
  */
 public class SchemaBufTable extends JTypeColTable
@@ -47,7 +47,8 @@ String[] colNames, String[] sColMap, boolean[] editable,
 boolean sortable, citibob.swing.typed.SwingerMap swingers)
 {
 	this.dbModel = dbModel;
-	super.setModelU(dbModel.getSchemaBuf(), colNames, sColMap, editable, sortable, swingers);
+	super.setModelU(dbModel.getSchemaBuf(),
+		colNames, sColMap, editable, swingers);
 }
 
 /** Creates a SubSchema & SchemaBuf for this table.
@@ -60,7 +61,7 @@ boolean sortable, citibob.swing.typed.SwingerMap swingers)
 {	
 	SqlSchema subSchema = new SubSchema(schema, sColMap);
 	SchemaBuf buf = new SchemaBuf(subSchema);
-	super.setModelU(buf, colNames, sColMap, editable, sortable, swingers);
+	super.setModelU(buf, colNames, sColMap, editable, swingers);
 	return buf;
 }
 

@@ -26,12 +26,14 @@ import citibob.swing.typed.*;
 import citibob.sql.pgsql.*;
 import static citibob.swing.typed.JTypedTextField.*;
 import citibob.text.*;
+import java.util.Comparator;
 
 /**
  *
  * @author citibob
  */
 public class BoolSwinger extends AbstractSwinger
+//implements Comparator<Boolean>
 {
 static JType boolJType = new JavaJType(Boolean.class);
 
@@ -51,6 +53,17 @@ protected citibob.swing.typed.TypedWidget createWidget()
 but Swingers for complex widget types do. */
 public void configureWidget(TypedWidget tw) {}
 
+//public Comparator getComparator() { return this; }
 
+public int compare(Object xo1, Object xo2)
+{
+	Boolean o1 = (Boolean)xo1;
+	Boolean o2 = (Boolean)xo2;
+	if (o1.booleanValue()) {
+		return o2.booleanValue() ? 0 : 1;
+	} else {
+		return o2.booleanValue() ? -1 : 0;
+	}
+}
 
 }

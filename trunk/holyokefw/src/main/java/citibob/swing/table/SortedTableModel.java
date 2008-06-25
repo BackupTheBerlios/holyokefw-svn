@@ -1,6 +1,5 @@
 package citibob.swing.table;
 
-import citibob.swing.table.SortSpec.SortCol;
 import citibob.types.JType;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -8,9 +7,9 @@ import java.util.LinkedList;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-
-public class SortedJTypeTableModel
-extends WrapJTypeTableModel implements TableModelListener
+public class SortedTableModel
+extends WrapJTypeTableModel
+implements TableModelListener, SortableTableModel
 {
 
 	// Per-row information --- cache a sorted version of the data
@@ -27,8 +26,11 @@ extends WrapJTypeTableModel implements TableModelListener
 	protected SortSpec spec;
 	
 	LinkedList<TableModelListener> listeners = new LinkedList();
-	
-	public SortedJTypeTableModel(JTypeTableModel sub)
+
+	/** @param sub The underlying TableModel to be sorted.  NOTE: sub MUST
+	 * have just one type per column!!!
+	 */
+	public SortedTableModel(JTypeTableModel sub)
 	{
 		super(sub);
 		int ncol = sub.getColumnCount();
@@ -40,31 +42,34 @@ extends WrapJTypeTableModel implements TableModelListener
 	public void setSortSpec(SortSpec spec)
 	{
 		this.spec = spec;
-		refresh();
+		resort();
 	}
-	public void setSortDir(int col, int dir)
-	{
-		spec.setSortDir(col, dir);
-		refresh();
-	}
-	public void setSortDir(String scol, int dir)
-	{
-		int col = findColumn(scol);
-		setSortDir(col, dir);
-	}
-	public void clearSort() {
-		spec.clear();
-		refresh();
-	}
+//	public void setSortDir(int col, int dir)
+//	{
+//		spec.setSortDir(col, dir);
+//		refresh();
+//	}
+//	public void setSortDir(String scol, int dir)
+//	{
+//		int col = findColumn(scol);
+//		setSortDir(col, dir);
+//	}
+//	public void clearSort() {
+//		spec.clear();
+//		resort();
+//	}
 	
 	public void setComparator(int col, Comparator comp)
 	{
 		comparators[col] = comp;
 	}
-
+	public void setComparator(String scol, Comparator comp)
+	{
+		setComparator(findColumn(scol), comp);
+	}
 	public SortSpec getSortSpec() { return spec; }
 	
-	public void refresh()
+	public void resort()
 	{
 		setSorted();
 		fireTableChanged(new TableModelEvent(this)); //, 0, getRowCount()-1));
@@ -166,11 +171,13 @@ public void setValueAt(Object val, int row, String col)
 // ========================== JTypeTableModel
 /** Return SqlType for a cell.  If type depends only on col, ignores the row argument. */
 public JType getJType(int row, int col)
-{ return sub.getJType(viewToModel[row],col); }
+{ return sub.getJType(0,col); }
+//{ return sub.getJType(viewToModel(row),col); }
 
 /** Convenience function */
 public JType getJType(int row, String col)
-{ return sub.getJType(viewToModel[row], col); }
+{ return sub.getJType(0, col); }
+//{ return sub.getJType(viewToModel(row), col); }
 
 // ================================================================
 // TableModelListener

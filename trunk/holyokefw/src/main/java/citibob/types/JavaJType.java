@@ -38,6 +38,7 @@ public class JavaJType implements JType
 	public boolean isInstance(Object o)
 		{ return (klass.isInstance(o) || (nullable && o == null)); }
 // =================================================================
+public static final JavaJType jtObject = new JavaJType(Object.class);
 public static final JavaJType jtInteger = new JavaJType(Integer.class);
 public static final JavaJType jtLong = new JavaJType(Long.class);
 public static final JavaJType jtBoolean= new JavaJType(Boolean.class);

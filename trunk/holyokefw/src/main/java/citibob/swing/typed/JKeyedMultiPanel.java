@@ -73,7 +73,7 @@ List val;					// Value we return overall as a typed widget
 		initComponents();
 		
 		JTypeTableModel tmodel = new MyModel();
-		table.setModelU(tmodel, new String[] {"",""}, null, editable);
+		table.setModelU(tmodel, new String[] {"",""}, null, editable, null);
 			BoolSwinger bswing = new BoolSwinger();
 			Component checkbox = (Component)bswing.newWidget();
 			table.setRenderEdit(C_CHECK, bswing);

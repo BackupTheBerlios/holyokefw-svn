@@ -41,14 +41,15 @@ boolean[] editable;	// Is each column editable?  (NULL ==> use underlying defaul
 /** Clone the bheavior of the underlying TableModel. */
 public ColPermuteTableModel(CitibobTableModel model_u)
 {
-	int ncol = model_u.getColumnCount();
-	String[] colNames = new String[ncol];
-	int[] colMap = new int[ncol];
-	for (int i=0; i<ncol; ++i) {
-		colNames[i] = model_u.getColumnName(i);
-		colMap[i] = i;
-	}
-	init(model_u, colNames, colMap, null);
+	this(model_u, null, (int[])null);
+//	int ncol = model_u.getColumnCount();
+//	String[] colNames = new String[ncol];
+//	int[] colMap = new int[ncol];
+//	for (int i=0; i<ncol; ++i) {
+//		colNames[i] = model_u.getColumnName(i);
+//		colMap[i] = i;
+//	}
+//	init(model_u, colNames, colMap, null);
 }
 /** Constructor
  @param Column i in this table maps to column colMap[i] in underlying table. */
@@ -72,8 +73,28 @@ boolean[] editable)			// Is each column editable?
 {
 	init(model_u, colNames, sColMap, editable);
 }
+
+
+private int[] newColMap(CitibobTableModel model_u)
+{
+	// Count number of "real" columns
+	int ncol = 0;
+	for (int i=0; i < model_u.getColumnCount(); ++i) {
+		if (!model_u.getColumnName(i).startsWith("__")) ++ncol;
+	}
+	int[] colMap = new int[ncol];
+	int j=0;
+	for (int i=0; i < model_u.getColumnCount(); ++i) {
+		if (model_u.isVisible(i)) colMap[j++] = i;
+//		if (!model_u.getColumnName(i).startsWith("__")) colMap[j++] = i;
+	}
+	
+	return colMap;
+}
+
 /** @param model_u Underlying table model
- @param colNames Display names -- Null if you wish to just use names of underlying columns
+ @param colNames Display names -- Null if you wish to just use names of underlying columns.  If null,
+underlying columns starting with "__" will not be used.
  @param sColMap Names of underlying columns --- Null if wish to use all underlying columns
  @param editable Is each column editable?  If null, use underlying table's isEditable() function. */
 protected void init(CitibobTableModel model_u,
@@ -84,16 +105,7 @@ boolean[] editable)			// Is each column editable?
 //System.out.println("ColPermuteTableModel: this = " + this);
 	int[] colMap;
 	if (sColMap == null) {
-		// Count number of "real" columns
-		int ncol = 0;
-		for (int i=0; i < model_u.getColumnCount(); ++i) {
-			if (!model_u.getColumnName(i).startsWith("__")) ++ncol;
-		}
-		colMap = new int[ncol];
-		int j=0;
-		for (int i=0; i < model_u.getColumnCount(); ++i) {
-			if (!model_u.getColumnName(i).startsWith("__")) colMap[j++] = i;
-		}
+		colMap = newColMap(model_u);
 	} else {
 		colMap = new int[sColMap.length];
 		for (int i = 0; i < colMap.length; ++i) {
@@ -242,6 +254,7 @@ public void setValueAt(Object val, int row, int column)
 //System.out.println("ColpermuteTableModel: setValueAt(" + val + ", " + row + ", " + column);
 	model_u.setValueAt(val, row, colMap[column]);
 }
+public boolean isVisible(int col) { return true; }
 // ------------------------------------------------------
 public Object getValueAt(int row, String col)
 	{ return getValueAt(row, findColumn(col)); }

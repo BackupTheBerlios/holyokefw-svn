@@ -45,5 +45,7 @@ public void setValueAt(Object val, int row, String col)
 	{ setValueAt(val, row, findColumn(col)); }
 public JType getJType(int row, String col)
 	{ return getJType(row, findColumn(col)); }
-
+/** By default, do not display columns starting with "__" in name. */
+public boolean isVisible(int col)
+	{ return !getColumnName(col).startsWith("__"); }
 }

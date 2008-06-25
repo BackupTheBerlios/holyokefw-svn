@@ -63,6 +63,8 @@ public Object getValueAt(int row, String col)
 public void setValueAt(Object val, int row, String col)
 { sub.setValueAt(val, row, col); }
 
+public boolean isVisible(int col)
+{ return sub.isVisible(col); }
 // ========================== JTypeTableModel
 /** Return SqlType for a cell.  If type depends only on col, ignores the row argument. */
 public JType getJType(int row, int col)

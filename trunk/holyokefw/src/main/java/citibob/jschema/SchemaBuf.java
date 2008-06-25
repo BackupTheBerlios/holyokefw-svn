@@ -558,7 +558,10 @@ public Object getValueAt(int row, int col)
 	}
 	return r.data[col];
 }
-
+public boolean isVisible(int col)
+{
+	return (col < getSchemaColumnCount());
+}
 // ===================================================================
 protected static class SqlRow2
 {
