@@ -34,17 +34,23 @@ public class CitibobJTable extends JTable
 implements MouseListener, MouseMotionListener
 {
 
-private boolean isHighlightMouseover = false;		// SHould we highlight rows when mousing over?
-private boolean isHighlightSelected = true;		// Should we highlight selected rows?
+private boolean highlightMouseover = false;		// SHould we highlight rows when mousing over?
 
-public void setHighlightSelected(boolean b) { this.isHighlightSelected = b; }
-public boolean getHighlightSelected() { return this.isHighlightSelected; }
+/** Should we fill the ScrollPane with our table, even if there aren't
+enough data rows to warrant it?
+See: http://nadeausoftware.com/articles/2008/01/java_tip_how_add_zebra_background_stripes_jtable
+ */
+private boolean fillViewport = true;			// 
+	
+//private boolean isHighlightSelected = true;		// Should we highlight selected rows?
+//public void setHighlightSelected(boolean b) { this.isHighlightSelected = b; }
+//public boolean getHighlightSelected() { return this.isHighlightSelected; }
 
 public void setHighlightMouseover(boolean b)
 {
-	if (isHighlightMouseover == b) return;
+	if (highlightMouseover == b) return;
 
-	isHighlightMouseover = b;
+	highlightMouseover = b;
 	if (b) {
 		this.addMouseListener(this); //new MyMouseAdapter());
 		this.addMouseMotionListener(this); //new MyMouseMotionAdapter());
@@ -53,7 +59,7 @@ public void setHighlightMouseover(boolean b)
 		this.removeMouseMotionListener(this); //new MyMouseMotionAdapter());		
 	}
 }
-public boolean getHighlightMouseover() { return isHighlightMouseover; }
+public boolean isHighlightMouseover() { return highlightMouseover; }
 
 //RowHeightUpdater rhu;
 
@@ -245,6 +251,38 @@ public void setRenderer(int colNo, TableCellRenderer re)
 //	Class klass = getModel().getColumnClass(col);
 //	setRenderEdit(col, res.getRenderEdit(klass));
 //}
+
+// ==========================================================
+// Mess with changing the font and adjusting table cell heights
+// accordingly.
+FontMetrics tableFontMetrics;
+public void setFont(Font tableFont)
+{
+//	this.tableFont = tableFont;
+	super.setFont(tableFont);
+	tableFontMetrics = getFontMetrics(tableFont);
+}
+/** @Override
+ * Adjust the height of the rows based on our chosen font.
+ */
+public int getRowHeight()
+{
+	if (tableFontMetrics == null) return super.getRowHeight();
+	return tableFontMetrics.getHeight();
+}
+// ==========================================================
+/** Force the table to fill the viewport's height. */
+public boolean getScrollableTracksViewportHeight( )
+{
+	if (!fillViewport) return false;
+	
+	final java.awt.Component p = getParent( );
+	if ( !(p instanceof javax.swing.JViewport) )
+		return false;
+	return ((javax.swing.JViewport)p).getHeight() > getPreferredSize().height;
+}
+
+
 // ================================================================
 // Stuff to highlight on mouseover
 // See: http://forum.java.sun.com/thread.jspa?threadID=280692&messageID=1091824
@@ -273,15 +311,31 @@ public Component prepareRenderer(TableCellRenderer renderer, int row, int col)
 		c.setBackground(cTextHighlightBg);
 		c.setForeground(cTextHighlightFg);
 	} else {
-		c.setBackground(cTextBg);
-		c.setForeground(cTextFg);
+		c.setBackground(getBackground(row,col));
+		c.setForeground(getForeground(row,col));
 	}
+	
+	// Set up the font
+	c.setFont(getFont(row,col));
+	
 	return c;
 }
 int mouseRow = -1;		// Row the mouse is currently hovering over.
 
 /** Override this to do tooltips in custom manner.  For now, we return the "tooltip column" */
 public String getTooltip(int row, int col) { return null; }
+
+
+/** Override this to change the foreground color of a cell. */
+public Color getForeground(int row, int col)
+	{ return cTextFg; }
+/** Override this to change the foreground color of a cell. */
+public Color getBackground(int row, int col)
+	{ return cTextBg; }
+/** Override this to change the font of a cell.  NOTE: The font
+ returned MUST have the same height as the Font set up using setFont(Font). */
+public Font getFont(int row, int col)
+	{ return getFont(); }
 // =====================================================================
 // MouseMotionListener
 /**
@@ -302,7 +356,7 @@ public void mouseDragged(MouseEvent e) {}
  * but no buttons have been pushed.
  */
 public void mouseMoved(MouseEvent e) {
-	if (!isHighlightMouseover) return;
+	if (!highlightMouseover) return;
 	
 	JTable aTable =  (JTable)e.getSource();
 	int oldRow = mouseRow;
@@ -338,12 +392,11 @@ public void mouseEntered(MouseEvent e) {}
  * Invoked when the mouse exits a component.
  */
 public void mouseExited(MouseEvent e) {
-	if (!isHighlightMouseover) return;
+	if (!highlightMouseover) return;
 
 	JTable aTable =  (JTable)e.getSource();
 	mouseRow = -1;
 	aTable.repaint();
 }
 // ================================================================
-
 }

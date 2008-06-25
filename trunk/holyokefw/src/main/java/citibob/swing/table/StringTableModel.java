@@ -31,6 +31,7 @@ import java.sql.*;
 import citibob.text.*;
 import citibob.sql.*;
 import java.io.*;
+import java.text.ParseException;
 import javax.swing.table.*;
 
 /**
@@ -38,50 +39,98 @@ import javax.swing.table.*;
  WARNING: Does not bother to pass up events from the TableModel it wraps.
  * @author citibob
  */
-public class StringTableModel extends AbstractTableModel {
+public class StringTableModel extends ColPermuteTableModel {
 
 SFormat[] formatters;		// Formatter for each column
-JTypeTableModel mod;
-int[] colMap;					// The columns we want to do
+//JTypeTableModel mod;
+//int[] colMap;					// The columns we want to do
 
-public StringTableModel(JTypeTableModel mod, SFormat[] formatters)
+/** This will create a "default" colMap, including only the VISIBLE
+ * columns in the underlying TableModel. The array of formatters
+ * must be of the same length.
+ * @param mod
+ * @param formatters
+ */
+public StringTableModel(JTypeTableModel mod, SFormatMap smap)
 {
-	this.mod = mod;
-	this.formatters = formatters;
+	init(mod, null, null, false, smap);
+}
+public StringTableModel(JTypeTableModel mod, String[] sColMap,
+boolean[] editable, boolean forwardEvents, SFormatMap smap)
+{
+	init(mod, sColMap, editable, forwardEvents, smap);
+}
+protected void init(JTypeTableModel mod, String[] sColMap, boolean[] editable,
+boolean forwardEvents, SFormatMap smap)
+{
+	super.init(mod, null, sColMap, null, forwardEvents);
 	
-	// ColMap by default will just be non-__ columns
-	int ngood = 0;
-	for (int i=0; i<mod.getColumnCount(); ++i) {
-		String name = mod.getColumnName(i);
-		if (!name.startsWith("__")) ++ngood;
+	formatters = new SFormat[getColumnCount()];
+	for (int col=0; col<formatters.length; ++col) {
+		int colU = getColU(col);
+		SFormat fmt = smap.newSFormat(mod.getJType(0,colU), mod.getColumnName(colU));
+		if (fmt == null) fmt = NullSFormat.instance;
+		formatters[col] = fmt;
 	}
-	colMap = new int[ngood];
-	int j=0;
-	for (int i=0; i<mod.getColumnCount(); ++i) {
-		String name = mod.getColumnName(i);
-		if (!name.startsWith("__")) {
-			colMap[j++] = i;
-		}
-	}
+	
+//	if (formatters.length != getColumnCount()) {
+//		throw new IllegalArgumentException(
+//			"Formatters must have " + getColumnCount() +
+//			" elements, it has only " + formatters.length);
+//	}
+//	this.formatters = formatters;
+//	
+//	// Eliminate nulls
+//	for (int i=0; i<formatters.length; ++i)
+//		if (formatters[i] == null) formatters[i] = NullSFormat.instance;
 }
 
+//public StringTableModel(JTypeTableModel mod, String[] sColMap,
+//SFormatMap smap)
+//{
+//	SFormat[] formatters = new SFormat[sColMap.length];
+//	for (for)
+//}
 
-/** @param colNames Name of each column in finished report --- Null if use underlying column names
- @param sColMap Name of each column in underlying uModel  --- Null if wish to use all underlying columns */
-public StringTableModel(JTypeTableModel mod,
-SFormatMap sfmap)
-{
-	this(mod, sfmap.newSFormats(mod));
-}
-public StringTableModel(JTypeTableModel mod,
-SFormatMap sfmap, String[] scol, SFormat[] sfmt)
-{
-	this(mod, sfmap.newSFormats(mod, scol, sfmt));
-}
+
+//
+//	model_u, colNames, colNames, editable, forwardEvents)
+//	this.mod = mod;
+//	this.formatters = formatters;
+//	
+//	// ColMap by default will just be non-__ columns
+//	int ngood = 0;
+//	for (int i=0; i<mod.getColumnCount(); ++i) {
+//		String name = mod.getColumnName(i);
+//		if (!name.startsWith("__")) ++ngood;
+//	}
+//	colMap = new int[ngood];
+//	int j=0;
+//	for (int i=0; i<mod.getColumnCount(); ++i) {
+//		String name = mod.getColumnName(i);
+//		if (!name.startsWith("__")) {
+//			colMap[j++] = i;
+//		}
+//	}
+//}
+
+
+///** @param colNames Name of each column in finished report --- Null if use underlying column names
+// @param sColMap Name of each column in underlying uModel  --- Null if wish to use all underlying columns */
+//public StringTableModel(JTypeTableModel mod,
+//SFormatMap sfmap)
+//{
+//	this(mod, sfmap.newSFormats(mod));
+//}
+//public StringTableModel(JTypeTableModel mod,
+//SFormatMap sfmap, String[] scol, SFormat[] sfmt)
+//{
+//	this(mod, sfmap.newSFormats(mod, scol, sfmt));
+//}
 /** Used to set a special (non-default) formatter for a particular column. */
 public void setSFormat(String uname, SFormat fmt)
 {
-	int col = mod.findColumn(uname);
+	int col = model_u.findColumn(uname);
 	formatters[col] = fmt;
 }
 
@@ -90,16 +139,28 @@ public void setSFormat(String uname, java.text.Format fmt)
 	{ setSFormat(uname, new FormatSFormat(fmt)); }
 // -----------------------------------------------------------------------
 
-public int getRowCount() { return mod.getRowCount(); }
+public int getRowCount() { return model_u.getRowCount(); }
 public int getColumnCount() { return colMap.length; }
-public String getColumnName(int column) { return mod.getColumnName(colMap[column]); }
+public String getColumnName(int column) { return model_u.getColumnName(colMap[column]); }
 public Object getValueAt(int row, int col) {
 	try {
 		int mcol = colMap[col];
-		return formatters[mcol].valueToString(mod.getValueAt(row,mcol));
+		SFormat fmt = formatters[mcol];
+		return formatters[mcol].valueToString(model_u.getValueAt(row,mcol));
 	} catch(Exception e) {
 		return e.toString();
 	}
+}
+
+/** Replaces the usual setValueAt(). */
+public void setStringValueAt(String stringVal, int row, int col)
+throws ParseException
+{
+	Object val;
+
+	int mcol = colMap[col];
+	val = formatters[mcol].stringToValue(stringVal);
+	model_u.setValueAt(val, row, mcol);
 }
 public Class getColumnClass(int columnIndex) { return String.class; }
 }

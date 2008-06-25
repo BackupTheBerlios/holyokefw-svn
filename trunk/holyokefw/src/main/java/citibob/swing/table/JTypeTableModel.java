@@ -21,6 +21,7 @@ import java.util.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
 import citibob.sql.*;
+import citibob.text.SFormat;
 import citibob.types.JType;
 
 public interface JTypeTableModel extends CitibobTableModel
@@ -34,6 +35,16 @@ public interface JTypeTableModel extends CitibobTableModel
 	/** Convenience function */
 	public JType getJType(int row, String col);
 
+	/** @returns SFormat to use for this type.  Normally
+	 * returns null, which will allow the system to use the
+	 * type coming from the SwingerMap.
+	 * If not null, this will override formats
+	 * supplied by the Swinger/SFormat Map.  This allows one
+	 * to create table models that include formatting info
+	 * along with type info.
+	 */
+//	public SFormat getSFormat();
+	
 //	/** Return a value we can sort on --- usually the same as getValueAt().  But, eg,
 //	if a column is an integer key with a KeyedModel, then it would be sorted according
 //	to the KeyedModel sort order. */

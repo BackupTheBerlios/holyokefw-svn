@@ -53,7 +53,7 @@ public class JTypeColTable
 extends CitibobJTable
 {
 
-ColPermuteTableModel ttModel;	// Tooltips for each column (in view)
+StringTableModel ttModel;	// Tooltips for each column (in view)
 SFormat[] ttFmt;				// Formatter for each tooltip (in view)
 
 JTypeTableModel modelU;			// Could be instance of SortableTableModel
@@ -70,18 +70,19 @@ ColPermuteTableModel permuteModel;	// The permuter model
 public String getTooltip(int row, int col)
 {
 	if (ttModel == null) return null;
-	try {
-		if (ttFmt[col] == null) return null;
-		Object val = ttModel.getValueAt(row, col);
-		return ttFmt[col].valueToString(ttModel.getValueAt(row, col));
-
+	return (String)ttModel.getValueAt(row, col);
+//	try {
 //		if (ttFmt[col] == null) return null;
-//		int row_u = row;
-//		if (sortModel != null) row_u = sortModel.viewToModel(row);
-//		return ttFmt[col].valueToString(ttModel.getValueAt(row_u, col)); // + "\nHoi";
-	} catch(java.text.ParseException e) {
-		return "<JTypeColTable: ParseException>\n" + e.getMessage();
-	}
+//		Object val = ttModel.getValueAt(row, col);
+//		return ttFmt[col].valueToString(ttModel.getValueAt(row, col));
+//
+////		if (ttFmt[col] == null) return null;
+////		int row_u = row;
+////		if (sortModel != null) row_u = sortModel.viewToModel(row);
+////		return ttFmt[col].valueToString(ttModel.getValueAt(row_u, col)); // + "\nHoi";
+//	} catch(java.text.ParseException e) {
+//		return "<JTypeColTable: ParseException>\n" + e.getMessage();
+//	}
 }
 
 //public void setModelU(CitibobTableModel uModel, String[] colNames,
@@ -135,7 +136,7 @@ public void setModelU(JTypeTableModel modelU,
 	// Set the RenderEdit for each column, according to that column's SqlType.
 //	for (int c=0; c<sColMap.length; ++c) {
 	for (int col=0; col<getColumnCount(); ++col) {
-		int col_u = permuteModel.getColMap(col);
+		int col_u = permuteModel.getColU(col);
 		if (col_u < 0) {
 			System.out.println("ERROR: Column " + sColMap[col] + " is undefined!!!");
 		}
@@ -168,16 +169,18 @@ public void setModelU(JTypeTableModel modelU,
 	this.setModelU(modelU, colNames, sColMap, editable, smap);
 	
 	// Come up with model for all the tooltips
-	ttModel = new ColPermuteTableModel(modelU, colNames, ttColMap, editable);
-	ttFmt = new SFormat[ttModel.getColumnCount()];
-	for (int i=0; i<ttModel.getColumnCount(); ++i) {
-		int colU = ttModel.getColMap(i);
-		if (colU < 0) continue;
-		JType jt = modelU.getJType(0, colU);
-		String colName = modelU.getColumnName(colU);
-		if (jt == null) continue;
-		ttFmt[i] = smap.newSwinger(jt, colName).getSFormat();
-	}
+	ttModel = new StringTableModel(modelU, ttColMap, null, false, smap);
+////	ttModel = new ColPermuteTableModel(modelU, colNames, ttColMap, editable);
+//	ttFmt = new SFormat[ttModel.getColumnCount()];
+//	for (int i=0; i<ttModel.getColumnCount(); ++i) {
+//		int colU = ttModel.getColU(i);
+//		if (colU < 0) continue;
+//		JType jt = modelU.getJType(0, colU);
+//		String colName = modelU.getColumnName(colU);
+//		if (jt == null) continue;
+//		ttFmt[i] = smap.newSwinger(jt, colName).getSFormat();
+//	}
+//new StringTableModel
 }
 
 
@@ -367,7 +370,7 @@ public void mouseClicked(MouseEvent e) {
 	int col_h = columnModel.getColumn(viewColumn).getModelIndex();
 	if (col_h != -1) {
 		// Find this column in the main model (or sort) table
-		int col_u = permuteModel.getColMap(col_h);
+		int col_u = permuteModel.getColU(col_h);
 		
 		// Obtain current sorting for possible change
 		SortSpec spec = sortModel.getSortSpec();
@@ -412,7 +415,7 @@ boolean hasFocus, int row, int column)
 		int col_h = table.convertColumnIndexToModel(column);
 
 		// Find this column in the main model (or sort) table
-		int col_u = permuteModel.getColMap(col_h);
+		int col_u = permuteModel.getColU(col_h);
 		
 		// Select the icon to display
 		Icon icon = null;

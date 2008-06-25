@@ -34,7 +34,7 @@ public void setPivotValFormat(JTypeColTable table, SFormat sfmt)
 	// Find first pivoted column
 	ColPermuteTableModel pm = table.getPermuteModel();
 	int firstColU = mainU.getColumnCount();
-	int firstCol = pm.getIColMap(firstColU);		// First pivot column in main table
+	int firstCol = pm.getColUInv(firstColU);		// First pivot column in main table
 	
 	for (int i=firstCol; i<table.getColumnCount(); ++i)
 		table.setFormat(i, sfmt);

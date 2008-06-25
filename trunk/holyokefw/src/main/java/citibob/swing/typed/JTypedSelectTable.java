@@ -92,7 +92,7 @@ public Object getValue()
 
 /** Sets the value.  Same as method in JFormattedTextField.  Fires a
  * propertyChangeEvent("value") when calling setValue() changes the value. */
-public void setValue(Object newVal)
+ public void setValue(Object newVal)
 {
 //if (newVal == null) {
 //	System.out.println("hoi");
