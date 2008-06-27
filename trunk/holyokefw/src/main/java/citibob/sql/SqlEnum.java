@@ -31,17 +31,19 @@ implements SqlType
 //	KeyedModel kmodel;
 	boolean nullable = true;
 	
-	/** nullText = string to use for null value, or else <null> if this is not nullable. */
-	public SqlEnum(KeyedModel kmodel, String nullText) {
-		super(kmodel);
-		this.nullable = (nullText != null);
-		if (nullable) {
-			if (!kmodel.containsKey(null)) kmodel.addItem(null, nullText, null);
-		}
-	}
+//	/** nullText = string to use for null value, or else <null> if this is not nullable. */
+//	public SqlEnum(KeyedModel kmodel, String nullText) {
+//		super(kmodel);
+//		this.nullable = (nullText != null);
+//		if (nullable) {
+//			if (!kmodel.containsKey(null)) kmodel.addItem(null, nullText, null);
+//		}
+//	}
 	
-	public SqlEnum(KeyedModel kmodel, boolean nullable) {
-		this(kmodel, nullable ? "" : null);
+	public SqlEnum(KeyedModel kmodel)
+	{
+		super(kmodel);
+		nullable = (kmodel.getNullValue() != null);
 	}
 	
 	/** Java class used to represent this type */

@@ -68,7 +68,9 @@ boolean forwardEvents, SFormatMap smap)
 	formatters = new SFormat[getColumnCount()];
 	for (int col=0; col<formatters.length; ++col) {
 		int colU = getColU(col);
-		SFormat fmt = smap.newSFormat(mod.getJType(0,colU), mod.getColumnName(colU));
+		SFormat fmt = null;
+		if (colU >= 0) fmt = smap.newSFormat(
+			mod.getJType(0,colU), mod.getColumnName(colU));
 		if (fmt == null) fmt = NullSFormat.instance;
 		formatters[col] = fmt;
 	}
@@ -144,10 +146,12 @@ public int getColumnCount() { return colMap.length; }
 public String getColumnName(int column) { return model_u.getColumnName(colMap[column]); }
 public Object getValueAt(int row, int col) {
 	try {
-		int mcol = colMap[col];
-		SFormat fmt = formatters[mcol];
-		return formatters[mcol].valueToString(model_u.getValueAt(row,mcol));
+		int colU = colMap[col];
+		Object val = model_u.getValueAt(row,colU);
+		SFormat fmt = formatters[col];
+		return fmt.valueToString(val);
 	} catch(Exception e) {
+		e.printStackTrace();
 		return e.toString();
 	}
 }

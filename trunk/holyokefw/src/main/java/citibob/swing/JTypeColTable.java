@@ -257,9 +257,9 @@ public Object getValue(int colU)
 	if (selRow < 0) return null;
 	return getModelU().getValueAt(selRow, colU);
 }
-public Object getValue(String colName)
+public Object getValue(String colNameU)
 {
-	int colU = getModelU().findColumn(colName);
+	int colU = getModelU().findColumn(colNameU);
 	return getValue(colU);
 }
 

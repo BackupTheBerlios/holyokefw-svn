@@ -80,7 +80,8 @@ public Object getKey(int ix)
 	{ return itemList.get(ix).key; }
 public Object getValue(int ix)
 	{ return itemList.get(ix).obj; }
-
+public Object getNullValue()
+	{ return get(null); }
 
 
 public Vector newKeyList(Object segment, Object nullValue)
@@ -151,32 +152,20 @@ public void addItem(Object key, Object item, Object segment)
 //	while (rs.next()) addItem(rs.getObject(keyCol), rs.getObject(itemCol));
 //}
 
-public void addAllItems(SqlRun str, String sql, final int keyCol, final int itemCol, final int segmentCol)
-{
-	str.execSql(sql, new RsTasklet() {
-	public void run(ResultSet rs) throws SQLException {
-		clear();
-		while (rs.next()) {
-			addItem(rs.getObject(keyCol),
-				rs.getObject(itemCol),
-				segmentCol < 0 ? null : rs.getObject(segmentCol));
-		}
-	}});
-}
 
-public void addAllItems(SqlRun str, String sql, final String keyCol,
-final String itemCol, final String segmentCol)
-{
-	str.execSql(sql, new RsTasklet() {
-	public void run(ResultSet rs) throws SQLException {
-		clear();
-		while (rs.next()) {
-			addItem(rs.getObject(keyCol),
-				rs.getObject(itemCol),
-				segmentCol == null ? null : rs.getObject(segmentCol));
-		}
-	}});
-}
+//public void addAllItems(SqlRun str, String sql, final String keyCol,
+//final String itemCol, final String segmentCol)
+//{
+//	str.execSql(sql, new RsTasklet() {
+//	public void run(ResultSet rs) throws SQLException {
+//		clear();
+//		while (rs.next()) {
+//			addItem(rs.getObject(keyCol),
+//				rs.getObject(itemCol),
+//				segmentCol == null ? null : rs.getObject(segmentCol));
+//		}
+//	}});
+//}
 
 /** Converts key value to a string, if the key exists in the model;
  *otherwise return null. */
@@ -195,14 +184,14 @@ public String toString(Object key)
 //	return oi.serial;
 //}
 // -------------------------------------------------------------------
-public void KeyedModel(SqlRun str, String sql, int keyCol, int itemCol)
-{
-	addAllItems(str, sql, keyCol, itemCol, -1);
-}
-public void KeyedModel(SqlRun str, String sql, String keyCol, String itemCol)
-{
-	addAllItems(str, sql, keyCol, itemCol, null);
-}
+//public void KeyedModel(SqlRun str, String sql, int keyCol, int itemCol)
+//{
+//	addAllItems(str, sql, keyCol, itemCol, -1);
+//}
+//public void KeyedModel(SqlRun str, String sql, String keyCol, String itemCol)
+//{
+//	addAllItems(str, sql, keyCol, itemCol, null);
+//}
 //public KeyedModel(Object[] objs)
 /** Creates a KeyedModel in which key == value. */
 public static KeyedModel sameKeys(Object[] objs)

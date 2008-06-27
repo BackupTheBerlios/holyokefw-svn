@@ -46,16 +46,22 @@ String idTableName;
 //String orderFieldName;
 
 String sql;
+Object nullVal;
+
+public Object getNullValue()
+	{ return nullVal; }
 
 /** @param change model that will tell us when we need to requery.
  @param idTableName Name of table on which a change should trigger a requery.
- @parm sql Query to generate key/value pairs; ID must be in column 1, Name in column 2. */
+ @param sql Query to generate key/value pairs; ID must be in column 1, Name in column 2.
+ @param nullVal The value to associate with the null key.  Only added if non-null. */
 public DbKeyedModel(SqlRun str, DbChangeModel change,
-String idTableName, String sql)
+String idTableName, String sql, Object nullVal)
 //throws SQLException
 {
 	super();
 	this.sql = sql;
+	this.nullVal = nullVal;
 	this.idTableName = idTableName;
 	this.change = change;
 	requery(str);
@@ -63,13 +69,15 @@ String idTableName, String sql)
 }
 public DbKeyedModel(SqlRun str, DbChangeModel change,
 String idTableName, String idFieldName,
-String nameFieldName, String orderFieldName)
+String nameFieldName, String orderFieldName,
+Object nullVal)
 {
-	this(str, change, idTableName, idFieldName, nameFieldName, "null", orderFieldName);
+	this(str, change, idTableName, idFieldName, nameFieldName, "null", orderFieldName, nullVal);
 }
 public DbKeyedModel(SqlRun str, DbChangeModel change,
 String idTableName, String idFieldName,
-String nameFieldName, String segmentFieldName, String orderFieldName)
+String nameFieldName, String segmentFieldName, String orderFieldName,
+Object nullVal)
 //throws SQLException
 {
 	this(str, change, idTableName,
@@ -77,16 +85,29 @@ String nameFieldName, String segmentFieldName, String orderFieldName)
 		", " + nameFieldName +
 		", " + segmentFieldName +
 		" from " +
-			idTableName + " order by " + orderFieldName);
+			idTableName + " order by " + orderFieldName,
+		nullVal);
 }
 
 /** Re-load keyed model from database... */
 public void requery(SqlRun str)
 {
 //	clear();
-	addAllItems(str, sql, 1, 2, 3);
-	str.execUpdate(new UpdTasklet() {
-	public void run() {
+//	addAllItems(str, sql, 1, 2, 3);
+	
+	str.execSql(sql, new RsTasklet() {
+	public void run(ResultSet rs) throws SQLException {
+		clear();
+		if (nullVal != null) addItem(null, nullVal, null);
+		
+		final int keyCol = 1;
+		final int itemCol = 2;
+		final int segmentCol = 3;
+		while (rs.next()) {
+			addItem(rs.getObject(keyCol),
+				rs.getObject(itemCol),
+				segmentCol < 0 ? null : rs.getObject(segmentCol));
+		}
 		fireKeyedModelChanged();
 	}});
 }
@@ -99,5 +120,7 @@ public void tableWillChange(SqlRun str, String table)
 //System.out.println("tableWillChange: " + table);
 	requery(str);
 }
+
+
 
 }

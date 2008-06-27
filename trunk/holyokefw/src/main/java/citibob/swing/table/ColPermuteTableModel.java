@@ -101,6 +101,9 @@ boolean forwardEvents)
 		for (int i = 0; i < colMap.length; ++i) {
 //			for (int j = 0; j < model_u.getColumnCount(); ++j) {
 				colMap[i] = (sColMap[i] == null ? -1 : model_u.findColumn(sColMap[i]));
+				if (colMap[i] < 0) {
+					System.out.println("Cannot find column " + i + ": " + sColMap[i]);
+				}
 				if (colMap[i] < 0 && sColMap[i] != null) {
 					throw new ArrayIndexOutOfBoundsException("Cannot find column " + sColMap[i]);
 				}
@@ -131,7 +134,8 @@ private void init(CitibobTableModel model_u, String[] xColNames, int[] xColMap, 
 	if (xColNames == null) {
 		xColNames = new String[xColMap.length];
 		for (int i=0; i<xColMap.length; ++i) {
-			xColNames[i] = model_u.getColumnName(xColMap[i]);
+			int colU = xColMap[i];
+			if (colU >= 0) xColNames[i] = model_u.getColumnName(colU);
 		}
 	}
 
