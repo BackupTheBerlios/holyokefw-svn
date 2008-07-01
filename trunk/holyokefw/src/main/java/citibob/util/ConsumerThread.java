@@ -31,7 +31,10 @@ public void run()
 	try {
 		for (;;) {
 			processQueue();
-			if (interrupted()) break;
+			if (interrupted()) {
+				if (!queue.isEmpty()) processQueue();
+				break;
+			}
 		}
 	} catch(InterruptedException e) {}
 }
