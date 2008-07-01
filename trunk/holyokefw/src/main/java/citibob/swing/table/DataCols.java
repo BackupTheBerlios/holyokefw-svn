@@ -20,6 +20,8 @@ TT[] data;
 
 public TT getValueAt(int row, int col) { return data[col]; }
 
+public void setColumn(int col, TT val) { data[col] = val; }
+
 public int getRowCount() { return 0; }
 public int getColumnCount() { return data.length; }
 
@@ -29,10 +31,10 @@ public DataCols(Class klass, int ncol)
 //	data = (TT[])new TT[ncol];
 //	data = new TT[ncol];
 }
-public DataCols(Class klass, StyledTableModel model)
-{
-	this(klass, model.getModel().getColumnCount());
-}
+//public DataCols(Class klass, StyledTableModel model)
+//{
+//	this(klass, model.getModel().getColumnCount());
+//}
 
 	
 	

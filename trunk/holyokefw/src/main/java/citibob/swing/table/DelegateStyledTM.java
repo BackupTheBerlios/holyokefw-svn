@@ -26,6 +26,7 @@ DataGrid<Color> bgColorModel;
 DataGrid<Color> fgColorModel;
 DataGrid<Font> fontModel;
 DataGrid<Boolean> editableModel;
+//DataCols<Comparator> comparatorModel;
 
 public DelegateStyledTM(JTypeTableModel modelU)
 	{ super(modelU); }
@@ -94,7 +95,70 @@ public boolean isEditable(int row, int col) {
 		this.tooltipModel = tooltipModel;
 	}
 
+	public DataGrid<Color> getBgColorModel() {
+		return bgColorModel;
+	}
+
+	public DataGrid<Boolean> getEditableModel() {
+		return editableModel;
+	}
+
+	public DataGrid<Color> getFgColorModel() {
+		return fgColorModel;
+	}
+
+	public DataGrid<Font> getFontModel() {
+		return fontModel;
+	}
+
+	public DataGrid<RenderEdit> getRenderEditModel() {
+		return renderEditModel;
+	}
+
+	public DataGrid<String> getTooltipModel() {
+		return tooltipModel;
+	}
+
 // ==========================================================
+
+// ==========================================================
+public void setCompModelU(SwingerMap smap)
+{
+	// Only useful for sortable tables
+	if (! (modelU instanceof SortableTableModel)) return;
+	
+	// Set up comparators based on the type of each column; can change later.
+	compModelU = CompModel.newCompModel((SortableTableModel)modelU, smap);
+}
+// ==========================================================
+
+/** Makes up a default model based on modelU */
+public void setDefaultModel(SwingerMap smap)
+{
+	// Set up the ColPermuteTableModel
+	setModel(new ColPermuteTableModel(modelU));
+	
+	// Set of swingers / types / etc.
+	RenderEditCols re = new RenderEditCols(this, smap);
+	this.setRenderEditModel(re);
+}
+
+public void setColumns(SwingerMap smap,
+String[] colNames, String[] sColMap, boolean[] xeditable)
+{
+	setModel(new ColPermuteTableModel(modelU, colNames, sColMap));
+	
+	// Do the editable stuff
+	int n = model.getColumnCount();
+	DataCols<Boolean> editable = new DataCols(Boolean.class, n);
+	for (int i=0; i<n; ++i) {
+		editable.data[i] = (xeditable[i] ? Boolean.TRUE : Boolean.FALSE);
+	}
+	this.setEditableModel(editable);
+}
+
+
+
 /** @param fmtSpecs.  Array of blocks of four:
 <nl>
 <li>Underlying Column Name (String)</li>
@@ -118,7 +182,7 @@ public void setColumns(SwingerMap smap, Object... fmtSpecs)
 		colMap[i] = nameU;
 		colNames[i] = name;
 	}
-	model = new ColPermuteTableModel(modelU, colNames, colMap);
+	setModel(new ColPermuteTableModel(modelU, colNames, colMap));
 	
 	// Set up editable
 	DataCols<Boolean> editable = new DataCols(Boolean.class, n);
@@ -131,7 +195,7 @@ public void setColumns(SwingerMap smap, Object... fmtSpecs)
 	this.setEditableModel(editable);
 	
 	// Set of swingers / types / etc.
-	RenderEditDataCols re = new RenderEditDataCols(this, smap);
+	RenderEditCols re = new RenderEditCols(this, smap);
 	for (int i=0; i<n; ++i) {
 		Object spec = fmtSpecs[i*4+3];
 		// Override result from constructor only if we've specified something.

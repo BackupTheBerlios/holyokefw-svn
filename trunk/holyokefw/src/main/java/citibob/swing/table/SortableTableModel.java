@@ -13,6 +13,9 @@ import java.util.Comparator;
  */
 public interface SortableTableModel extends JTypeTableModel
 {
+	/** Tells how to sort each column */
+	public void setComparators(DataGrid<Comparator> comps);
+	
 	/** Set a new SortSpec (and resort). */
 	public void setSortSpec(SortSpec spec);
 	
@@ -23,11 +26,11 @@ public interface SortableTableModel extends JTypeTableModel
 	/** Re-sort according to the latest SortSpec.  Throws events, etc. */
 	public void resort();
 	
-	/** Shows how to sort a particular column */
-	public void setComparator(int col, Comparator comp);
-	
-	/** Convenience function */
-	public void setComparator(String scol, Comparator comp);
+//	/** Shows how to sort a particular column */
+//	public void setComparator(int col, Comparator comp);
+//	
+//	/** Convenience function */
+//	public void setComparator(String scol, Comparator comp);
 	
 	/** IF the underlying rows are ordered 0..n, gives the underlying
 	 * row # for a given visible row #. */

@@ -29,6 +29,7 @@ package citibob.swingers;
 
 //import citibob.sql.*;
 //import citibob.jschema.JType;
+import citibob.swing.table.DefaultComparator;
 import citibob.swing.typed.*;
 import citibob.swing.typed.Swinger;
 import citibob.types.JType;
@@ -43,7 +44,7 @@ import citibob.text.*;
  *
  * @author citibob
  */
-public abstract class AbstractSwinger implements Swinger, Comparator
+public abstract class AbstractSwinger implements Swinger//, Comparator
 {
 
 protected JType jType;
@@ -61,12 +62,13 @@ public AbstractSwinger(JType jType, SFormat sformat, boolean renderWithWidget)
 }
 
 //protected static final Comparator COMPARABLE_COMAPRATOR = new Comparator() {
-	public int compare(Object o1, Object o2) {
-		return ((Comparable) o1).compareTo(o2);
-	}
+//	public int compare(Object o1, Object o2) {
+//		return ((Comparable) o1).compareTo(o2);
+//	}
 //};
 public Comparator getComparator() {
-	return this;
+	return DefaultComparator.instance;
+//	return this;
 //	return COMPARABLE_COMAPRATOR;
 }
 

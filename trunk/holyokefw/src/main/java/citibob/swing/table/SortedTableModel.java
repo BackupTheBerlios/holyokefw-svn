@@ -21,8 +21,8 @@ implements TableModelListener, SortableTableModel
 	public int modelToView(int row) { return modelToView[row]; }
 	
 	// Per-column information
-	protected Comparator[] comparators;		// How to sort on each column
-
+//	protected Comparator[] comparators;		// How to sort on each column
+	protected DataGrid<Comparator> comparators;
 	protected SortSpec spec;
 	
 	LinkedList<TableModelListener> listeners = new LinkedList();
@@ -34,10 +34,16 @@ implements TableModelListener, SortableTableModel
 	{
 		super(sub);
 		int ncol = sub.getColumnCount();
+		comparators = CompModel.newCompModel(ncol);		// Set up default
 //		comparators = new Comparator[ncol];
-		this.comparators = new Comparator[sub.getColumnCount()];
+//		this.comparators = new Comparator[sub.getColumnCount()];
 		sub.addTableModelListener(this);
 		setSortSpec(new SortSpec(ncol));
+	}
+	/** Must be called as part of initialization!!! */
+	public void setComparators(DataGrid<Comparator> comparators)
+	{
+		this.comparators = comparators;
 	}
 	public void setSortSpec(SortSpec spec)
 	{
@@ -59,14 +65,14 @@ implements TableModelListener, SortableTableModel
 //		resort();
 //	}
 	
-	public void setComparator(int col, Comparator comp)
-	{
-		comparators[col] = comp;
-	}
-	public void setComparator(String scol, Comparator comp)
-	{
-		setComparator(findColumn(scol), comp);
-	}
+//	public void setComparator(int col, Comparator comp)
+//	{
+//		comparators[col] = comp;
+//	}
+//	public void setComparator(String scol, Comparator comp)
+//	{
+//		setComparator(findColumn(scol), comp);
+//	}
 	public SortSpec getSortSpec() { return spec; }
 	
 	public void resort()
@@ -99,8 +105,14 @@ public int compare(Row a, Row b) {
 		
 		// Neither is null, use the regular comparator for this column
 //System.out.println("COmparator: " + col + " " + comparators[col]);
-		int cmp = comparators[col].compare(valA, valB);
-		if (cmp != 0) return cmp * sc.dir;
+//		int cmp = comparators[col].compare(valA, valB);
+//		if (comparators == null) {
+//			return ((Comparable) valA).compareTo(valB);
+//		} else {
+			Comparator comp = comparators.getValueAt(0, col);
+			int cmp = comp.compare(valA, valB);
+			if (cmp != 0) return cmp * sc.dir;
+//		}
 	}
 	
 	// The two rows compare exactly on all their sort columns...

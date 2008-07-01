@@ -5,14 +5,10 @@
 
 package citibob.swing.table;
 
-import citibob.swing.typed.Swinger;
 import citibob.swing.typed.Swinger.RenderEdit;
-import citibob.swing.typed.SwingerMap;
-import citibob.types.JType;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.Comparator;
-import javax.swing.table.JTableHeader;
 
 /**
  *
@@ -21,6 +17,7 @@ import javax.swing.table.JTableHeader;
 public class StyledTableModel {
 
 protected JTypeTableModel modelU;		// Some underlying table model
+protected DataCols<Comparator> compModelU;		// Way to sort each column
 
 /** The model to display; may be a projection of modelU, may be the same. */
 protected JTypeTableModel model;
@@ -29,7 +26,6 @@ protected JTypeTableModel model;
 public StyledTableModel(JTypeTableModel modelU)
 {
 	this.modelU = modelU;
-//	this.model = new ColPermuteTableModel(modelU);
 }
 
 public void setModel(JTypeTableModel model)
@@ -37,6 +33,10 @@ public void setModel(JTypeTableModel model)
 	this.model = model;
 }
 
+public void setCompModelU(DataCols<Comparator> compModelU)
+	{ this.compModelU = compModelU; }
+public DataCols<Comparator> getCompModelU()
+	{ return compModelU; }
 //public StyledTableModel(JTypeTableModel modelU, JTypeTableModel model)
 //{
 //	this.modelU = modelU;

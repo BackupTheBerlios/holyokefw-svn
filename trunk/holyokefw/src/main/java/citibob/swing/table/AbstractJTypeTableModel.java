@@ -58,5 +58,5 @@ reports its location in THIS table model.  Otherwise, same
 as findColumn(). */
 public int findColumnU(String colU)
 	{ return findColumn(colU); }
-
+public int getColU(int col) { return col; }
 }

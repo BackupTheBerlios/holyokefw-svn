@@ -28,20 +28,20 @@ import javax.swing.table.TableCellRenderer;
  * type to each column.
  * @author fiscrob
  */
-public class RenderEditDataCols extends DataCols<RenderEdit>
+public class RenderEditCols extends DataCols<RenderEdit>
 {
 
 StyledTableModel model;		// Used for isEditable
 //RenderEdit[] redits;
 
-public RenderEditDataCols(StyledTableModel model)
+public RenderEditCols(StyledTableModel model)
 {
-	super(RenderEdit.class, model);
+	super(RenderEdit.class, model.getModel().getColumnCount());
 	this.model = model;
 //	redits = new RenderEdit[model.getModel().getColumnCount()];
 }
 
-public RenderEditDataCols(StyledTableModel styledModel, SwingerMap smap)
+public RenderEditCols(StyledTableModel styledModel, SwingerMap smap)
 {
 	this(styledModel);
 	

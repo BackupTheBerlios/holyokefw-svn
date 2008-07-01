@@ -41,6 +41,7 @@ implements JTypeTableModel
 protected citibob.types.JType[] jTypes;		// JType of each column
 
 public JTypeTableModel getModelU() { return null; }
+public int getColU(int col) { return col; }
 public int findColumnU(String colU) { return findColumn(colU); }
 
 // -----------------------------------------------------------

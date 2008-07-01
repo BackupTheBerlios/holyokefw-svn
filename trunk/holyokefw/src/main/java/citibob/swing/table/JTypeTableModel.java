@@ -48,7 +48,11 @@ public interface JTypeTableModel<TT> extends TableModel, DataGrid<TT>
 reports its location in THIS table model.  This allows one to refer
 to columns by their UNDERLYING name, not their display name. */
 public int findColumnU(String name);
-	
+
+/** Given a column in the visible table, returns the corresponding
+ * column in the underlying table. */
+public int getColU(int col);
+
 //	/** Return SqlType for an entire column --- or null, if this column does not have a single SqlType. */
 //	public JType getColumnJType(int col);
 

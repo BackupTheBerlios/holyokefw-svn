@@ -35,7 +35,8 @@ implements MouseListener, MouseMotionListener
 {
 
 protected StyledTableModel styledModel = dummyStyledModel;
-	
+SortableTableModel sortModel;
+
 private boolean highlightMouseover = false;		// SHould we highlight rows when mousing over?
 
 /** Should we fill the ScrollPane with our table, even if there aren't
@@ -72,6 +73,24 @@ public StyledTable()
 public void setStyledModel(StyledTableModel ext)
 {
 	this.styledModel = ext;
+	
+	// Set up table sorting stuff
+	JTypeTableModel modelU = ext.getModelU();
+	if (modelU instanceof SortableTableModel) {
+		sortModel = (SortableTableModel)modelU;
+		
+		// Set comparators in sortModel
+		sortModel.setComparators(ext.getCompModelU());
+		
+		// Sort when user clicks headers
+		JTableHeader head = getTableHeader();
+		head.addMouseListener(new SortableMouseHandler());
+		head.setDefaultRenderer(
+			new SortableHeaderRenderer(
+			head.getDefaultRenderer()));
+	}
+	
+	
 	super.setModel(ext.getModel());
 }
 
@@ -340,7 +359,78 @@ public void setRenderer(int colNo, TableCellRenderer re)
 	col.setCellRenderer(re);
 }
 
+// ======================================================================
+/** NOTE: Third Party Code.
+ * Mouse Handler is Copyright (c) 1995 - 2008 by Sun Microsystems.
+ * See ArrowIcon.java for full copyright notice. */
+private class SortableMouseHandler extends MouseAdapter {
+public void mouseClicked(MouseEvent e) {
+	JTableHeader h = (JTableHeader) e.getSource();
+	TableColumnModel columnModel = h.getColumnModel();
+	int viewColumn = columnModel.getColumnIndexAtX(e.getX());
+	int col_h = columnModel.getColumn(viewColumn).getModelIndex();
+	if (col_h != -1) {
+		// Find this column in the main model (or sort) table
+//		int col_u = permuteModel.getColU(col_h);
+		int col_u = styledModel.getModel().getColU(col_h);
+		
+		// Obtain current sorting for possible change
+		SortSpec spec = sortModel.getSortSpec();
+		int dir = spec.getSortDir(col_u);
+		if (!e.isControlDown()) spec.clear();
+		
+		// Cycle the sorting states through {NOT_SORTED, ASCENDING, DESCENDING} or 
+		// {NOT_SORTED, DESCENDING, ASCENDING} depending on whether shift is pressed. 
+		dir = dir + (e.isShiftDown() ? -1 : 1);
+		dir = (dir + 4) % 3 - 1; // signed mod, returning {-1, 0, 1}
+		spec.setSortDir(col_u, dir);
+System.out.println("Sort by column " + col_u + " direction " + dir);
 
+		// Do the refresh
+		sortModel.resort();
+		getTableHeader().repaint();
+	}
+}}
+// ======================================================================
+/** NOTE: Third Party Code.
+ * SortableHeaderRenderer is Copyright (c) 1995 - 2008 by Sun Microsystems.
+ * See ArrowIcon.java for full copyright notice. */
+private class SortableHeaderRenderer implements TableCellRenderer {
+private TableCellRenderer sub;
+
+public SortableHeaderRenderer(TableCellRenderer sub) {
+	this.sub = sub;
+}
+
+public Component getTableCellRendererComponent(
+JTable table,  Object value, boolean isSelected, 
+boolean hasFocus, int row, int column)
+{		
+	SortSpec spec = sortModel.getSortSpec();
+	Component c = sub.getTableCellRendererComponent(table, 
+			value, isSelected, hasFocus, row, column);
+	if (c instanceof JLabel) {
+		JLabel l = (JLabel) c;
+		l.setHorizontalTextPosition(JLabel.LEFT);
+
+		// User might have rearranged columns in the JTable
+		int col_h = table.convertColumnIndexToModel(column);
+
+		// Find this column in the main model (or sort) table
+		int col_u = styledModel.getModel().getColU(col_h);
+//		int col_u = permuteModel.getColU(col_h);
+		
+		// Select the icon to display
+		Icon icon = null;
+		int dir = spec.getSortDir(col_u);
+		if (dir != 0) icon = new ArrowIcon(
+			dir < 0, l.getFont().getSize(),
+			spec.getSortIndex(col_u));
+		l.setIcon(icon);
+	}
+	return c;
+}
+}
 //// ==========================================================
 //// Toltips
 ///** Set the tooltips to be used */
