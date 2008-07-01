@@ -76,6 +76,12 @@ Object nullVal)
 }
 public DbKeyedModel(SqlRun str, DbChangeModel change,
 String idTableName, String idFieldName,
+String nameFieldName, String orderFieldName)
+{
+	this(str, change, idTableName, idFieldName, nameFieldName, "null", orderFieldName, null);
+}
+public DbKeyedModel(SqlRun str, DbChangeModel change,
+String idTableName, String idFieldName,
 String nameFieldName, String segmentFieldName, String orderFieldName,
 Object nullVal)
 //throws SQLException

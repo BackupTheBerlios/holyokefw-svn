@@ -27,7 +27,16 @@ public class MakeNbm {
     public MakeNbm() {
     }
     
-    
+
+static String[] getBeanNames(Class[] klasses)
+{
+	String[] ret = new String[klasses.length];
+	for (int i=0; i<ret.length; ++i) {
+		ret[i] = klasses[i].getName();
+	}
+	return ret;
+}
+	
     /**
      * @param args the command line arguments
      */
@@ -54,35 +63,37 @@ public class MakeNbm {
 		prm.license =
 			Licensor.readLicenseFile(MakeNbm.class, "license-long.txt");
 		prm.minJDK = "1.5";
-		prm.beanNames = new String[] {
-			"citibob.swing.typed.JBoolCheckbox",
-			"citibob.swing.typed.JKeyedComboBox",
-			"citibob.swing.typed.JTypedDateChooser",
-			"citibob.swing.typed.JTypedDayChooser",			
-			"citibob.swing.typed.JTypedEditableLabel",
-			"citibob.swing.typed.JTypedEditableLabelDB",
-			"citibob.swing.typed.JTypedFileName",
-			"citibob.swing.typed.JTypedLabel",
-			"citibob.swing.typed.JTypedPanel",
-			"citibob.swing.typed.JTypedScrollPane",
-			"citibob.swing.typed.JTypedSelectTable",
-			"citibob.swing.typed.JTypedTextField",
-			"citibob.swing.typed.KeyedButtonGroup",
-			"citibob.swing.typed.JKeyedMulti",
-			"citibob.swing.typed.JKeyedMultiPanel",
-			"citibob.swing.CitibobJTable",
-			"citibob.swing.ColorsJTypeTable",
-			"citibob.swing.ColPermuteTable",
-			"citibob.swing.JConsole",
-			"citibob.swing.JDialogWiz",
-			"citibob.swing.JTextAreaWriter",
-			"citibob.swing.JTypeColTable",
-			"citibob.swing.JTypeTable",
-			"citibob.swing.LogPanel",
-			"citibob.gui.ConsoleFrame",
-			"citibob.gui.DBPrefsDialog",
-			"citibob.gui.ThreadConsoleGui"
-		};
+		prm.beanNames = getBeanNames(new Class[] {
+			citibob.swing.typed.JBoolCheckbox.class,
+			citibob.swing.typed.JKeyedComboBox.class,
+			citibob.swing.typed.JTypedDateChooser.class,
+			citibob.swing.typed.JTypedDayChooser.class,			
+//			citibob.swing.typed.JTypedEditableLabel.class,
+//			citibob.swing.typed.JTypedEditableLabelDB.class,
+			citibob.swing.typed.JTypedFileName.class,
+			citibob.swing.typed.JTypedLabel.class,
+			citibob.swing.typed.JTypedPanel.class,
+			citibob.swing.typed.JTypedScrollPane.class,
+			citibob.swing.typed.JTypedSelectTable.class,
+			citibob.swing.typed.SingleSelectStyledTable.class,
+			citibob.swing.typed.JTypedTextField.class,
+			citibob.swing.typed.KeyedButtonGroup.class,
+			citibob.swing.typed.JKeyedMulti.class,
+			citibob.swing.typed.JKeyedMultiPanel.class,
+			citibob.swing.CitibobJTable.class,
+			citibob.swing.ColorsJTypeTable.class,
+//			citibob.swing.ColPermuteTable.class,
+//			citibob.swing.JConsole.class,
+			citibob.swing.JDialogWiz.class,
+			citibob.swing.JTextAreaWriter.class,
+			citibob.swing.JTypeColTable.class,
+			citibob.swing.StyledTable.class,
+			citibob.swing.JTypeTable.class,
+			citibob.swing.LogPanel.class,
+			citibob.gui.ConsoleFrame.class,
+//			citibob.gui.DBPrefsDialog.class,
+			citibob.gui.ThreadConsoleGui.class
+		});
 		Beans2Nbm.makeNbm(prm);
 	}
 }

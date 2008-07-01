@@ -23,84 +23,86 @@ import javax.swing.event.*;
 import javax.swing.*;
 import citibob.swing.typed.*;
 
+import citibob.types.JType;
 import java.io.*;
 
-public class ColPermuteTableModel extends AbstractTableModel
-implements CitibobTableModel, TableModelListener
+public class ColPermuteTableModel<TT>
+extends AbstractJTypeTableModel<TT>
+implements TableModelListener
 {
 
-protected CitibobTableModel model_u;
+protected JTypeTableModel<TT> modelU;
 
 //final ArrayList prototypes = new ArrayList(NUMCOLS);
 
 String[] colNames;
 int[] colMap;		// Column map: i in this table --> colMap[i] in underlying
 int[] iColMap;
-boolean[] editable;	// Is each column editable?  (NULL ==> use underlying default)
+//boolean[] editable;	// Is each column editable?  (NULL ==> use underlying default)
 // ---------------------------------------------------------
 
 protected ColPermuteTableModel() {}
 
 /** Clone the bheavior of the underlying TableModel. */
-public ColPermuteTableModel(CitibobTableModel model_u)
+public ColPermuteTableModel(JTypeTableModel modelU)
 {
-	this(model_u, null, (int[])null);
-//	int ncol = model_u.getColumnCount();
+	this(modelU, null, (int[])null);
+//	int ncol = modelU.getColumnCount();
 //	String[] colNames = new String[ncol];
 //	int[] colMap = new int[ncol];
 //	for (int i=0; i<ncol; ++i) {
-//		colNames[i] = model_u.getColumnName(i);
+//		colNames[i] = modelU.getColumnName(i);
 //		colMap[i] = i;
 //	}
-//	init(model_u, colNames, colMap, null);
+//	init(modelU, colNames, colMap, null);
 }
 /** Constructor
  @param Column i in this table maps to column colMap[i] in underlying table. */
-public ColPermuteTableModel(CitibobTableModel model_u, String[] colNames, int[] colMap)
+public ColPermuteTableModel(JTypeTableModel modelU, String[] colNames, int[] colMap)
 {
-	init(model_u, colNames, colMap, null, true);
+	init(modelU, colNames, colMap, true);
 }
-public ColPermuteTableModel(CitibobTableModel model_u, String[] sColNames, String[] colMap)
+public ColPermuteTableModel(JTypeTableModel modelU, String[] sColNames, String[] colMap)
 {
-	init(model_u, sColNames, colMap, null, true);
-}
-
-/** @param model_u Underlying table model
- @param colNames Display names -- Null if you wish to just use names of underlying columns
- @param sColMap Names of underlying columns --- Null if wish to use all underlying columns
- @param editable Is each column editable?  If null, use underlying table's isEditable() function. */
-public ColPermuteTableModel(CitibobTableModel model_u,
-String[] colNames,			// Display names
-String[] sColMap,			// Underlying names
-boolean[] editable)			// Is each column editable?
-{
-	init(model_u, colNames, sColMap, editable, true);
+	init(modelU, sColNames, colMap, true);
 }
 
+///** @param modelU Underlying table model
+// @param colNames Display names -- Null if you wish to just use names of underlying columns
+// @param sColMap Names of underlying columns --- Null if wish to use all underlying columns
+// @param editable Is each column editable?  If null, use underlying table's isEditable() function. */
+//public ColPermuteTableModel(JTypeTableModel modelU,
+//String[] colNames,			// Display names
+//String[] sColMap,			// Underlying names
+//boolean[] editable)			// Is each column editable?
+//{
+//	init(modelU, colNames, sColMap, editable, true);
+//}
 
 
 
-/** @param model_u Underlying table model
+
+/** @param modelU Underlying table model
  @param colNames Display names -- Null if you wish to just use names of underlying columns.  If null,
 underlying columns starting with "__" will not be used.
  @param sColMap Names of underlying columns --- Null if wish to use all underlying columns
  @param editable Is each column editable?  If null, use underlying table's isEditable() function.
-@param forwardEvents If true, this should forward events when model_u changes. */
-protected void init(CitibobTableModel model_u,
+@param forwardEvents If true, this should forward events when modelU changes. */
+protected void init(JTypeTableModel modelU,
 String[] colNames,			// Display names
 String[] sColMap,			// Underlying names
-boolean[] editable,			// Is each column editable?
+//boolean[] editable,			// Is each column editable?
 boolean forwardEvents)
 {
 //System.out.println("ColPermuteTableModel: this = " + this);
 	int[] colMap;
 	if (sColMap == null) {
-		colMap = TableModelUtils.defaultColMap(model_u);
+		colMap = null;
 	} else {
 		colMap = new int[sColMap.length];
 		for (int i = 0; i < colMap.length; ++i) {
-//			for (int j = 0; j < model_u.getColumnCount(); ++j) {
-				colMap[i] = (sColMap[i] == null ? -1 : model_u.findColumn(sColMap[i]));
+//			for (int j = 0; j < modelU.getColumnCount(); ++j) {
+				colMap[i] = (sColMap[i] == null ? -1 : modelU.findColumn(sColMap[i]));
 				if (colMap[i] < 0) {
 					System.out.println("Cannot find column " + i + ": " + sColMap[i]);
 				}
@@ -114,28 +116,20 @@ boolean forwardEvents)
 		}
 	}
 
-	init(model_u, colNames, colMap, editable, forwardEvents);
+	init(modelU, colNames, colMap, forwardEvents);
 }
-public void setEditable(boolean[] editable)
-{
-	this.editable = editable;
-}
-public void setAllEditable(boolean edit)
-{
-	editable = new boolean[this.getColumnCount()];
-	for (int i=0; i<getColumnCount(); ++i) editable[i] = edit;
-}
-/** @param model_u Underlying table model
+/** @param modelU Underlying table model
  @param xColNames Display names
  @param xColMap Index in underlying table of each column
  @param editable Is each column editable? */
-private void init(CitibobTableModel model_u, String[] xColNames, int[] xColMap, boolean[] editable, boolean forwardEvents)
+private void init(JTypeTableModel modelU, String[] xColNames, int[] xColMap, boolean forwardEvents)
 {
+	if (xColMap == null) xColMap = TableModelUtils.defaultColMap(modelU);
 	if (xColNames == null) {
 		xColNames = new String[xColMap.length];
 		for (int i=0; i<xColMap.length; ++i) {
 			int colU = xColMap[i];
-			if (colU >= 0) xColNames[i] = model_u.getColumnName(colU);
+			if (colU >= 0) xColNames[i] = modelU.getColumnName(colU);
 		}
 	}
 
@@ -155,20 +149,20 @@ private void init(CitibobTableModel model_u, String[] xColNames, int[] xColMap, 
 	colMap = xColMap;
 	colNames = xColNames;
 	
-	this.model_u = model_u;
+	this.modelU = modelU;
 	this.colNames = colNames;
 	this.colMap = colMap;
-	this.editable = editable;
+//	this.editable = editable;
 
 	// Set up inverse column map
-	iColMap = new int[model_u.getColumnCount()];
-	for (int i=0; i < model_u.getColumnCount(); ++i) iColMap[i] = -1;
+	iColMap = new int[modelU.getColumnCount()];
+	for (int i=0; i < modelU.getColumnCount(); ++i) iColMap[i] = -1;
 	for (int i=0; i < colMap.length; ++i) {
 		if (colMap[i] != -1) iColMap[colMap[i]] = i;
 	}
 
 
-	if (forwardEvents) model_u.addTableModelListener(this);
+	if (forwardEvents) modelU.addTableModelListener(this);
 
 //for (int i = 0; i < colMap.length; ++i) System.out.println("colMap["+i+"] = "+colMap[i]);
 }
@@ -187,7 +181,7 @@ to columns by their UNDERLYING name, not their display name.
  the table model... */
 public int findColumnU(String s)
 {
-	int col_u = model_u.findColumn(s);
+	int col_u = modelU.findColumn(s);
 	int col_t = iColMap[col_u];
 	return col_t;
 }
@@ -206,32 +200,26 @@ public int getColUInv(int col_u) { return iColMap[col_u]; }
 
 /** Gets the column class of a column named ``name'' in the underlying model. */
 public Class getColumnClassU(String s)
-	{ return model_u.getColumnClass(model_u.findColumn(s)); }
-public CitibobTableModel getModelU() { return model_u; }
+	{ return modelU.getColumnClass(modelU.findColumn(s)); }
+public JTypeTableModel getModelU() { return modelU; }
 
 
 public String getColumnName(int col)
 	{ return colNames[col]; }
 public Class getColumnClass(int col)
-	{ return model_u.getColumnClass(colMap[col]); }
+	{ return modelU.getColumnClass(colMap[col]); }
 
 public boolean isCellEditable(int rowIndex, int columnIndex)
-{
-	if (editable == null) {
-		return model_u.isCellEditable(rowIndex, colMap[columnIndex]);
-	} else {
-		return editable[columnIndex];
-	}
-}
+	{ return modelU.isCellEditable(rowIndex, colMap[columnIndex]); }
 
 public int getColumnCount()
 	{ return colMap.length; }
 public int getRowCount()
-	{ return model_u.getRowCount(); }
+	{ return modelU.getRowCount(); }
 
 //public List getPrototypes()
 //{
-//	List pold = model_u.getPrototypes();
+//	List pold = modelU.getPrototypes();
 //	if (pold == null) return null;
 //
 //	// TODO: This could be inefficient with LinkedList.
@@ -240,15 +228,19 @@ public int getRowCount()
 //	return pnew;
 //}
 
-public Object getValueAt(int row, int column)
-	{ return model_u.getValueAt(row, colMap[column]); }
+public TT getValueAt(int row, int column)
+	{ return modelU.getValueAt(row, colMap[column]); }
 
 public void setValueAt(Object val, int row, int column)
 {
 //System.out.println("ColpermuteTableModel: setValueAt(" + val + ", " + row + ", " + column);
-	model_u.setValueAt(val, row, colMap[column]);
+	modelU.setValueAt(val, row, colMap[column]);
 }
 public boolean isVisible(int col) { return true; }
+
+public JType getJType(int row, int col) {
+	return modelU.getJType(row, colMap[col]);
+}
 // ------------------------------------------------------
 public Object getValueAt(int row, String col)
 	{ return getValueAt(row, findColumn(col)); }
@@ -272,7 +264,7 @@ public void tableChanged(TableModelEvent e_u)
 		} else {
 			// Re-map the columns.
 //System.out.println("col_u = " + col_u);
-//for (int i = 0; i < colMap.length; ++i) System.out.println(colMap[i] + " " + model_u.getColumnName(colMap[i]));
+//for (int i = 0; i < colMap.length; ++i) System.out.println(colMap[i] + " " + modelU.getColumnName(colMap[i]));
 			int col_t = iColMap[col_u];
 //System.out.println("ColPermuteTableModel: col_u = " + col_u + ", col_t = " + col_t + " " + this);
 //System.out.println("rows = " +e_u.getFirstRow() + ", " + e_u.getLastRow());

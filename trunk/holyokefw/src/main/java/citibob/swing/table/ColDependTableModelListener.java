@@ -25,10 +25,10 @@ import javax.swing.table.*;
 public class ColDependTableModelListener implements TableModelListener
 {
 
-CitibobTableModel model;
+JTypeTableModel model;
 int[][] dependMap;
 
-public ColDependTableModelListener(CitibobTableModel model, int[][] dependMap)
+public ColDependTableModelListener(JTypeTableModel model, int[][] dependMap)
 {
 	this.model = model;
 	this.dependMap = dependMap;

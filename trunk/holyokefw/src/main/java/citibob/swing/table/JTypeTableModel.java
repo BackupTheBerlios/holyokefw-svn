@@ -17,15 +17,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.swing.table;
 
+import citibob.types.JType;
 import java.util.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
-import citibob.sql.*;
-import citibob.text.SFormat;
-import citibob.types.JType;
 
-public interface JTypeTableModel extends CitibobTableModel
+public interface JTypeTableModel<TT> extends TableModel, DataGrid<TT>
 {
+	/** Model provies "prototype" information, i.e. a sample row of data. */
+//	List getPrototypes();
+
+	/** These, you will get for free if you subclass AbstractTableModel. */
+	void fireTableChanged(TableModelEvent e);
+
+	/** Finds a column's index by name --- also implemented in AbstractTableModel.
+	 Returns -1 if column names doesn't exist or is null. */
+	int findColumn(String name);
+
+	/** Should this column be displayed by default? */
+	public boolean isVisible(int col);
+	
+	/** Gets the value at a specific column and row, with column referenced by name */
+	public Object getValueAt(int row, String col);
+	public void setValueAt(Object val, int row, String col);
+
+	/** If this wraps another JTypeTableModel, return the model being wrapped. */
+	public JTypeTableModel getModelU();
+
+/** Finds a column by name in the UNDERLYING table model, then
+reports its location in THIS table model.  This allows one to refer
+to columns by their UNDERLYING name, not their display name. */
+public int findColumnU(String name);
+	
 //	/** Return SqlType for an entire column --- or null, if this column does not have a single SqlType. */
 //	public JType getColumnJType(int col);
 
@@ -51,6 +74,6 @@ public interface JTypeTableModel extends CitibobTableModel
 //	public Object getSortValueAt(int row, int col);
 
 
-// --------------------------------------------------------
+
 
 }

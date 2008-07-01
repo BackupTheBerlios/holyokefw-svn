@@ -76,6 +76,9 @@ public JType getJType(int row, String col)
 	
 public JTypeTableModel getModelU() { return sub; }
 
+public int findColumnU(String colU) { return findColumn(colU); }
+
+
 }
 
 

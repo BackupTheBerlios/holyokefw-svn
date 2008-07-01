@@ -12,7 +12,7 @@ package citibob.swing.table;
 public class TableModelUtils {
 	
 /** Creates a colMap if the user didn't specify one.  Only includes the visible columns. */
-public static int[] defaultColMap(CitibobTableModel model_u)
+public static int[] defaultColMap(JTypeTableModel model_u)
 {
 	// Count number of "real" columns
 	int ncol = 0;

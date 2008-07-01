@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.text;
 
 
+import citibob.types.KeyedModel;
 import java.text.*;
 
 /**
@@ -37,12 +38,38 @@ public class FormatUtils {
 
 // ==================================================================
 // Utility classes to create formats from format strings
+
+public static SFormat toSFormat(Class klass, String fmtString)
+{
+	Format fmt = FormatUtils.newFormat(klass, fmtString);
+	return toSFormat(fmt);
+}
+	
+public static SFormat toSFormat(KeyedModel kmodel)
+{
+	return new KeyedSFormat(kmodel);
+}
+	
+public static SFormat toSFormat(Format fmt, int horizAlign)
+{
+	SFormat sfmt = new FormatSFormat(fmt, "", horizAlign);
+	return sfmt;	
+}
+	
+public static SFormat toSFormat(Format fmt)
+{
+	SFormat sfmt = (fmt instanceof NumberFormat ?
+		new FormatSFormat(fmt, "", SFormat.RIGHT) :
+		new FormatSFormat(fmt, "", SFormat.LEFT));
+	return sfmt;
+}
+	
 public static Format newFormat(Class klass, String fmtString)
 {
 	if (Number.class.isAssignableFrom(klass))
 		return new DecimalFormat(fmtString);
 	else if (java.util.Date.class.isAssignableFrom(klass))
 		return new SimpleDateFormat(fmtString);
-	return null;
+	throw new IllegalArgumentException("Cannot make Format for class " + klass);
 }
 }

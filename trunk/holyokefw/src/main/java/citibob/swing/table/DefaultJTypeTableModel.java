@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.swing.table;
 
-import citibob.swing.CitibobJTable;
 import citibob.swing.typed.*;
 import citibob.types.JType;
 
@@ -34,13 +33,15 @@ import citibob.types.JType;
  *
  * @author citibob
  */
-public class DefaultJTypeTableModel extends javax.swing.table.DefaultTableModel
+public class DefaultJTypeTableModel
+extends javax.swing.table.DefaultTableModel
 implements JTypeTableModel
 {
 
 protected citibob.types.JType[] jTypes;		// JType of each column
 
 public JTypeTableModel getModelU() { return null; }
+public int findColumnU(String colU) { return findColumn(colU); }
 
 // -----------------------------------------------------------
 public DefaultJTypeTableModel(Object[][] data, Object[] columnNames, JType[] jTypes)

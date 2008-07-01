@@ -33,11 +33,11 @@ import citibob.types.JType;
  *
  * @author citibob
  */
-public abstract class AbstractJTypeTableModel extends javax.swing.table.AbstractTableModel
-implements JTypeTableModel
+public abstract class AbstractJTypeTableModel<TT>
+extends javax.swing.table.AbstractTableModel
+implements JTypeTableModel<TT>
 {
-	
-public JTypeTableModel getModelU() { return null; }
+
 
 public Object getValueAt(int row, String col)
 	{ return getValueAt(row, findColumn(col)); }
@@ -48,4 +48,15 @@ public JType getJType(int row, String col)
 /** By default, do not display columns starting with "__" in name. */
 public boolean isVisible(int col)
 	{ return !getColumnName(col).startsWith("__"); }
+
+
+public JTypeTableModel getModelU() { return null; }
+
+/** If this wraps another TableModel:
+Finds a column by name in the UNDERLYING table model, then
+reports its location in THIS table model.  Otherwise, same
+as findColumn(). */
+public int findColumnU(String colU)
+	{ return findColumn(colU); }
+
 }

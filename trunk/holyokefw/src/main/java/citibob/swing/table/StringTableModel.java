@@ -30,16 +30,20 @@ import citibob.swing.table.*;
 import java.sql.*;
 import citibob.text.*;
 import citibob.sql.*;
+import citibob.types.KeyedModel;
 import java.io.*;
+import java.text.Format;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import javax.swing.table.*;
 
 /**
  * Wraps a TableModel, converting everything to String.
  WARNING: Does not bother to pass up events from the TableModel it wraps.
+ * This could easily be added.
  * @author citibob
  */
-public class StringTableModel extends ColPermuteTableModel {
+public class StringTableModel extends ColPermuteTableModel<String> {
 
 SFormat[] formatters;		// Formatter for each column
 //JTypeTableModel mod;
@@ -63,7 +67,7 @@ boolean[] editable, boolean forwardEvents, SFormatMap smap)
 protected void init(JTypeTableModel mod, String[] sColMap, boolean[] editable,
 boolean forwardEvents, SFormatMap smap)
 {
-	super.init(mod, null, sColMap, null, forwardEvents);
+	super.init(mod, null, sColMap, forwardEvents);
 	
 	formatters = new SFormat[getColumnCount()];
 	for (int col=0; col<formatters.length; ++col) {
@@ -74,80 +78,64 @@ boolean forwardEvents, SFormatMap smap)
 		if (fmt == null) fmt = NullSFormat.instance;
 		formatters[col] = fmt;
 	}
-	
-//	if (formatters.length != getColumnCount()) {
-//		throw new IllegalArgumentException(
-//			"Formatters must have " + getColumnCount() +
-//			" elements, it has only " + formatters.length);
-//	}
-//	this.formatters = formatters;
-//	
-//	// Eliminate nulls
-//	for (int i=0; i<formatters.length; ++i)
-//		if (formatters[i] == null) formatters[i] = NullSFormat.instance;
 }
 
-//public StringTableModel(JTypeTableModel mod, String[] sColMap,
-//SFormatMap smap)
-//{
-//	SFormat[] formatters = new SFormat[sColMap.length];
-//	for (for)
-//}
-
-
-//
-//	model_u, colNames, colNames, editable, forwardEvents)
-//	this.mod = mod;
-//	this.formatters = formatters;
-//	
-//	// ColMap by default will just be non-__ columns
-//	int ngood = 0;
-//	for (int i=0; i<mod.getColumnCount(); ++i) {
-//		String name = mod.getColumnName(i);
-//		if (!name.startsWith("__")) ++ngood;
-//	}
-//	colMap = new int[ngood];
-//	int j=0;
-//	for (int i=0; i<mod.getColumnCount(); ++i) {
-//		String name = mod.getColumnName(i);
-//		if (!name.startsWith("__")) {
-//			colMap[j++] = i;
-//		}
-//	}
-//}
-
-
-///** @param colNames Name of each column in finished report --- Null if use underlying column names
-// @param sColMap Name of each column in underlying uModel  --- Null if wish to use all underlying columns */
-//public StringTableModel(JTypeTableModel mod,
-//SFormatMap sfmap)
-//{
-//	this(mod, sfmap.newSFormats(mod));
-//}
-//public StringTableModel(JTypeTableModel mod,
-//SFormatMap sfmap, String[] scol, SFormat[] sfmt)
-//{
-//	this(mod, sfmap.newSFormats(mod, scol, sfmt));
-//}
-/** Used to set a special (non-default) formatter for a particular column. */
-public void setSFormat(String uname, SFormat fmt)
+// -----------------------------------------------------------------------
+public void setFormat(int colNo, SFormat sformat)
 {
-	int col = model_u.findColumn(uname);
-	formatters[col] = fmt;
+	formatters[colNo] = sformat;
+}
+public void setFormat(int col, KeyedModel kmodel)
+	{ setFormat(col, FormatUtils.toSFormat(kmodel)); }
+
+/** Sets a text-based renderer and editor pair at once, for a column,
+without going through Swingers or anything.  Works for simpler text-based
+renderers and editors ONLY. */
+public void setFormat(int colNo, java.text.Format fmt, int horizAlign)
+{
+
+	setFormat(colNo, FormatUtils.toSFormat(fmt, horizAlign));
+}
+public void setFormat(int colNo, java.text.Format fmt)
+{
+	setFormat(colNo, FormatUtils.toSFormat(fmt));
 }
 
-/** Convenience function. */
-public void setSFormat(String uname, java.text.Format fmt)
-	{ setSFormat(uname, new FormatSFormat(fmt)); }
+/** Sets up a renderer and editor based on a format string.  Works for a small
+number of well-known types, this is NOT general. */
+public void setFormat(int colNo, String fmtString)
+{
+	Class klass = modelU.getColumnClass(colMap[colNo]);
+	setFormat(colNo, FormatUtils.toSFormat(klass, fmtString));
+}
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------
+// Allow setting of the RenderEdit by column name in the underlying table
+public void setFormatU(String underlyingName, KeyedModel kmodel)
+	{ setFormat(findColumnU(underlyingName), kmodel); }
+
+/** Sets a render/edit on a colum, by UNDERLYING column name. */
+public void setFormatU(String underlyingName, SFormat sfmt)
+	{ setFormat(findColumnU(underlyingName), sfmt); }
+
+public void setFormatU(String underlyingName, java.text.Format fmt, int horizAlign)
+	{ setFormat(findColumnU(underlyingName), fmt, horizAlign); }
+
+public void setFormatU(String underlyingName, java.text.Format fmt)
+	{ setFormat(findColumnU(underlyingName), fmt); }
+
+public void setFormatU(String underlyingName, String fmtString)
+	{ setFormat(findColumnU(underlyingName), fmtString); }
 // -----------------------------------------------------------------------
 
-public int getRowCount() { return model_u.getRowCount(); }
-public int getColumnCount() { return colMap.length; }
-public String getColumnName(int column) { return model_u.getColumnName(colMap[column]); }
-public Object getValueAt(int row, int col) {
+//public int getRowCount() { return modelU.getRowCount(); }
+//public int getColumnCount() { return colMap.length; }
+//public String getColumnName(int column) { return modelU.getColumnName(colMap[column]); }
+public String getValueAt(int row, int col) {
 	try {
-		int colU = colMap[col];
-		Object val = model_u.getValueAt(row,colU);
+//		int colU = colMap[col];
+//		Object val = modelU.getValueAt(row,colU);
+		Object val = super.getValueAt(row, col);
 		SFormat fmt = formatters[col];
 		return fmt.valueToString(val);
 	} catch(Exception e) {
@@ -164,7 +152,7 @@ throws ParseException
 
 	int mcol = colMap[col];
 	val = formatters[mcol].stringToValue(stringVal);
-	model_u.setValueAt(val, row, mcol);
+	modelU.setValueAt(val, row, mcol);
 }
 public Class getColumnClass(int columnIndex) { return String.class; }
 }

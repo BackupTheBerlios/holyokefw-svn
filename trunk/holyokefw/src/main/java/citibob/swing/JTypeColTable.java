@@ -48,42 +48,19 @@ import java.util.Comparator;
  * A table with one type per column.  Integrated with ColPermuteTable, so it's
  * convenient for editing JTypeTableModels.
  * @author citibob
+ * @deprecated
  */
 public class JTypeColTable
 extends CitibobJTable
 {
 
-StringTableModel ttModel;	// Tooltips for each column (in view)
-SFormat[] ttFmt;				// Formatter for each tooltip (in view)
+//CitibobTableModel ttModel;	// Tooltips for each column (in view)
+//SFormat[] ttFmt;				// Formatter for each tooltip (in view)
 
 JTypeTableModel modelU;			// Could be instance of SortableTableModel
 	SortableTableModel sortModel;	// The sorter model (if modelU is instance)
 ColPermuteTableModel permuteModel;	// The permuter model
 
-
-// In wrapping order:
-//CitibobTableModel modelU;		// Model the user gave us.
-//CitibobTableModel sortModelU;		// Model the user gave us, sorted...
-
-
-/** Override this to do tooltips in custom manner.  For now, we return the "tooltip column" */
-public String getTooltip(int row, int col)
-{
-	if (ttModel == null) return null;
-	return (String)ttModel.getValueAt(row, col);
-//	try {
-//		if (ttFmt[col] == null) return null;
-//		Object val = ttModel.getValueAt(row, col);
-//		return ttFmt[col].valueToString(ttModel.getValueAt(row, col));
-//
-////		if (ttFmt[col] == null) return null;
-////		int row_u = row;
-////		if (sortModel != null) row_u = sortModel.viewToModel(row);
-////		return ttFmt[col].valueToString(ttModel.getValueAt(row_u, col)); // + "\nHoi";
-//	} catch(java.text.ParseException e) {
-//		return "<JTypeColTable: ParseException>\n" + e.getMessage();
-//	}
-}
 
 //public void setModelU(CitibobTableModel uModel, String[] colNames,
 //String[] sColMap, boolean[] editable)
@@ -113,10 +90,10 @@ public void setModelU(JTypeTableModel modelU,
 	// Set underlying model
 	this.modelU = modelU;
 	
-	// Set up column selection on top of modelU
-	permuteModel = new ColPermuteTableModel(
-		modelU, colNames, sColMap, editable);
-	if (editable != null) permuteModel.setEditable(editable);
+////	// Set up column selection on top of modelU
+////	permuteModel = new ColPermuteTableModel(
+////		modelU, colNames, sColMap);
+////	if (editable != null) permuteModel.setEditable(editable);
 
 	
 	// Set up table sorting stuff
@@ -282,7 +259,7 @@ public Object getValue(String colNameU)
 // From the old ColPermuteTable
 public void setAllEditable(boolean edit)
 {
-	((ColPermuteTableModel)getModel()).setAllEditable(edit);
+////	((ColPermuteTableModel)getModel()).setAllEditable(edit);
 }
 
 /** Convenience function, to be used by subclasses:
@@ -296,7 +273,7 @@ public int findColumnU(String s)
 //	return ((ColPermuteTableModel)getModel()).getColumnU(col_u);
 //}
 
-public CitibobTableModel getModelU()
+public JTypeTableModel getModelU()
 { return modelU; }
 //{ return ((ColPermuteTableModel)getModel()).getModelU(); }
 

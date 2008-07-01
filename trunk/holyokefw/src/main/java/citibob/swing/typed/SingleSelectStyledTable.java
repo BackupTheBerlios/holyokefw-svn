@@ -37,10 +37,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 /**
- * Allows user to select rows in a table, returns one column as the value of this widget.
- * @author citibob
- */
-public class JTypedSelectTable extends JTypeColTable
+ * A table that allows single-row selections.  Implements TypedWidget. */
+public class SingleSelectStyledTable extends StyledTable
 implements TypedWidget, ListSelectionListener
 {
 
@@ -49,17 +47,22 @@ protected boolean clearValueOnClearTable = true;	// Flag: Should we clear the va
 
 int valueColU = 0;		// This column in the selected row will be returned as the value
 protected Object val = null;
-Object lastVal = null;		// The last non-null value we had.
+//Object lastVal = null;		// The last non-null value we had.
+
+// State flags
 protected boolean inSelect;		// Are we in the middle of having the user change the value?
 protected boolean disableUpdateOnSelect;	// Are we in the middle of a program-initiated setValue()?
+
+
 /** Are we in the middle of having the user change the value? */
 public boolean isInSelect() { return inSelect; }
 
-public JTypedSelectTable()
+public SingleSelectStyledTable()
 {
 	super();
 	setHighlightMouseover(true);
 }
+
 
 public boolean isClearValueOnClearTable() {
 	return clearValueOnClearTable;
@@ -68,36 +71,65 @@ public boolean isClearValueOnClearTable() {
 public void setClearValueOnClearTable(boolean clearValueOnClearTable) {
 	this.clearValueOnClearTable = clearValueOnClearTable;
 }
+// --------------------------------------------------------
+public void setSelectedRow(int row)
+{
+	if (row >= 0 && row < getRowCount()) {
+		this.getSelectionModel().setSelectionInterval(row,row);		
+	} else {
+		getSelectionModel().clearSelection();		
+	}
+}
 
+/** Sets ONE selected row, based on the value of a column.  Clears
+ selection if val == null.  This update the display to match an
+ underlying model. */
+protected void setSelectedRow(Object val, int col, DataGrid model)
+{
+	
+	if (val == null) {
+		getSelectionModel().clearSelection();
+		return;
+	}
+	
+	// Test if we're already set correctly.
+	int row = getSelectedRow();
+	if (row >= 0 && ObjectUtil.eq(model.getValueAt(row, col), val)) return;
+	
+	// Find the row and set it.
+	row = DataGridUtils.getRowOfValue(val, col, model);
+	setSelectedRow(row);
+//	if (row >= 0) {
+//		this.getSelectionModel().setSelectionInterval(row,row);
+//		return;
+//	} else {
+//		getSelectionModel().clearSelection();
+//	}
+}
 
+protected void setSelectedRow(Object val, int col)
+	{ setSelectedRow(val, col, styledModel.getModel()); }
+protected void setSelectedRowU(Object val, int colU)
+	{ setSelectedRow(val, colU, styledModel.getModelU()); }
+
+protected void setSelectedRowU(Object val, String colU)
+{
+	JTypeTableModel model = styledModel.getModelU();
+	setSelectedRow(val, model.findColumn(colU), model);
+}
+// ---------------------------------------------------------------------
 /** Controls which column in selected row will be returned as the value */
 public void setValueColU(String name)
-	{ valueColU = getModelU().findColumn(name); }
+	{ valueColU = styledModel.getModelU().findColumn(name); }
 	
 /** Returns last legal value of the widget.  Same as method in JFormattedTextField */
 public Object getValue()
 { return val; }
 
-///** Returns the row a value is found on (or -1 if no such row) */
-//protected int rowOfValue(Object o)
-//{
-//	for (int i=0; i<getModel().getRowCount(); ++i) {
-//		Object val = getModelU().getValueAt(i, valueColU);
-//		boolean eq = (val == null ? o == null : o.equals(val));
-//		if (eq) return i;
-//	}
-//	return -1;
-//}
-
-
 /** Sets the value.  Same as method in JFormattedTextField.  Fires a
  * propertyChangeEvent("value") when calling setValue() changes the value. */
  public void setValue(Object newVal)
 {
-//if (newVal == null) {
-//	System.out.println("hoi");
-//}
-System.out.println("setValue(" + newVal + ")");
 	// Disable event processing on display update
 	disableUpdateOnSelect = true;
 
@@ -107,19 +139,6 @@ System.out.println("setValue(" + newVal + ")");
 	
 	// Update the graphic display
 	setSelectedRowU(val, valueColU);
-//	if (val == null) {
-//		getSelectionModel().clearSelection();
-//	} else {
-//		int row = rowOfValue(val, valueColU, getModel());
-//		if (row >= 0 && row < getRowCount()) {
-//			// Graphically show the selected row
-//			getSelectionModel().setSelectionInterval(row,row);		
-//		} else {
-//			// We cannot represent the value as a selection; no matter,
-//			// keep it anyway, but clear the table selection.
-//			getSelectionModel().clearSelection();		
-//		}
-//	}	
 	
 	// Fire property change if needed
 	if (!ObjectUtil.eq(oldVal, val))
@@ -127,9 +146,6 @@ System.out.println("setValue(" + newVal + ")");
 	
 	disableUpdateOnSelect = false;
 }
-
-
-
 
 /** From TableCellEditor (in case this is being used in a TableCellEditor):
  * Tells the editor to stop editing and accept any partially edited value
@@ -142,7 +158,7 @@ public boolean stopEditing() {return true;}
  * If so, then setValue() will work.  See SqlType.. */
 public boolean isInstance(Object o)
 {
-	JType type = ((JTypeTableModel)getModelU()).getJType(0,valueColU);
+	JType type = (styledModel.getModelU()).getJType(0,valueColU);
 	return type.isInstance(o);
 }
 
@@ -173,7 +189,7 @@ public void valueChanged(ListSelectionEvent e) {
 	
 	int selRow = this.getSelectedRow();
 	if (selRow < 0) val = null;
-	else val = getModelU().getValueAt(selRow, valueColU);
+	else val = styledModel.getModelU().getValueAt(selRow, valueColU);
 	firePropertyChange("value", oldval, val);
 	inSelect = false;
 }

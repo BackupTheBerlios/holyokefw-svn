@@ -34,6 +34,8 @@ public class CitibobJTable extends JTable
 implements MouseListener, MouseMotionListener
 {
 
+JTypeTableModel ttModel;		// Tooltips
+	
 private boolean highlightMouseover = false;		// SHould we highlight rows when mousing over?
 
 /** Should we fill the ScrollPane with our table, even if there aren't
@@ -78,20 +80,20 @@ public CitibobJTable()
 //javax.swing.plaf.basic.BasicComboBoxUI
 }
 
-public void setModel(TableModel model)
-{
-	super.setModel(model);
-	if (model instanceof CitibobTableModel) {
-		CitibobTableModel ctm = (CitibobTableModel)model;
-//		rhu = new RowHeightUpdater(this, ctm.getPrototypes());
-//		rhu.setEnabled(true);
-	}
-}
+//public void setModel(TableModel model)
+//{
+//	super.setModel(model);
+//	if (model instanceof CitibobTableModel) {
+//		CitibobTableModel ctm = (CitibobTableModel)model;
+////		rhu = new RowHeightUpdater(this, ctm.getPrototypes());
+////		rhu.setEnabled(true);
+//	}
+//}
 
-public CitibobTableModel getCBModel()
+public JTypeTableModel getCBModel()
 {
 	TableModel m = super.getModel();
-	return (CitibobTableModel)m;
+	return (JTypeTableModel)m;
 }
 
 /** Returns the row a value is found on (or -1 if no such row) */
@@ -167,13 +169,18 @@ public void setRenderEdit(int colNo, KeyedModel kmodel)
 		new KeyedRenderEdit(kmodel));
 }
 
+protected boolean isEditable(int row, int col)
+{
+	return getModel().isCellEditable(row, col);
+}
+
 /** Sets a renderer and editor pair at once, for a column. */
 public void setRenderEdit(int colNo, Swinger.RenderEdit re)
 {
 	if (re == null) return;		// Don't change, if we don't know what to set it TO.
 	
 	TableColumn col = getColumnModel().getColumn(colNo);
-	TableCellRenderer rr = re.getRenderer(getModel().isCellEditable(0, colNo));
+	TableCellRenderer rr = re.getRenderer(isEditable(0, colNo));
 		if (rr != null) col.setCellRenderer(rr);
 	TableCellEditor ee = re.getEditor();
 		if (ee != null) col.setCellEditor(ee);
@@ -227,30 +234,21 @@ public void setRenderer(int colNo, TableCellRenderer re)
 	col.setCellRenderer(re);
 }
 
-//public void setSFormat(int col, SFormat sfmt)
-//	{ setRenderer(col, new citibob.swingers.SFormatRenderer(sfmt)); }
-//public void setSFormat(String scol, SFormat sfmt)
-//	{ setSFormat(getCBModel().findColumn(scol), sfmt); }
-//public void setFormat(int col, Format fmt)
-//	{ setRenderer(col, new citibob.swingers.FormatRenderer(fmt)); }
-//public void setFormat(String scol, Format fmt)
-//	{ setFormat(getCBModel().findColumn(scol), fmt); }
 
-
-
-///** Sets a renderer and editor pair at once, for a column. */
-//public void setDefaultRenderEdit(Class klass, RenderEdit re)
-//{
-//	setDefaultRenderer(klass, re.getRenderer());
-//	setDefaultEditor(klass, re.getEditor());
-//}
-
-///** Sets RenderEdit on a column according to the column's declared class. */
-//public void setRenderEdit(int col, RenderEditSet res)
-//{
-//	Class klass = getModel().getColumnClass(col);
-//	setRenderEdit(col, res.getRenderEdit(klass));
-//}
+// ==========================================================
+// Toltips
+/** Set the tooltips to be used */
+public void setTTModel(JTypeTableModel ttModel)
+{
+	this.ttModel = ttModel;
+}
+/** Override this to do tooltips in custom manner.  For now, we return the "tooltip column" */
+public String getTooltip(int row, int col)
+{
+	if (ttModel == null) return null;
+	return (String)ttModel.getValueAt(row, col);
+}
+// ==========================================================
 
 // ==========================================================
 // Mess with changing the font and adjusting table cell heights
@@ -321,10 +319,6 @@ public Component prepareRenderer(TableCellRenderer renderer, int row, int col)
 	return c;
 }
 int mouseRow = -1;		// Row the mouse is currently hovering over.
-
-/** Override this to do tooltips in custom manner.  For now, we return the "tooltip column" */
-public String getTooltip(int row, int col) { return null; }
-
 
 /** Override this to change the foreground color of a cell. */
 public Color getForeground(int row, int col)

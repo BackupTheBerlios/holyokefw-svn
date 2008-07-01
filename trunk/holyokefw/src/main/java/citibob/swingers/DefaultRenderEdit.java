@@ -49,6 +49,12 @@ public class DefaultRenderEdit implements Swinger.RenderEdit
 	protected DefaultRenderEdit() {}
 
 	public DefaultRenderEdit(
+		TableCellRenderer renderer,
+		TableCellEditor editor)
+	{
+		this(renderer, renderer, editor);
+	}
+	public DefaultRenderEdit(
 		TableCellRenderer rendererNotEditable,
 		TableCellRenderer rendererEditable,
 		TableCellEditor editor)
