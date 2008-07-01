@@ -74,7 +74,7 @@ static String[] getBeanNames(Class[] klasses)
 			citibob.swing.typed.JTypedLabel.class,
 			citibob.swing.typed.JTypedPanel.class,
 			citibob.swing.typed.JTypedScrollPane.class,
-			citibob.swing.typed.JTypedSelectTable.class,
+//			citibob.swing.typed.JTypedSelectTable.class,
 			citibob.swing.typed.SingleSelectStyledTable.class,
 			citibob.swing.typed.JTypedTextField.class,
 			citibob.swing.typed.KeyedButtonGroup.class,

@@ -110,6 +110,19 @@ public void setFormat(int colNo, String fmtString)
 }
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------
+public void setFormatU(String colNameU, Object obj)
+{
+	if (obj instanceof KeyedModel)
+		setFormatU(colNameU, (KeyedModel)obj);
+	else if (obj instanceof SFormat)
+		setFormatU(colNameU, (SFormat)obj);
+	else if (obj instanceof Format)
+		setFormatU(colNameU, (Format)obj);
+	else if (obj instanceof String)
+		setFormatU(colNameU, (String)obj);
+	else throw new IllegalArgumentException("Illegal type for format specification: " + obj.getClass());
+}
+
 // Allow setting of the RenderEdit by column name in the underlying table
 public void setFormatU(String underlyingName, KeyedModel kmodel)
 	{ setFormat(findColumnU(underlyingName), kmodel); }

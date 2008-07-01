@@ -15,7 +15,7 @@ import java.awt.Font;
  *
  * @author fiscrob
  */
-public class DataGridStyledTM extends StyledTableModel
+public class DelegateStyledTM extends StyledTableModel
 {
 
 DataGrid<String> tooltipModel;
@@ -27,9 +27,9 @@ DataGrid<Color> fgColorModel;
 DataGrid<Font> fontModel;
 DataGrid<Boolean> editableModel;
 
-public DataGridStyledTM(JTypeTableModel model)
+public DelegateStyledTM(JTypeTableModel model)
 	{ super(model); }
-public DataGridStyledTM(JTypeTableModel modelU, JTypeTableModel model)
+public DelegateStyledTM(JTypeTableModel modelU, JTypeTableModel model)
 	{ super(modelU, model); }
 // ==========================================================
 @Override
@@ -93,5 +93,9 @@ public boolean isEditable(int row, int col) {
 	public void setTooltipModel(DataGrid<String> tooltipModel) {
 		this.tooltipModel = tooltipModel;
 	}
+
+// ==========================================================
+public void 
+
 
 }
