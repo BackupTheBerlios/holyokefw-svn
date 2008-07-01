@@ -28,13 +28,12 @@ public BlockingQueue<TT> getQueue()
 
 public void run()
 {
-	for (;;) {
-		try {
+	try {
+		for (;;) {
 			processQueue();
-		} catch(InterruptedException e) {
-			break;
+			if (interrupted()) break;
 		}
-	}
+	} catch(InterruptedException e) {}
 }
 
 public abstract void processItems(LinkedList<TT> items) throws Exception;
