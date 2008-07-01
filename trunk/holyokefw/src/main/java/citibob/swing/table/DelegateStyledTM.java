@@ -5,9 +5,9 @@
 
 package citibob.swing.table;
 
-import citibob.swing.typed.Swinger;
 import citibob.swing.typed.Swinger.RenderEdit;
-import citibob.text.SFormat;
+import citibob.swing.typed.SwingerMap;
+import citibob.text.SFormatMap;
 import java.awt.Color;
 import java.awt.Font;
 
@@ -27,10 +27,10 @@ DataGrid<Color> fgColorModel;
 DataGrid<Font> fontModel;
 DataGrid<Boolean> editableModel;
 
-public DelegateStyledTM(JTypeTableModel model)
-	{ super(model); }
-public DelegateStyledTM(JTypeTableModel modelU, JTypeTableModel model)
-	{ super(modelU, model); }
+public DelegateStyledTM(JTypeTableModel modelU)
+	{ super(modelU); }
+//public DelegateStyledTM(JTypeTableModel modelU, JTypeTableModel model)
+//	{ super(modelU, model); }
 // ==========================================================
 @Override
 public Color getBgColor(int row, int col) {
@@ -95,7 +95,76 @@ public boolean isEditable(int row, int col) {
 	}
 
 // ==========================================================
-public void 
+/** @param fmtSpecs.  Array of blocks of four:
+<nl>
+<li>Underlying Column Name (String)</li>
+<li>Visible Column Name (String).  If null: use Underlying name.</li>
+<li>Editable (Boolean).  If null: use editable from modelU </li>
+<li>Format Spec: Swinger, SFormat, JType, Class, etc.  If null: get from SwingerMap.</li>
+ </nl>
+ * 
+ */
+public void setColumns(SwingerMap smap, Object... fmtSpecs)
+{
+	int n = fmtSpecs.length / 4;
+	
+	// Set up the ColPermuteTableModel
+	String[] colMap = new String[n];
+	String[] colNames = new String[n];
+	for (int i=0; i<n; ++i) {
+		String nameU = (String)fmtSpecs[i*4];
+		String name = (String)fmtSpecs[i*4+1];
+		if (name == null) name = nameU;
+		colMap[i] = nameU;
+		colNames[i] = name;
+	}
+	model = new ColPermuteTableModel(modelU, colNames, colMap);
+	
+	// Set up editable
+	DataCols<Boolean> editable = new DataCols(Boolean.class, n);
+	for (int i=0; i<n; ++i) {
+		Boolean ed = (Boolean)fmtSpecs[i*4+2];
+		// Override editable only if we've given a non-null
+		if (ed == null) ed = super.isEditable(0, i);
+		editable.data[i] = ed;
+	}
+	this.setEditableModel(editable);
+	
+	// Set of swingers / types / etc.
+	RenderEditDataCols re = new RenderEditDataCols(this, smap);
+	for (int i=0; i<n; ++i) {
+		Object spec = fmtSpecs[i*4+3];
+		// Override result from constructor only if we've specified something.
+		if (spec != null) re.setFormat(i, spec);
+	}
+	this.setRenderEditModel(re);
+}
 
+/** @param fmtSpecs.  Array of blocks of four:
+<nl>
+<li>Underlying column in modelU that provides tooltip (String)</li>
+<li>Format Spec: Swinger, SFormat, JType, Class, etc.  If null: get from SwingerMap.</li>
+ </nl>
+ * fmtSpecs must specifiy the same number of columns as is in model.
+ * 
+ */
+public void setToolTips(SFormatMap smap, Object... fmtSpecs)
+{
+	int n = fmtSpecs.length / 2;
+	String[] colMap = new String[n];
+	for (int i=0; i<n; ++i) {
+		colMap[i] = (String)fmtSpecs[i*2];
+	}
+	StringTableModel tt = new StringTableModel(
+		modelU, colMap, null, false, smap);
+	
+	// Set up non-default formatting
+	for (int i=0; i<n; ++i) {
+		Object spec = fmtSpecs[i*2+1];
+		// Override result from constructor only if we've specified something.
+		if (spec != null) tt.setFormat(i, spec);
+	}
+	this.setTooltipModel(tt);
+}
 
 }

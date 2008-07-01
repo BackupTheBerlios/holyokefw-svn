@@ -63,6 +63,23 @@ protected int findColumnU(String colNameU)
 // -----------------------------------------------------------
 // Re-useable in other classes
 // -----------------------------------------------------------
+public void setFormat(int col, Object obj)
+{
+	if (obj instanceof RenderEdit)
+		setFormat(col, (RenderEdit)obj);
+	else if (obj instanceof Swinger)
+		setFormat(col, (Swinger)obj);
+	else if (obj instanceof KeyedModel)
+		setFormat(col, (KeyedModel)obj);
+	else if (obj instanceof SFormat)
+		setFormat(col, (SFormat)obj);
+	else if (obj instanceof Format)
+		setFormat(col, (Format)obj);
+	else if (obj instanceof String)
+		setFormat(col, (String)obj);
+	else throw new IllegalArgumentException("Illegal type for format specification: " + obj.getClass());
+}
+
 public void setFormat(int col, RenderEdit re)
 	{ data[col] = re; }
 public void setFormat(int col, Swinger swinger)
