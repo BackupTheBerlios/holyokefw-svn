@@ -1,0 +1,10 @@
+package citibob.liveset;
+
+listeners LiveSetMVC
+{
+	itemAdded(TrackerRow row);
+	itemRemoved(TrackerRow row);
+	itemUpdated(TrackerRow row);
+	/** The set of rows has changed; listener should re-read them all */
+	itemsChanged();
+}
