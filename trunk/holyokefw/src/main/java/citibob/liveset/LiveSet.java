@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
-public abstract class LiveSet<TT extends LiveItem>
+public class LiveSet<TT extends LiveItem>
 extends LiveSetMVC<TT>
 {
 
