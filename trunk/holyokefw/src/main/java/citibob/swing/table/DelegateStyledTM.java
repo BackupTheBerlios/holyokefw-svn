@@ -128,7 +128,7 @@ public void setCompModelU(SwingerMap smap)
 	if (! (modelU instanceof SortableTableModel)) return;
 	
 	// Set up comparators based on the type of each column; can change later.
-	compModelU = CompModel.newCompModel((SortableTableModel)modelU, smap);
+	compModelU = ComparatorCols.newComparatorCols((SortableTableModel)modelU, smap);
 }
 // ==========================================================
 

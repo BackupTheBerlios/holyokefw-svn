@@ -34,7 +34,7 @@ implements TableModelListener, SortableTableModel
 	{
 		super(sub);
 		int ncol = sub.getColumnCount();
-		comparators = CompModel.newCompModel(ncol);		// Set up default
+		comparators = ComparatorCols.newComparatorCols(ncol);		// Set up default
 //		comparators = new Comparator[ncol];
 //		this.comparators = new Comparator[sub.getColumnCount()];
 		sub.addTableModelListener(this);

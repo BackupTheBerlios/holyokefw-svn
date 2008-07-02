@@ -14,14 +14,20 @@ import java.util.Comparator;
  *
  * @author fiscrob
  */
-public class CompModel
+public class ComparatorCols extends DataCols<Comparator>
 {
 
+	
 /** @param smap can be null */
-public static DataCols<Comparator> newCompModel(
+public static DataCols<Comparator> newComparatorCols(
 SortableTableModel model, SwingerMap smap)
 {
-	DataCols<Comparator> cmodel = new DataCols(Comparator.class, model.getColumnCount());
+	return new ComparatorCols(model, smap);
+}
+public ComparatorCols(SortableTableModel model, SwingerMap smap)
+{
+	super(Comparator.class, model.getColumnCount());
+	DataCols<Comparator> cmodel = this;
 	
 	for (int i=0; i<model.getColumnCount(); ++i) {
 		cmodel.data[i] = DefaultComparator.instance;
@@ -34,11 +40,11 @@ SortableTableModel model, SwingerMap smap)
 		
 		cmodel.data[i] = swinger.getComparator();
 	}
-	return cmodel;
+//	return cmodel;
 }
 
 /** Sets up a default ComModel, used initially in SortedTableModel */
-public static DataCols<Comparator> newCompModel(int ncol)
+public static DataCols<Comparator> newComparatorCols(int ncol)
 {
 	DataCols<Comparator> cmodel = new DataCols(Comparator.class, ncol);
 	

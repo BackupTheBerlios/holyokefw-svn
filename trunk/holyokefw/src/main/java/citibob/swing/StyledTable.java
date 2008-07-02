@@ -80,7 +80,8 @@ public void setStyledModel(StyledTableModel ext)
 		sortModel = (SortableTableModel)modelU;
 		
 		// Set comparators in sortModel
-		sortModel.setComparators(ext.getCompModelU());
+		if (ext.getCompModelU() != null)
+			sortModel.setComparators(ext.getCompModelU());
 		
 		// Sort when user clicks headers
 		JTableHeader head = getTableHeader();
