@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package citibob.liveset;
 
 import java.util.ArrayList;
@@ -11,10 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- *
- * @author fiscrob
- */
+
 public abstract class LiveSet<TT extends LiveItem>
 extends LiveSetMVC<TT>
 {
