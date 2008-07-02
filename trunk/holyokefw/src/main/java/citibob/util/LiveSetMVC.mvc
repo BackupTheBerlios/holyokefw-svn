@@ -1,4 +1,4 @@
-package citibob.liveset;
+package citibob.util;
 
 listeners LiveSetMVC
 {

@@ -1,4 +1,4 @@
-package citibob.liveset;
+package citibob.util;
 
 public abstract class LiveSetMVC<TT extends LiveItem>
 //implements LiveSetI<TT>
