@@ -23,8 +23,9 @@ protected Map<TT,TT> set = new TreeMap();
 boolean newItemCreated;
 
 
-/** Creates a new row, based on a lookupKey */
-protected abstract TT newItem(TT lookupKey);
+/** Creates a new row, based on a lookupKey.  Optional.  Only
+ needed if you're going to use getCreate(). */
+protected TT newItem(TT lookupKey) { return null; }
 
 
 /** Fires event... */
