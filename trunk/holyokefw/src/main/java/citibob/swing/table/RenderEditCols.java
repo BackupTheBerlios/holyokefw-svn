@@ -31,13 +31,13 @@ import javax.swing.table.TableCellRenderer;
 public class RenderEditCols extends DataCols<RenderEdit>
 {
 
-StyledTableModel model;		// Used for isEditable
+//StyledTableModel model;		// Used for isEditable
 //RenderEdit[] redits;
 
-public RenderEditCols(StyledTableModel model)
+public RenderEditCols(StyledTableModel styledModel)
 {
-	super(RenderEdit.class, model.getModel().getColumnCount());
-	this.model = model;
+	super(RenderEdit.class, styledModel.getModel().getColumnCount());
+	this.styledModel = styledModel;
 //	redits = new RenderEdit[model.getModel().getColumnCount()];
 }
 
@@ -57,7 +57,7 @@ public RenderEditCols(StyledTableModel styledModel, SwingerMap smap)
 	}
 }
 protected int findColumnU(String colNameU)
-	{ return model.getModel().findColumnU(colNameU); }
+	{ return styledModel.getModel().findColumnU(colNameU); }
 
 
 // -----------------------------------------------------------
@@ -117,7 +117,7 @@ public void setFormat(int colNo, java.text.Format fmt)
 number of well-known types, this is NOT general. */
 public void setFormat(int colNo, String fmtString)
 {
-	Class klass = model.getModel().getColumnClass(colNo);
+	Class klass = styledModel.getModel().getColumnClass(colNo);
 //	Format fmt = FormatUtils.newFormat(klass, fmtString);
 	SFormat sfmt = FormatUtils.toSFormat(klass, fmtString);
 	setFormat(colNo, sfmt);

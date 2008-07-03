@@ -22,6 +22,8 @@ protected DataCols<Comparator> compModelU;		// Way to sort each column
 /** The model to display; may be a projection of modelU, may be the same. */
 protected JTypeTableModel model;
 
+protected StyledTableModel() {}
+
 /** Does not set model, just modelU */
 public StyledTableModel(JTypeTableModel modelU)
 {

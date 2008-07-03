@@ -1,9 +1,9 @@
-package citibob.liveset;
+package citibob.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 
@@ -11,7 +11,7 @@ public class LiveSet<TT extends LiveItem>
 extends LiveSetMVC<TT>
 {
 
-protected Map<TT,TT> set = new TreeMap();
+protected SortedMap<TT,TT> items = new TreeMap();
 boolean newItemCreated;
 
 
@@ -23,40 +23,40 @@ protected TT newItem(TT lookupKey) { return null; }
 /** Fires event... */
 public void add(TT item)
 {
-	set.put(item,item);
+	items.put(item,item);
 	fireItemAdded(item);
 }
 /** Fires event... */
 public TT remove(TT item)
 {
-	TT ret = set.remove(item);
+	TT ret = items.remove(item);
 	fireItemRemoved(item);
 	return ret;
 }
 public TT get(TT key)
 {
-	return set.get(key);
+	return items.get(key);
 }
 
 /** Fires event... */
 public void clear()
 {
-	set.clear();
+	items.clear();
 	fireItemsChanged();
 }
 
 /** Returns all items in this LiveSet. */
 public Collection<TT> copyAll()
 {
-	List<TT> list = new ArrayList(set.size());
-	for (TT tt : set.keySet()) list.add(tt);
+	List<TT> list = new ArrayList(items.size());
+	for (TT tt : items.keySet()) list.add(tt);
 	return list;
 }
 
 /** Call only AFTER you've set lookupKey! */
 public TT getCreateItem(TT lookupKey) //TT lookupKey)
 {
-	TT row = set.get(lookupKey);
+	TT row = items.get(lookupKey);
 	if (row == null) {
 		newItemCreated = true;
 		row = newItem(lookupKey);

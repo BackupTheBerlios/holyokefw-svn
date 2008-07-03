@@ -26,7 +26,7 @@ implements LiveSetMVC.Listener<TT> {
 	public void itemsChanged() {}
 }
 // ======================================================
-java.util.LinkedList listeners = new java.util.LinkedList();
+protected java.util.LinkedList listeners = new java.util.LinkedList();
 public void addListener(LiveSetMVC.Listener l)
 	{ listeners.add(l); }
 public void removeListener(LiveSetMVC.Listener l)

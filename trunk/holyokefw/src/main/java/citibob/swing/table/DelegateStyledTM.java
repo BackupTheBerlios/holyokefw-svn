@@ -28,6 +28,8 @@ DataGrid<Font> fontModel;
 DataGrid<Boolean> editableModel;
 //DataCols<Comparator> comparatorModel;
 
+protected DelegateStyledTM() {}
+
 public DelegateStyledTM(JTypeTableModel modelU)
 	{ super(modelU); }
 //public DelegateStyledTM(JTypeTableModel modelU, JTypeTableModel model)
