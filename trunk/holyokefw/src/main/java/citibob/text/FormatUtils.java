@@ -70,6 +70,7 @@ public static Format newFormat(Class klass, String fmtString)
 		return new DecimalFormat(fmtString);
 	else if (java.util.Date.class.isAssignableFrom(klass))
 		return new SimpleDateFormat(fmtString);
+//System.out.println("fmtString = '" + fmtString + "'");
 	throw new IllegalArgumentException("Cannot make Format for class " + klass);
 }
 }

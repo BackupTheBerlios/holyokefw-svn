@@ -18,12 +18,12 @@ public class ComparatorCols extends DataCols<Comparator>
 {
 
 	
-/** @param smap can be null */
-public static DataCols<Comparator> newComparatorCols(
-SortableTableModel model, SwingerMap smap)
-{
-	return new ComparatorCols(model, smap);
-}
+///** @param smap can be null */
+//public static DataCols<Comparator> newComparatorCols(
+//SortableTableModel model, SwingerMap smap)
+//{
+//	return new ComparatorCols(model, smap);
+//}
 public ComparatorCols(SortableTableModel model, SwingerMap smap)
 {
 	super(Comparator.class, model.getColumnCount());

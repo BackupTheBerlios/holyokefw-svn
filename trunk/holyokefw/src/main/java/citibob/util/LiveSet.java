@@ -60,6 +60,7 @@ public TT getCreateItem(TT lookupKey) //TT lookupKey)
 	if (row == null) {
 		newItemCreated = true;
 		row = newItem(lookupKey);
+		if (row == null) throw new NullPointerException("LiveSet.newItem() returned null; has it been properly overridden yet?");
 		add(row);
 	} else {
 		newItemCreated = false;

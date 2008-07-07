@@ -226,7 +226,7 @@ public void valueChanged(ListSelectionEvent e) {
 public void tableChanged(TableModelEvent e)
 {
 	Object curVal = val;
-System.out.println("tableChanged: val = " + val);
+//System.out.println("tableChanged: val = " + val);
 
 	disableUpdateOnSelect = true;
 	super.tableChanged(e);

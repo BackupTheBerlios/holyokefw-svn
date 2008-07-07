@@ -124,14 +124,14 @@ public boolean isEditable(int row, int col) {
 // ==========================================================
 
 // ==========================================================
-public void setCompModelU(SwingerMap smap)
-{
-	// Only useful for sortable tables
-	if (! (modelU instanceof SortableTableModel)) return;
-	
-	// Set up comparators based on the type of each column; can change later.
-	compModelU = ComparatorCols.newComparatorCols((SortableTableModel)modelU, smap);
-}
+//public void setCompModelU(SwingerMap smap)
+//{
+//	// Only useful for sortable tables
+//	if (! (modelU instanceof SortableTableModel)) return;
+//	
+//	// Set up comparators based on the type of each column; can change later.
+//	compModelU = ComparatorCols.newComparatorCols((SortableTableModel)modelU, smap);
+//}
 // ==========================================================
 
 /** Makes up a default model based on modelU */

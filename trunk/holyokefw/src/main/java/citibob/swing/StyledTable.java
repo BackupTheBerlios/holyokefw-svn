@@ -79,9 +79,9 @@ public void setStyledModel(StyledTableModel ext)
 	if (modelU instanceof SortableTableModel) {
 		sortModel = (SortableTableModel)modelU;
 		
-		// Set comparators in sortModel
-		if (ext.getCompModelU() != null)
-			sortModel.setComparators(ext.getCompModelU());
+//		// Set comparators in sortModel
+//		if (ext.getCompModelU() != null)
+//			sortModel.setComparators(ext.getCompModelU());
 		
 		// Sort when user clicks headers
 		JTableHeader head = getTableHeader();

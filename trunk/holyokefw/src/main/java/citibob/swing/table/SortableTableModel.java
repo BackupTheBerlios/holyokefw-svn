@@ -13,8 +13,8 @@ import java.util.Comparator;
  */
 public interface SortableTableModel extends JTypeTableModel
 {
-	/** Tells how to sort each column */
-	public void setComparators(DataGrid<Comparator> comps);
+//	/** Tells how to sort each column */
+//	public void setComparators(DataGrid<Comparator> comps);
 	
 	/** Set a new SortSpec (and resort). */
 	public void setSortSpec(SortSpec spec);

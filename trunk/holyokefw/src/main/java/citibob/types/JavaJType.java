@@ -30,6 +30,7 @@ public class JavaJType implements JType
 		this.nullable = nullable;
 	}
 	public JavaJType(Class klass) { this(klass, true); }
+
 	
 	/** Java class used to represent this type */
 	public Class getObjClass()
@@ -37,6 +38,8 @@ public class JavaJType implements JType
 
 	public boolean isInstance(Object o)
 		{ return (klass.isInstance(o) || (nullable && o == null)); }
+
+public String toString() { return "JavaJType(" + klass.getName() + ")"; }
 // =================================================================
 public static final JavaJType jtObject = new JavaJType(Object.class);
 public static final JavaJType jtInteger = new JavaJType(Integer.class);

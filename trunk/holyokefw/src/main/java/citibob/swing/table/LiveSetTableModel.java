@@ -31,7 +31,7 @@ implements SortableTableModel, LiveSet.Listener, Comparator<ItemType>
 protected boolean evtSetChanged;
 public boolean getSetChanged() { return evtSetChanged; }
 
-LiveSet liveSet;
+protected LiveSet liveSet;
 ExpHandler expHandler;
 ConsumerThread<LiveSetEvent> queue;
 
@@ -42,11 +42,13 @@ boolean sorted;				// True if the table data is CURRENTLY sorted...
 
 // Per-column information
 //protected Comparator[] comparators;		// How to sort on each column
-protected DataGrid<Comparator> comparators;
+//protected DataGrid<Comparator> comparators;
 protected SortSpec spec;
 
 LinkedList<TableModelListener> listeners = new LinkedList();
 
+
+public Comparator getComparator(int col) { return DefaultComparator.instance; }
 
 /** @param colSpecs: (name, jType) ordered pairs */
 public LiveSetTableModel(ExpHandler expHandler,
@@ -57,13 +59,23 @@ String[] colNames, JType[] jTypes)
 	this.jTypes = jTypes;
 	this.spec = new SortSpec(getColumnCount());
 }
+/** Sets the livSet this TableModel listens to, and also
+ * adds itself as a listener.  Do NOT use this with Plapyen!
+ * @param xliveSet
+ */
 public void setLiveSet(LiveSet xliveSet)
 {
 	if (liveSet != null) {
 		liveSet.removeListener(this);
 	}
-	this.liveSet = xliveSet;
+	setLiveSetNoListen(xliveSet);
+//	this.liveSet = xliveSet;
 	liveSet.addListener(this);
+}
+/** User should not need this. */
+public void setLiveSetNoListen(LiveSet xliveSet)
+{
+	this.liveSet = xliveSet;
 }
 // ===========================================================
 // TrackerCols<ItemType>
@@ -109,7 +121,7 @@ public int compare(ItemType a, ItemType b) {
 		}
 
 		// Neither is null, use the regular comparator for this column
-		Comparator comp = comparators.getValueAt(0, col);
+		Comparator comp = getComparator(col); //comparators.getValueAt(0, col);
 		int cmp = comp.compare(valA, valB);
 		if (cmp != 0) return cmp * sc.dir;
 	}
@@ -165,7 +177,9 @@ void resortFromQueueThread(final boolean setChanged)
 	ArrayList<ItemType> newItems = new ArrayList(items);
 	TreeMap<ItemType,Integer> newIitems = new TreeMap();	
 	Collections.sort(newItems, this);
-	for (int i=0; i<newItems.size(); ++i) newIitems.put(newItems.get(i), i);
+	for (int i=0; i<newItems.size(); ++i) {
+		newIitems.put(newItems.get(i), i);
+	}
 	items = newItems;
 	iitems = newIitems;
 
@@ -198,10 +212,10 @@ public void setSortSpec(SortSpec spec)
 	resort();
 }
 
-public void setComparators(DataGrid<Comparator> comparators)
-{
-	this.comparators = comparators;
-}
+//public void setComparators(DataGrid<Comparator> comparators)
+//{
+//	this.comparators = comparators;
+//}
 // ==================================================
 // LiveSet.Listener --- runs in the Playpen thread
 
@@ -260,7 +274,12 @@ System.out.println("***** trackerEvents processing " + xevents.size() + " events
 				items.clear();
 				// Copy over items stored in the event
 				if (e.getItems() != null) {
-					for (ItemType item : e.getItems()) items.add(item);
+					for (ItemType item : e.getItems()) {
+//if (item == null) {
+//	System.out.println("LiveSetTableModel A: item == null");
+//}
+						items.add(item);
+					}
 				}
 				needsRefresh = true;
 				LiveItemsChanged = true;
@@ -271,8 +290,12 @@ System.out.println("***** trackerEvents processing " + xevents.size() + " events
 				needsRefresh = true;
 			}
 			case LiveSetEvent.ROWADDED : {
-				items.add(e.getItem());
-				iitems.put(e.getItem(), items.size()-1);
+				ItemType item = e.getItem();
+//if (item == null) {
+//	System.out.println("LiveSetTableModel B: item == null");
+//}
+				items.add(item);
+				iitems.put(item, items.size()-1);
 				needsRefresh = true;
 			} break;
 		}

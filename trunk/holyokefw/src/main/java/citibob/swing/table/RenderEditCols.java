@@ -117,6 +117,7 @@ public void setFormat(int colNo, java.text.Format fmt)
 number of well-known types, this is NOT general. */
 public void setFormat(int colNo, String fmtString)
 {
+//System.out.println("styledModel.getModel(" + colNo + ") = " + styledModel.getModel());
 	Class klass = styledModel.getModel().getColumnClass(colNo);
 //	Format fmt = FormatUtils.newFormat(klass, fmtString);
 	SFormat sfmt = FormatUtils.toSFormat(klass, fmtString);

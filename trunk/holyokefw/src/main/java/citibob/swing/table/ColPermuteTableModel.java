@@ -207,7 +207,11 @@ public JTypeTableModel getModelU() { return modelU; }
 public String getColumnName(int col)
 	{ return colNames[col]; }
 public Class getColumnClass(int col)
-	{ return modelU.getColumnClass(colMap[col]); }
+{
+	Class klass = modelU.getColumnClass(colMap[col]);
+//System.out.println("ColPermuteTableModel.getColumnClass(" + col + ") = " + klass);
+	return klass;
+}
 
 public boolean isCellEditable(int rowIndex, int columnIndex)
 	{ return modelU.isCellEditable(rowIndex, colMap[columnIndex]); }
