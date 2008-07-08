@@ -32,6 +32,8 @@ import java.util.*;
 import citibob.sql.*;
 
 //import
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 /**
  *
  * @author citibob
@@ -219,6 +221,27 @@ public static KeyedModel intKeys(Object... items)
 	}
 	return km;
 }
-// -------------------------------------------------------------------
 
+/** Gets an enumeration of static variables from a Java Class
+ @param klass The class to look in
+ @param valKlass Enumerate values must be of this type.
+ */
+public static KeyedModel fromPojo(Class klass, Class valKlass)
+{
+	Field[] fields = klass.getFields();
+	KeyedModel km = new KeyedModel();
+	for (int i=0; i<fields.length; ++i) {
+		Field f = fields[i];
+		if (valKlass.isAssignableFrom(f.getType()) &&
+			(f.getModifiers() & Modifier.STATIC) != 0) {
+			try {
+				km.addItem(f.get(null), f.getName());
+			} catch(IllegalAccessException e) {
+				// Should not happen
+				e.printStackTrace();
+			}
+		}
+	}
+	return km;
+}
 }

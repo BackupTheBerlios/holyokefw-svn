@@ -18,6 +18,8 @@ public class SortSpec {
 		public int col;
 		public int dir;		// Should be 1 (forward) or -1 (backward).  Cannot be 0
 	}
+	
+	// Indexed by number of columns in the overall table.
 	int[] dirs;
 	int[] sortIndex;		// The order of sort in the sortCols array
 	
@@ -74,6 +76,49 @@ public class SortSpec {
 				sc.dir = dir;
 			sortIndex[col] = sortCols.size();
 			sortCols.add(sc);
+		}
+	}
+	
+	
+	/** Gets the value of the spec, as a String */
+	public String getStringVal()
+	{
+		if (sortCols.size() == 0) return "";
+		StringBuffer sb = new StringBuffer();
+		
+		for (SortCol sc : sortCols) {
+			sb.append(sc.dir > 0 ? '+' : '-');
+			sb.append(sc.col);
+			sb.append('|');
+		}
+		
+		return sb.toString();
+	}
+	
+	/** Sets the value of the spec, as a String */
+	public void setStringVal(String sspec)
+	{
+		clear();
+		if (sspec == null) return;
+		
+		String[] sspecs = sspec.split("\\|");
+		int n = sspecs.length;
+		
+		for (int i=0; i<n; ++i) {
+			SortCol sc = new SortCol();
+			
+			String cspec = sspecs[i];
+			char cdir = cspec.charAt(0);
+			switch(cdir) {
+				case '+' : sc.dir = 1; break;
+				case '-' : sc.dir = -1; break;
+			}
+			sc.col = Integer.parseInt(cspec.substring(1));
+			
+			// Add to the data structure
+			sortCols.add(sc);
+			dirs[sc.col] = sc.dir;
+			sortIndex[sc.col] = i;
 		}
 	}
 }

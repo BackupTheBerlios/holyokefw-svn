@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import citibob.exception.*;
+import citibob.swing.StyledTable;
 import java.util.prefs.*;
 import java.util.*;
 
@@ -48,6 +49,7 @@ public SwingPrefs(Map<String,String> baseVals)
 	settersType = new HashMap();
 	settersType.put(JFrame.class, new JFramePrefSetter(baseVals));
 	settersType.put(JDialog.class, new JDialogPrefSetter(baseVals));
+	settersType.put(StyledTable.class, new StyledTablePrefSetter(baseVals));
 	settersType.put(JTable.class, new JTablePrefSetter(baseVals));
 	settersType.put(JSplitPane.class, new JSplitPanePrefSetter(baseVals));
 	settersType.put(JFileChooser.class, new JFileChooserPrefSetter(baseVals));

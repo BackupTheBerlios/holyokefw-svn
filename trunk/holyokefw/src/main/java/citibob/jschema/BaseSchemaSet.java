@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.jschema;
 
+import citibob.types.KeyedModel;
 import java.util.*;
 
 /**
@@ -36,6 +37,7 @@ public class BaseSchemaSet extends SchemaSet
 {
 
 protected TreeMap<String,SqlSchema> map = new TreeMap();
+protected TreeMap<String,KeyedModel> keyedModels = new TreeMap();
 
 public SqlSchema get(String name) {
 	SqlSchema sc = map.get(name);
@@ -43,9 +45,20 @@ public SqlSchema get(String name) {
 	return sc;
 }
 
+public KeyedModel getKeyedModel(String name)
+{
+	KeyedModel km = keyedModels.get(name);
+	if (km == null) throw new NullPointerException("KeyedModel " + name + " not in SchemaSet");
+	return km;
+}
+
 public void add(SqlSchema schema)
 {
 	map.put(schema.getDefaultTable(), schema);
 }
 
+public void addKeyedModel(String name, KeyedModel km)
+{
+	keyedModels.put(name, km);
+}
 }

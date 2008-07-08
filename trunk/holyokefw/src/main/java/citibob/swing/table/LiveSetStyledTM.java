@@ -5,6 +5,7 @@
 
 package citibob.swing.table;
 
+import citibob.app.App;
 import citibob.swing.typed.SwingerMap;
 import citibob.task.ExpHandler;
 import citibob.types.JType;
@@ -25,6 +26,10 @@ protected LiveSetStyledTM() {}
 public LiveSetStyledTM(ExpHandler expHandler, SwingerMap smap, Object... colSpecs)
 	{ init(expHandler, smap, colSpecs); }
 
+protected void init(App app, Object... colSpecs)
+{
+	init(app.expHandler(), app.swingerMap(), colSpecs);
+}
 protected void init(ExpHandler expHandler, SwingerMap smap, Object... colSpecs)
 {
 	// Set up basic modelU and model

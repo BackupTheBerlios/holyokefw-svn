@@ -60,24 +60,41 @@ public DivDoubleSFormat(String fmtString)
 public DivDoubleSFormat()
 	{ this("#.####", 1.0); }
 
-public Object stringToValue(String text)  throws java.text.ParseException
+protected double stringToDouble(String text)  throws java.text.ParseException
 {
-	text = text.trim();
-	if (nullText.equals(text)) return null;
 	if (nanText.equals(text)) return Double.NaN;
 	if (infText.endsWith(text)) return Double.POSITIVE_INFINITY;
 	if (ninfText.equals(text)) return Double.NEGATIVE_INFINITY;
 	Number n = (Number)fmt.parseObject(text);
-	return new Double(n.doubleValue() * div);
+	return n.doubleValue() * div;
+}
+public Object stringToValue(String text)  throws java.text.ParseException
+{
+	text = text.trim();
+	if (nullText.equals(text)) return null;
+	return new Double(stringToDouble(text));
+//	if (nanText.equals(text)) return Double.NaN;
+//	if (infText.endsWith(text)) return Double.POSITIVE_INFINITY;
+//	if (ninfText.equals(text)) return Double.NEGATIVE_INFINITY;
+//	Number n = (Number)fmt.parseObject(text);
+//	return new Double(n.doubleValue() * div);
+}
+public String doubleToString(double val) throws java.text.ParseException
+{
+	if (Double.isNaN(val)) return nanText;
+	if (val == Double.POSITIVE_INFINITY) return infText;
+	if (val == Double.NEGATIVE_INFINITY) return ninfText;
+	return fmt.format(val / div);
 }
 public String valueToString(Object value) throws java.text.ParseException
 {
 	if (value == null) return nullText;
 	double val = ((Number)value).doubleValue();
-	if (Double.isNaN(val)) return nanText;
-	if (val == Double.POSITIVE_INFINITY) return infText;
-	if (val == Double.NEGATIVE_INFINITY) return ninfText;
-	return fmt.format(val / div);
+	return doubleToString(val);
+//	if (Double.isNaN(val)) return nanText;
+//	if (val == Double.POSITIVE_INFINITY) return infText;
+//	if (val == Double.NEGATIVE_INFINITY) return ninfText;
+//	return fmt.format(val / div);
 }
 //public int getHorizontalAlignment() { return SFormat.RIGHT; }
 

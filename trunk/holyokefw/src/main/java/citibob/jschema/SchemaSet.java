@@ -36,6 +36,8 @@ import citibob.types.KeyedModel;
  * @author citibob
  */
 public abstract class SchemaSet {
+
+	public abstract KeyedModel getKeyedModel(String name);
 	
 	public abstract SqlSchema get(String name);
 	

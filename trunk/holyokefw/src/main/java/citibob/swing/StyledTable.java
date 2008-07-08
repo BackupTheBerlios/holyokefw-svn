@@ -370,28 +370,49 @@ public void mouseClicked(MouseEvent e) {
 	TableColumnModel columnModel = h.getColumnModel();
 	int viewColumn = columnModel.getColumnIndexAtX(e.getX());
 	int col_h = columnModel.getColumn(viewColumn).getModelIndex();
-	if (col_h != -1) {
-		// Find this column in the main model (or sort) table
-//		int col_u = permuteModel.getColU(col_h);
-		int col_u = styledModel.getModel().getColU(col_h);
-		
-		// Obtain current sorting for possible change
-		SortSpec spec = sortModel.getSortSpec();
-		int dir = spec.getSortDir(col_u);
-		if (!e.isControlDown()) spec.clear();
-		
-		// Cycle the sorting states through {NOT_SORTED, ASCENDING, DESCENDING} or 
-		// {NOT_SORTED, DESCENDING, ASCENDING} depending on whether shift is pressed. 
-		dir = dir + (e.isShiftDown() ? -1 : 1);
-		dir = (dir + 4) % 3 - 1; // signed mod, returning {-1, 0, 1}
-		spec.setSortDir(col_u, dir);
-System.out.println("Sort by column " + col_u + " direction " + dir);
+	if (col_h == -1) return;
+	
+	// Find this column in the main model (or sort) table
+//	int col_u = permuteModel.getColU(col_h);
+	int col_u = styledModel.getModel().getColU(col_h);
 
-		// Do the refresh
-		sortModel.resort();
-		getTableHeader().repaint();
+	// Obtain current sorting for possible change
+	SortSpec spec = sortModel.getSortSpec();
+	int dir = spec.getSortDir(col_u);
+	if (!e.isControlDown()) {
+		spec.clear();
 	}
+
+	// Cycle the sorting states through {NOT_SORTED, ASCENDING, DESCENDING} or 
+	// {NOT_SORTED, DESCENDING, ASCENDING} depending on whether shift is pressed. 
+	dir = dir + (e.isShiftDown() ? -1 : 1);
+	dir = (dir + 4) % 3 - 1; // signed mod, returning {-1, 0, 1}
+	spec.setSortDir(col_u, dir);
+System.out.println("Sort by column " + col_u + " direction " + dir);
+	
+	// Do the refresh
+	sortModel.resort();
+	getTableHeader().repaint();
+	fireSortChanged(spec);
 }}
+void fireSortChanged(SortSpec spec)
+{
+	firePropertyChange("sortSpec", null, spec.getStringVal());
+}
+public void setSortString(String sspec)
+{
+	if (!(getStyledModel().getModelU() instanceof SortableTableModel)) return;
+	SortableTableModel modelU = (SortableTableModel)getStyledModel().getModelU();
+	modelU.getSortSpec().setStringVal(sspec);
+}
+public String getSortString()
+{
+	if (!(getStyledModel().getModelU() instanceof SortedTableModel))
+		return null;
+	SortedTableModel modelU = (SortedTableModel)getStyledModel().getModelU();
+	return modelU.getSortSpec().getStringVal();
+	
+}
 // ======================================================================
 /** NOTE: Third Party Code.
  * SortableHeaderRenderer is Copyright (c) 1995 - 2008 by Sun Microsystems.

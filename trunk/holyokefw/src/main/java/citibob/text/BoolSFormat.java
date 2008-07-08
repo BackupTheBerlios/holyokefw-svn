@@ -40,6 +40,8 @@ extends BaseSFormat
 {
 
 int limit;
+String trueText = "true";
+String falseText = "false";
 //String nullText;
 
 static TreeMap<String, Boolean> vals;
@@ -55,6 +57,12 @@ static {
 	vals.put("y", Boolean.TRUE);
 }
 
+public BoolSFormat(String trueText, String falseText, String nullText)
+{
+	super(nullText);
+	this.trueText = trueText;
+	this.falseText = falseText;
+}
 public BoolSFormat(String nullText) { super(nullText); }
 //public String getNullText() { return nullText; }
 public BoolSFormat() { this(""); }
@@ -69,6 +77,6 @@ public String  valueToString(Object value)
 {
 	if (value == null) return nullText;
 	boolean b = ((Boolean)value).booleanValue();
-	return (b ? "true" : "false");
+	return (b ? trueText : falseText);
 }
 }
