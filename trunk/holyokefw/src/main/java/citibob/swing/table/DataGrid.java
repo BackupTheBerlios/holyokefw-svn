@@ -5,15 +5,9 @@
 
 package citibob.swing.table;
 
-/**
- *
- * @author fiscrob
- */
 public interface DataGrid<TT>
 {
 	public int getColumnCount();
 	public int getRowCount();
 	public TT getValueAt(int row, int col);
-
-
 }

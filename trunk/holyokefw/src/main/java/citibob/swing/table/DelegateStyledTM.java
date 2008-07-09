@@ -122,7 +122,26 @@ public boolean isEditable(int row, int col) {
 	}
 
 // ==========================================================
+public RenderEditCols setRenderEditCols(SwingerMap smap)
+{
+	RenderEditCols re = new RenderEditCols(this, smap);
+	this.setRenderEditModel(re);
+	return re;
+}
 
+/** Sets up editable DataCols, with each column set to its default editability. */
+public DataCols<Boolean> setEditableCols()
+{
+	// Do the editable stuff
+	int n = model.getColumnCount();
+	DataCols<Boolean> editable = new DataCols(Boolean.class, n);
+	for (int i=0; i<n; ++i) {
+		editable.data[i] = (model.isCellEditable(0, i) ? Boolean.TRUE : Boolean.FALSE);
+	}
+	this.setEditableModel(editable);
+	return editable;
+}
+	
 // ==========================================================
 //public void setCompModelU(SwingerMap smap)
 //{

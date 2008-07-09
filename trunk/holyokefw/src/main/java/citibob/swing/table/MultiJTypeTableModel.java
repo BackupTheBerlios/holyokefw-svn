@@ -53,11 +53,18 @@ static class ColRec
 	int col;		// Column in main table
 	int subTab;		// Sub-table we're part of
 	int subCol;		// Column index in sub-table
+//	int subColU;	// Column index in the sub-table's modelU
 }
 ColRec[] cols;		// Description of each column in aggregate table
 TreeMap<String,ColRec> colMap;		// "tabName.colName" --> ColRec
 
 int[] tabStart;		// Starting column in super-table of each sub-table
+int[] tabStartU;		// Starting column in super-table of each sub-table's modelU()
+
+public int getModelStartCol(int i) { return tabStart[i]; }
+public int getModelNextCol(int i)
+	{ return getModelStartCol(i) + getModel(i).getColumnCount(); }
+public JTypeTableModel getModel(int i) { return models[i]; }
 
 //	
 ///** record for each sub-table */
@@ -96,11 +103,13 @@ public MultiJTypeTableModel(JTypeTableModel... models)
 	for (int i=0; i<models.length; ++i) colCount += models[i].getColumnCount();
 
 	tabStart = new int[models.length];
+	tabStartU = new int[models.length];
 	tabStart[0] = 0;
+	tabStartU[0] = 0;
 	cols = new ColRec[colCount];
 	colMap = new TreeMap();
 	int curCol = 0;
-	for (int i=0; i<models.length; ++i) {
+	for (int i=0; ;) {
 		JTypeTableModel mod = models[i];
 		tabStart[i] = curCol;
 		for (int j=0; j<mod.getColumnCount(); ++j) {
@@ -114,6 +123,9 @@ public MultiJTypeTableModel(JTypeTableModel... models)
 			cols[curCol] = crec;
 			++curCol;
 		}
+		if (i == models.length) break;
+		++i;
+		tabStartU[i] = tabStartU[i-1] + mod.getModelU().getColumnCount();
 	}
 	
 	// Set up listeners
@@ -140,6 +152,38 @@ public JType getJType(int row, int col)
 	int tab = getTableOfCol(col);
 	return models[cols[col].subTab].getJType(row, col - tabStart[tab]);
 }	
+/** If this wraps another TableModel:
+Finds a column by name in the UNDERLYING table model, then
+reports its location in THIS table model.  Otherwise, same
+as findColumn().  */
+public int findColumnU(String colU)
+{
+	int baseCol = 0;
+	for (int tab=0; ;) {
+		int localCol = models[tab].findColumnU(colU);
+		if (localCol != -1) return baseCol + localCol;
+		baseCol += models[tab].getModelU().getColumnCount();
+		++tab;
+		if (tab >= models.length) return -1;
+	}
+}
+/** Given a column in THIS table, reports the column in the UNDERLYING table.
+ * Returns -1 if none.
+ */
+public int getColU(int col)
+{
+	int tab = this.getTableOfCol(col);
+	return tabStartU[tab] + models[tab].getModelU().getColU(col - tabStart[tab]);
+}
+
+/** Given a column in the underlying table, returns the corresponding
+ * column in the visible table. */
+public int colU2col(int colU)
+{
+	int tab = Arrays.binarySearch(tabStartU, colU);
+	if (tab < 0) tab = -(tab + 1) - 1;
+	return tabStart[tab] + models[tab].colU2col(colU);
+}
 // ===============================================================
 // CitibobTableModel
 /** These, you will get for free if you subclass AbstractTableModel. */
@@ -227,6 +271,32 @@ class MyListener implements TableModelListener
 		break;
 		}
 	}
+}
+// =============================================================
+// Convenience Functions
+/** Sets a general set of columns in a DataCols object.
+ * @param model The visible model, for which this is modelU.
+ * @param tab the sub-table whose columns need to be set.
+ * @param dataCols Object to set values in (per column)
+ * @param val The value to set.
+ */
+public void setCols(JTypeTableModel visibleModel, int tab, DataCols dataCols, Object val)
+{
+	int first = visibleModel.colU2col(getModelStartCol(tab));
+	int next = visibleModel.colU2col(getModelNextCol(tab));
+	for (int i=first; i<next; ++i) dataCols.setColumn(i, val);
+}
+
+/** Sets a general set of columns in a DataCols object.
+ * @param model The visible model, for which this is modelU.
+ * @param dataCols Object to set values in (per column)
+ * @param val The value to set.
+ */
+public void setFormat(JTypeTableModel visibleModel, int tab, RenderEditCols dataCols, Object fmt)
+{
+	int first = visibleModel.colU2col(getModelStartCol(tab));
+	int next = visibleModel.colU2col(getModelNextCol(tab));
+	for (int i=first; i<next; ++i) dataCols.setFormat(i, fmt);
 }
 
 

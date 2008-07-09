@@ -34,6 +34,11 @@ public void setModel(JTypeTableModel model)
 {
 	this.model = model;
 }
+public void setModels(JTypeTableModel modelU, JTypeTableModel model)
+{
+	this.modelU = modelU;
+	this.model = model;
+}
 
 public void setCompModelU(DataCols<Comparator> compModelU)
 	{ this.compModelU = compModelU; }

@@ -58,5 +58,12 @@ reports its location in THIS table model.  Otherwise, same
 as findColumn(). */
 public int findColumnU(String colU)
 	{ return findColumn(colU); }
+/** Given a column in THIS table, reports the column in the UNDERLYING table.
+ * Returns -1 if none.
+ */
 public int getColU(int col) { return col; }
+/** Given a column in the underlying table, returns the corresponding
+ * column in the visible table. */
+public int colU2col(int colU) { return colU; }
+
 }

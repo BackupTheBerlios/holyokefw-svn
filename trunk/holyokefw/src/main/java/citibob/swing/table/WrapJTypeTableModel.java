@@ -80,6 +80,8 @@ public int findColumnU(String colU) { return sub.findColumnU(colU); }
 
 public int getColU(int col) { return sub.getColU(col); }
 
+public int colU2col(int colU) { return sub.colU2col(colU); }
+
 }
 
 

@@ -42,6 +42,9 @@ protected citibob.types.JType[] jTypes;		// JType of each column
 
 public JTypeTableModel getModelU() { return null; }
 public int getColU(int col) { return col; }
+/** Given a column in the underlying table, returns the corresponding
+ * column in the visible table. */
+public int colU2col(int colU) { return colU; }
 public int findColumnU(String colU) { return findColumn(colU); }
 
 // -----------------------------------------------------------

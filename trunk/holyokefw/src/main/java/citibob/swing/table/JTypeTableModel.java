@@ -53,6 +53,10 @@ public int findColumnU(String name);
  * column in the underlying table. */
 public int getColU(int col);
 
+/** Given a column in the underlying table, returns the corresponding
+ * column in the visible table. */
+public int colU2col(int colU);
+
 //	/** Return SqlType for an entire column --- or null, if this column does not have a single SqlType. */
 //	public JType getColumnJType(int col);
 

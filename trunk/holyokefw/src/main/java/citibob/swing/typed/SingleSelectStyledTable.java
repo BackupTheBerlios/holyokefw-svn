@@ -107,12 +107,12 @@ protected void setSelectedRow(Object val, int col, DataGrid model)
 //	}
 }
 
-protected void setSelectedRow(Object val, int col)
+public void setSelectedRow(Object val, int col)
 	{ setSelectedRow(val, col, styledModel.getModel()); }
-protected void setSelectedRowU(Object val, int colU)
+public void setSelectedRowU(Object val, int colU)
 	{ setSelectedRow(val, colU, styledModel.getModelU()); }
 
-protected void setSelectedRowU(Object val, String colU)
+public void setSelectedRowU(Object val, String colU)
 {
 	JTypeTableModel model = styledModel.getModelU();
 	setSelectedRow(val, model.findColumn(colU), model);

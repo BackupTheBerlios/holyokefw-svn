@@ -65,6 +65,21 @@ public void setModelU(JTypeTableModel modelU, SwingerMap smap)
 	super.setStyledModel(stm);
 }
 
+
+/** Non-standard way to access any column of the selected row. */
+public Object getValue(int colU)
+{
+	int selRow = this.getSelectedRow();
+	if (selRow < 0) return null;
+	return getModelU().getValueAt(selRow, colU);
+}
+public Object getValue(String colNameU)
+{
+	int colU = getModelU().findColumn(colNameU);
+	return getValue(colU);
+}
+
+
 /** @param modelU Underling data buffer to use.  If it's an instance of
  * SortableTableModel, sortable features will be used.
  * @param typeCol Name of type column in the schema
