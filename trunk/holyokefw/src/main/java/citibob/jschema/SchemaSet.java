@@ -38,6 +38,18 @@ import citibob.types.KeyedModel;
 public abstract class SchemaSet {
 
 	public abstract KeyedModel getKeyedModel(String name);
+
+	public int getEnumInt(String keyedModelName, String enumVal)
+	{
+		KeyedModel km = getKeyedModel(keyedModelName);
+		Integer ret = km.getIntKey(enumVal);
+		if (ret == null) {
+			System.err.println("getEnum(" + keyedModelName + ", " + enumVal + ") is null");
+		}
+		return ret;
+	}
+
+	
 	
 	public abstract SqlSchema get(String name);
 	
