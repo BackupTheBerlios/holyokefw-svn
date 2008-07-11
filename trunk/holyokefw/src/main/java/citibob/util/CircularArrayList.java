@@ -60,14 +60,14 @@ public class CircularArrayList extends java.util.AbstractList
 	protected int circularSize = 0;
 	
     public CircularArrayList() {
-        this(DEFAULT_SIZE);
+//        this(DEFAULT_SIZE);
     }
 
     public CircularArrayList(int circularSize) {
 		setCircularSize(circularSize);
 	}
 	public int getCircularSize() { return circularSize; }
-    private void setCircularSize(int circularSize) {
+    public void setCircularSize(int circularSize) {
 		this.circularSize = circularSize;
         array = new Object[circularSize+1];
     }
