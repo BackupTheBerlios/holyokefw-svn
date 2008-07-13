@@ -34,26 +34,28 @@ public class RenderEditCols extends DataCols<RenderEdit>
 //StyledTableModel model;		// Used for isEditable
 //RenderEdit[] redits;
 
-public RenderEditCols(StyledTableModel styledModel)
+public RenderEditCols(StyledTM styledModel)
 {
 	super(RenderEdit.class, styledModel.getModel().getColumnCount());
 	this.styledModel = styledModel;
 //	redits = new RenderEdit[model.getModel().getColumnCount()];
 }
 
-public RenderEditCols(StyledTableModel styledModel, SwingerMap smap)
+public RenderEditCols(StyledTM styledModel, SwingerMap smap)
 {
 	this(styledModel);
 	
 	// Set up the RenderEdits...
 	if (smap == null) return;
 	JTypeTableModel model = styledModel.getModel();
-	for (int i=0; i<data.length; ++i) {
-		JType jType = model.getJType(0, i);
+	for (int col=0; col<data.length; ++col) {
+		JType jType = model.getJType(0, col);
 		if (jType == null) continue;
-		Swinger swinger = smap.newSwinger(jType);
+		int colU = model.getColU(col);
+		String name = styledModel.getModelU().getColumnName(colU);
+		Swinger swinger = smap.newSwinger(jType, name);
 		if (swinger == null) return;
-		setFormat(i, swinger);
+		setFormat(col, swinger);
 	}
 }
 protected int findColumnU(String colNameU)

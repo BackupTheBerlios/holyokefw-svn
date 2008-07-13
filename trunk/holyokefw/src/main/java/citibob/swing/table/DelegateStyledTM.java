@@ -15,7 +15,7 @@ import java.awt.Font;
  *
  * @author fiscrob
  */
-public class DelegateStyledTM extends StyledTableModel
+public class DelegateStyledTM extends StyledTM
 {
 
 DataGrid<String> tooltipModel;
@@ -168,8 +168,13 @@ public void setColumns(SwingerMap smap,
 String[] colNames, String[] sColMap, boolean[] xeditable)
 {
 	setModel(new ColPermuteTableModel(modelU, colNames, sColMap));
+
+	// Set of swingers / types / etc.
+	RenderEditCols re = new RenderEditCols(this, smap);
+	this.setRenderEditModel(re);
 	
 	// Do the editable stuff
+	if (xeditable == null) return;		// Use default...
 	int n = model.getColumnCount();
 	DataCols<Boolean> editable = new DataCols(Boolean.class, n);
 	for (int i=0; i<n; ++i) {
@@ -180,7 +185,8 @@ String[] colNames, String[] sColMap, boolean[] xeditable)
 
 
 
-/** @param fmtSpecs.  Array of blocks of four:
+/** @param smap may be null.
+ * @param fmtSpecs.  Array of blocks of four:
 <nl>
 <li>Underlying Column Name (String)</li>
 <li>Visible Column Name (String).  If null: use Underlying name.</li>

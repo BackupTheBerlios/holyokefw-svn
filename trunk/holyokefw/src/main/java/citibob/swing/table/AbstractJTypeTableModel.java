@@ -50,7 +50,7 @@ public boolean isVisible(int col)
 	{ return !getColumnName(col).startsWith("__"); }
 
 
-public JTypeTableModel getModelU() { return null; }
+public JTypeTableModel getModelU() { return this; }
 
 /** If this wraps another TableModel:
 Finds a column by name in the UNDERLYING table model, then

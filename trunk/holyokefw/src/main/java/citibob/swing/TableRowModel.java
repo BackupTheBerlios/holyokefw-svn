@@ -28,7 +28,7 @@ import citibob.types.JType;
 * NOTE: (x instanceof SchemaRowModel) ==> (x instanceof TableRowModel) */
 public class TableRowModel
 extends AbstractRowModel
-implements MultiRowModel, TableModelListener, ListSelectionModel {
+implements MultiRowModel, TableModelListener { //, ListSelectionModel {
 
 private JTypeTableModel tmodel;
 int curRow;
@@ -116,13 +116,13 @@ public void setCurRow(int row)
 	int old = curRow;
 	curRow = row;
 	fireCurRowChanged();
-	fireListSelectionListeners(old);
+//	fireListSelectionListeners(old);
 }
 // ==========================================================
 // TableModelListener Implementation...
 public void tableChanged(TableModelEvent e)
 {
-//System.out.println("TableRowModel.tableChanged: " + e.getType());
+System.out.println("TableRowModel.tableChanged: " + e.getType());
 	switch(e.getType()) {
 		case TableModelEvent.INSERT : if (listenTableModel) {
 			if (curRow == NOROW) {
@@ -156,8 +156,10 @@ public void tableChanged(TableModelEvent e)
 			}
 		} break;
 		case TableModelEvent.UPDATE :
-			if (getRowCount() > 0 && (curRow < 0 || curRow >= getRowCount())) curRow = 0;
-			if (getRowCount() == 0) {
+			if (getRowCount() > 0 && (curRow < 0 || curRow >= getRowCount())) {
+				setCurRow(0);
+				//curRow = 0;
+			} else if (getRowCount() == 0) {
 				if (curRow != NOROW) {
 					curRow = MultiRowModel.NOROW;
 					fireAllValuesChanged();
@@ -178,123 +180,123 @@ public void tableChanged(TableModelEvent e)
 }
 
 // ================================================================================
-	/** Change the selection to be the set union of the current selection and the indices between index0 and index1 inclusive. */
-	public void  addSelectionInterval(int index0, int index1)
-		{ setCheckCurRow(index0); }
-	/** Change the selection to the empty set. */
-	public void  clearSelection()
-		{ setCheckCurRow(NOROW); }
-	/** Return the first index argument from the most recent call to setSelectionInterval(), addSelectionInterval() or removeSelectionInterval(). */
-	public int  getAnchorSelectionIndex() {
-		return curRow; }
-	/** Return the second index argument from the most recent call to setSelectionInterval(), addSelectionInterval() or removeSelectionInterval(). */
-	public int  getLeadSelectionIndex() {
-		return curRow; }
-	/** Returns the last selected index or NOROW if the selection is empty. */
-	public int  getMaxSelectionIndex() {
-		return curRow; }
-	/** Returns the first selected index or NOROW if the selection is empty. */
-	public int  getMinSelectionIndex() {
-		return curRow; }
-	/** Returns the current selection mode. */
-	public int  getSelectionMode() {
-		return SINGLE_SELECTION; }
-	
-	// ---------------------------------------------------
-	boolean valueIsAdjusting = false;
-	/** Returns true if the value is undergoing a series of changes. */
-	public boolean  getValueIsAdjusting() {
-		return valueIsAdjusting; }
-	/** This property is true if upcoming changes to the value of the model should be considered a single event. */
-	public void  setValueIsAdjusting(boolean valueIsAdjusting) {
-		this.valueIsAdjusting = valueIsAdjusting; }
-	// ---------------------------------------------------
-	
-	/** Insert length indices beginning before/after index. */
-	public void  insertIndexInterval(int index, int length, boolean before) {
-		// First row of inserted region (in new numbering scheme)
-		int firstRow = (before ? index-1 : index+1);
-		if (curRow == NOROW) {
-			// We weren't looking at any row: look at the first
-			// row just inserted.
-			setCurRow(firstRow);
-		} else {
-			// Maintain ourselves at the same row in the table.
-			// No (visible) change.  Thus, fireCurRowChanged()
-			// need not be called.
-			if (curRow >= firstRow) {
-				curRow += length;
-				// We're still on same row, no need to call listeners.
-			}
-		}
-	}
-	/** Remove the indices in the interval index0,index1 (inclusive) from the selection model. */
-	public void  removeIndexInterval(int index0, int index1) {
-		if (curRow > index1) {
-			curRow -= (index1 - index0 + 1);
-			// We're still on same row, no need to call listeners.
-		} else if (curRow >= index0) {
-			// Our row was deleted, we're forced to move to a different row
-			int row = index0 - 1;
-			if (row < 0) row = MultiRowModel.NOROW;
-			setCurRow(row);
-		}
-	}
-	// ---------------------------------------------------
-	
-	/** Returns true if the specified index is selected. */
-	public boolean  isSelectedIndex(int index) {
-		return index == curRow; }
-	/** Returns true if no indices are selected. */
-	public boolean  isSelectionEmpty() {
-		return curRow == NOROW; }
-	
-	/** Change the selection to be the set difference of the current selection and the indices between index0 and index1 inclusive. */
-	public void  removeSelectionInterval(int index0, int index1) {
-		if (curRow >= index0 && curRow <= index1) setCurRow(NOROW);
-	}
-	
-	/** Set the anchor selection index. */
-	public void  setAnchorSelectionIndex(int index) {
-		setCheckCurRow(index); }
-	/** Set the lead selection index. */
-	public void  setLeadSelectionIndex(int index) {
-		setCheckCurRow(index); }
-	/** Change the selection to be between index0 and index1 inclusive. */
-	public void  setSelectionInterval(int index0, int index1) {
-		setCheckCurRow(index0); }
-	/** Set the selection mode. */
-	public void  setSelectionMode(int selectionMode) {}
-	
-	// ============================================================
-	LinkedList selListeners= new LinkedList();
-
-	/** Add a listener to the list that's notified each time a change to the selection occurs. */
-	public void  addListSelectionListener(ListSelectionListener x)
-		{ selListeners.add(x); }
-
-	/** Remove a listener from the list that's notified each time a change to the selection occurs. */
-	public void  removeListSelectionListener(ListSelectionListener x)
-		{ selListeners.remove(x); }
-	
-	void fireListSelectionListeners(int oldCurRow)
-	{
-		// Construct the event
-		int min,max;
-		if (curRow == -1 && oldCurRow == -1) return;	// No change
-		if (oldCurRow == -1) min = max = curRow;
-		else if (curRow == -1) min = max = oldCurRow;
-		else {
-			min = (curRow < oldCurRow ? curRow : oldCurRow);
-			max = (curRow > oldCurRow ? curRow : oldCurRow);
-		}
-		ListSelectionEvent lse = new ListSelectionEvent(
-			this, min, max,  valueIsAdjusting);
-		
-		// Fire the event
-		for (Iterator ii=selListeners.iterator(); ii.hasNext(); ) {
-			ListSelectionListener l = (ListSelectionListener)ii.next();
-			l.valueChanged(lse);
-		}
-	}
+//	/** Change the selection to be the set union of the current selection and the indices between index0 and index1 inclusive. */
+//	public void  addSelectionInterval(int index0, int index1)
+//		{ setCheckCurRow(index0); }
+//	/** Change the selection to the empty set. */
+//	public void  clearSelection()
+//		{ setCheckCurRow(NOROW); }
+//	/** Return the first index argument from the most recent call to setSelectionInterval(), addSelectionInterval() or removeSelectionInterval(). */
+//	public int  getAnchorSelectionIndex() {
+//		return curRow; }
+//	/** Return the second index argument from the most recent call to setSelectionInterval(), addSelectionInterval() or removeSelectionInterval(). */
+//	public int  getLeadSelectionIndex() {
+//		return curRow; }
+//	/** Returns the last selected index or NOROW if the selection is empty. */
+//	public int  getMaxSelectionIndex() {
+//		return curRow; }
+//	/** Returns the first selected index or NOROW if the selection is empty. */
+//	public int  getMinSelectionIndex() {
+//		return curRow; }
+//	/** Returns the current selection mode. */
+//	public int  getSelectionMode() {
+//		return SINGLE_SELECTION; }
+//	
+//	// ---------------------------------------------------
+//	boolean valueIsAdjusting = false;
+//	/** Returns true if the value is undergoing a series of changes. */
+//	public boolean  getValueIsAdjusting() {
+//		return valueIsAdjusting; }
+//	/** This property is true if upcoming changes to the value of the model should be considered a single event. */
+//	public void  setValueIsAdjusting(boolean valueIsAdjusting) {
+//		this.valueIsAdjusting = valueIsAdjusting; }
+//	// ---------------------------------------------------
+//	
+//	/** Insert length indices beginning before/after index. */
+//	public void  insertIndexInterval(int index, int length, boolean before) {
+//		// First row of inserted region (in new numbering scheme)
+//		int firstRow = (before ? index-1 : index+1);
+//		if (curRow == NOROW) {
+//			// We weren't looking at any row: look at the first
+//			// row just inserted.
+//			setCurRow(firstRow);
+//		} else {
+//			// Maintain ourselves at the same row in the table.
+//			// No (visible) change.  Thus, fireCurRowChanged()
+//			// need not be called.
+//			if (curRow >= firstRow) {
+//				curRow += length;
+//				// We're still on same row, no need to call listeners.
+//			}
+//		}
+//	}
+//	/** Remove the indices in the interval index0,index1 (inclusive) from the selection model. */
+//	public void  removeIndexInterval(int index0, int index1) {
+//		if (curRow > index1) {
+//			curRow -= (index1 - index0 + 1);
+//			// We're still on same row, no need to call listeners.
+//		} else if (curRow >= index0) {
+//			// Our row was deleted, we're forced to move to a different row
+//			int row = index0 - 1;
+//			if (row < 0) row = MultiRowModel.NOROW;
+//			setCurRow(row);
+//		}
+//	}
+//	// ---------------------------------------------------
+//	
+//	/** Returns true if the specified index is selected. */
+//	public boolean  isSelectedIndex(int index) {
+//		return index == curRow; }
+//	/** Returns true if no indices are selected. */
+//	public boolean  isSelectionEmpty() {
+//		return curRow == NOROW; }
+//	
+//	/** Change the selection to be the set difference of the current selection and the indices between index0 and index1 inclusive. */
+//	public void  removeSelectionInterval(int index0, int index1) {
+//		if (curRow >= index0 && curRow <= index1) setCurRow(NOROW);
+//	}
+//	
+//	/** Set the anchor selection index. */
+//	public void  setAnchorSelectionIndex(int index) {
+//		setCheckCurRow(index); }
+//	/** Set the lead selection index. */
+//	public void  setLeadSelectionIndex(int index) {
+//		setCheckCurRow(index); }
+//	/** Change the selection to be between index0 and index1 inclusive. */
+//	public void  setSelectionInterval(int index0, int index1) {
+//		setCheckCurRow(index0); }
+//	/** Set the selection mode. */
+//	public void  setSelectionMode(int selectionMode) {}
+//	
+//	// ============================================================
+//	LinkedList selListeners= new LinkedList();
+//
+//	/** Add a listener to the list that's notified each time a change to the selection occurs. */
+//	public void  addListSelectionListener(ListSelectionListener x)
+//		{ selListeners.add(x); }
+//
+//	/** Remove a listener from the list that's notified each time a change to the selection occurs. */
+//	public void  removeListSelectionListener(ListSelectionListener x)
+//		{ selListeners.remove(x); }
+//	
+//	void fireListSelectionListeners(int oldCurRow)
+//	{
+//		// Construct the event
+//		int min,max;
+//		if (curRow == -1 && oldCurRow == -1) return;	// No change
+//		if (oldCurRow == -1) min = max = curRow;
+//		else if (curRow == -1) min = max = oldCurRow;
+//		else {
+//			min = (curRow < oldCurRow ? curRow : oldCurRow);
+//			max = (curRow > oldCurRow ? curRow : oldCurRow);
+//		}
+//		ListSelectionEvent lse = new ListSelectionEvent(
+//			this, min, max,  valueIsAdjusting);
+//		
+//		// Fire the event
+//		for (Iterator ii=selListeners.iterator(); ii.hasNext(); ) {
+//			ListSelectionListener l = (ListSelectionListener)ii.next();
+//			l.valueChanged(lse);
+//		}
+//	}
 }

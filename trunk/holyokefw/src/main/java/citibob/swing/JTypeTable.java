@@ -43,6 +43,10 @@ import citibob.swing.typed.*;
  * an JTypeTableModel.
  * NOTE: This class caches RenderEdit objects it makes.  They could grow
  * over time, if it keeps being used to edit different JTypes.
+ * 
+ * <p>This needs to be replaced by an implementation of DataGrid<RenderEdit>
+ * and a subclass of StyledTM.  But since it works for now, I'll let it be...
+ * @deprecated
  * @author citibob
  */
 public class JTypeTable extends CitibobJTable

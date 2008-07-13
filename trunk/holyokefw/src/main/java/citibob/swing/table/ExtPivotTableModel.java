@@ -24,7 +24,7 @@ public ExtPivotTableModel(DbBuf base, PivotTableModel pivot)
 }
 
 public DbBuf getBase() { return (DbBuf)getModel(BASE); }
-public JTypeTableModel getPivot() { return (DbBuf)getModel(PIVOT); }
+public JTypeTableModel getPivot() { return (JTypeTableModel)getModel(PIVOT); }
 
 
 /** Mark a row for deletion. */
@@ -43,7 +43,7 @@ public void undeleteAllRows()
 	{ getBase().undeleteAllRows(); }
 
 
-
+/** Create an appropriate ColPermuteTableModel */
 public ColPermuteTableModel project(
 String[] xcolNames, String[] xsColMap)
 {

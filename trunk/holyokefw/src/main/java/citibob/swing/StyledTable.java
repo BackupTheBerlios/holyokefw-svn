@@ -34,7 +34,7 @@ public class StyledTable extends JTable
 implements MouseListener, MouseMotionListener
 {
 
-protected StyledTableModel styledModel = dummyStyledModel;
+protected StyledTM styledModel = dummyStyledModel;
 SortableTableModel sortModel;
 
 private boolean highlightMouseover = false;		// SHould we highlight rows when mousing over?
@@ -52,7 +52,7 @@ int mouseRow = -1;		// Row the mouse is currently hovering over.
 
 /** Dummy for GUI builder */
 static final JTypeTableModel nullTableModel = new DefaultJTypeTableModel();
-static final StyledTableModel dummyStyledModel = new StyledTableModel(nullTableModel);
+static final StyledTM dummyStyledModel = new StyledTM(nullTableModel);
 
 
 public StyledTable()
@@ -70,12 +70,12 @@ public StyledTable()
 
 // ===============================================================
 // Fundamental stuff for drawing the JTable and interacting with the model
-public void setStyledModel(StyledTableModel ext)
+public void setStyledTM(StyledTM stm)
 {
-	this.styledModel = ext;
+	this.styledModel = stm;
 	
 	// Set up table sorting stuff
-	JTypeTableModel modelU = ext.getModelU();
+	JTypeTableModel modelU = stm.getModelU();
 	if (modelU instanceof SortableTableModel) {
 		sortModel = (SortableTableModel)modelU;
 		
@@ -92,10 +92,10 @@ public void setStyledModel(StyledTableModel ext)
 	}
 	
 	
-	super.setModel(ext.getModel());
+	super.setModel(stm.getModel());
 }
 
-public StyledTableModel getStyledModel()
+public StyledTM getStyledTM()
 	{ return styledModel; }
 
 public TableCellRenderer getCellRenderer(int row, int col)
@@ -295,9 +295,9 @@ public void setRenderEdit(int colNo, KeyedModel kmodel)
 		new KeyedRenderEdit(kmodel));
 }
 
-protected boolean isEditable(int row, int col)
+public boolean isCellEditable(int row, int col)
 {
-	return getModel().isCellEditable(row, col);
+	return getStyledTM().isEditable(row, col);
 }
 
 /** Sets a renderer and editor pair at once, for a column. */
@@ -306,7 +306,7 @@ public void setRenderEdit(int colNo, Swinger.RenderEdit re)
 	if (re == null) return;		// Don't change, if we don't know what to set it TO.
 	
 	TableColumn col = getColumnModel().getColumn(colNo);
-	TableCellRenderer rr = re.getRenderer(isEditable(0, colNo));
+	TableCellRenderer rr = re.getRenderer(isCellEditable(0, colNo));
 		if (rr != null) col.setCellRenderer(rr);
 	TableCellEditor ee = re.getEditor();
 		if (ee != null) col.setCellEditor(ee);
@@ -401,15 +401,15 @@ void fireSortChanged(SortSpec spec)
 }
 public void setSortString(String sspec)
 {
-	if (!(getStyledModel().getModelU() instanceof SortableTableModel)) return;
-	SortableTableModel modelU = (SortableTableModel)getStyledModel().getModelU();
+	if (!(getStyledTM().getModelU() instanceof SortableTableModel)) return;
+	SortableTableModel modelU = (SortableTableModel)getStyledTM().getModelU();
 	modelU.getSortSpec().setStringVal(sspec);
 }
 public String getSortString()
 {
-	if (!(getStyledModel().getModelU() instanceof SortedTableModel))
+	if (!(getStyledTM().getModelU() instanceof SortedTableModel))
 		return null;
-	SortedTableModel modelU = (SortedTableModel)getStyledModel().getModelU();
+	SortedTableModel modelU = (SortedTableModel)getStyledTM().getModelU();
 	return modelU.getSortSpec().getStringVal();
 	
 }

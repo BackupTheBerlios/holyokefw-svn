@@ -123,9 +123,10 @@ public MultiJTypeTableModel(JTypeTableModel... models)
 			cols[curCol] = crec;
 			++curCol;
 		}
-		if (i == models.length) break;
 		++i;
-		tabStartU[i] = tabStartU[i-1] + mod.getModelU().getColumnCount();
+		if (i == models.length) break;
+		JTypeTableModel modelU = mod.getModelU();
+		tabStartU[i] = tabStartU[i-1] + modelU.getColumnCount();
 	}
 	
 	// Set up listeners
@@ -295,7 +296,7 @@ public void setCols(JTypeTableModel visibleModel, int tab, DataCols dataCols, Ob
 public void setFormat(JTypeTableModel visibleModel, int tab, RenderEditCols dataCols, Object fmt)
 {
 	int first = visibleModel.colU2col(getModelStartCol(tab));
-	int next = visibleModel.colU2col(getModelNextCol(tab));
+	int next = visibleModel.colU2col(getModelNextCol(tab)-1)+1;
 	for (int i=first; i<next; ++i) dataCols.setFormat(i, fmt);
 }
 

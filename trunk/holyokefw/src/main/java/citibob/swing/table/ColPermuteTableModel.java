@@ -233,7 +233,11 @@ public int getRowCount()
 //}
 
 public TT getValueAt(int row, int column)
-	{ return modelU.getValueAt(row, colMap[column]); }
+{
+	int colU = colMap[column];
+	if (colU < 0) return null;
+	return modelU.getValueAt(row, colU);
+}
 
 public void setValueAt(Object val, int row, int column)
 {

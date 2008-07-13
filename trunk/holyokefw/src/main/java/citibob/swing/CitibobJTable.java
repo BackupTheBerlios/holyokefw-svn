@@ -30,6 +30,7 @@ import citibob.types.*;
 //import de.chka.swing.components.*;
 import citibob.util.ObjectUtil;
 
+/** @deprecated */
 public class CitibobJTable extends JTable
 implements MouseListener, MouseMotionListener
 {

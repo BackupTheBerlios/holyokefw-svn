@@ -27,7 +27,6 @@ x *		Here, sortModelU == modelU, sortModel == null
 package citibob.swing;
 
 //import bsh.This;
-import citibob.swing.typed.Swinger;
 import javax.swing.table.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -38,9 +37,6 @@ import citibob.swing.table.*;
 import citibob.swing.typed.*;
 import java.awt.*;
 import citibob.text.*;
-import citibob.types.KeyedModel;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * A table with one type per column.  Integrated with ColPermuteTable, so it's
@@ -62,7 +58,7 @@ public void setModelU(JTypeTableModel modelU, SwingerMap smap)
 	DelegateStyledTM stm = new DelegateStyledTM(modelU);
 	stm.setDefaultModel(smap);
 	setAllEditable(false);
-	super.setStyledModel(stm);
+	super.setStyledTM(stm);
 }
 
 
@@ -91,7 +87,7 @@ public void setModelU(JTypeTableModel modelU,
 {
 	DelegateStyledTM stm = new DelegateStyledTM(modelU);
 	stm.setColumns(smap, colNames, sColMap, editable);
-	super.setStyledModel(stm);
+	super.setStyledTM(stm);
 }
 
 /** @param modelU Underling data buffer to use
@@ -106,6 +102,15 @@ public void setModelU(JTypeTableModel modelU,
 	DelegateStyledTM stm = new DelegateStyledTM(modelU);
 	stm.setColumns(smap, colNames, sColMap, editable);
 	stm.setTooltipModel(new ColPermuteTableModel(modelU, null, ttColMap));
+	
+//	// Nothing is editable if editable == null!
+//	if (editable == null) {
+//		DataCols<Boolean> ed = (DataCols)stm.getEditableModel();
+//		for (int i=0; i<colNames.length; ++i) {
+//			ed.setColumn(i, Boolean.FALSE);
+//		}
+//	}
+	setStyledTM(stm);
 }
 
 public JTypeTableModel getModelU() { return styledModel.getModelU(); }

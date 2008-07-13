@@ -25,7 +25,7 @@ package citibob.swing.prefs;
 
 import citibob.swing.StyledTable;
 import citibob.swing.table.SortedTableModel;
-import citibob.swing.table.StyledTableModel;
+import citibob.swing.table.StyledTM;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
