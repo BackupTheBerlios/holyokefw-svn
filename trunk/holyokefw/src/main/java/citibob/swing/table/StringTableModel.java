@@ -64,11 +64,28 @@ boolean[] editable, boolean forwardEvents, SFormatMap smap)
 {
 	init(mod, sColMap, editable, forwardEvents, smap);
 }
+
+public StringTableModel(JTypeTableModel mod, SFormatMap smap, String[] scol, SFormat[] sfmt)
+{
+	init(mod, scol, null, false, smap);
+	
+	if (sfmt == null) return;
+	for (int col=0; col<formatters.length; ++col) {
+		if (sfmt[col] != null) formatters[col] = sfmt[col];
+	}
+}
+public StringTableModel(JTypeTableModel mod, SFormat[] sfmt)
+{
+	super.init(mod, null, null, false);
+	this.formatters = sfmt;
+}
+
 protected void init(JTypeTableModel mod, String[] sColMap, boolean[] editable,
 boolean forwardEvents, SFormatMap smap)
 {
 	super.init(mod, null, sColMap, forwardEvents);
 	
+	if (smap == null) return;
 	formatters = new SFormat[getColumnCount()];
 	for (int col=0; col<formatters.length; ++col) {
 		int colU = getColU(col);
