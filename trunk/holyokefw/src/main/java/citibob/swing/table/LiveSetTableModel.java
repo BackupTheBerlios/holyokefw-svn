@@ -231,6 +231,11 @@ public void itemRemoved(LiveItem item) {
 	queue.offer(new LiveSetEvent(LiveSetEvent.ROWREMOVED, liveSet, item));
 }
 
+/** Ignore this; we don't need to know what the value WAS when we update. */
+public void beforeItemUpdated(LiveItem item) {
+}
+
+
 public void itemUpdated(LiveItem item) {
 	queue.offer(new LiveSetEvent(LiveSetEvent.ROWUPDATED, liveSet, item));
 }

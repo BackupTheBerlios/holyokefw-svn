@@ -53,7 +53,6 @@ public Collection<TT> copyAll()
 	return list;
 }
 
-/** Call only AFTER you've set lookupKey! */
 public TT getCreateItem(TT lookupKey) //TT lookupKey)
 {
 	TT row = items.get(lookupKey);

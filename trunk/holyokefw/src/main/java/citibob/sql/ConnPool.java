@@ -23,10 +23,10 @@ import java.sql.*;
 
 public interface ConnPool {
 
-/** Get a connection from the pool. */
+/** Get a connection from the pool.  This is thread-safe.  */
 Connection checkout() throws SQLException;
 
-/** Return a connection */
+/** Return a connection.  This is thread-safe. */
 void checkin(Connection c) throws SQLException;
 
 /** Free up resources when you'return done with this conn pool. */

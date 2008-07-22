@@ -48,7 +48,7 @@ public RealConnPool(String url, Properties props)
 //}
 
 /** Get a connection from the pool. */
-public Connection checkout() throws SQLException
+public synchronized Connection checkout() throws SQLException
 {
 //return create();
 	long ms = System.currentTimeMillis();
@@ -72,7 +72,7 @@ System.out.println("RealConnPool: Creating new database connection");
 }
 
 /** Return a connection */
-public void checkin(Connection c) throws SQLException
+public synchronized void checkin(Connection c) throws SQLException
 {
 //	c.close();
 	if (reserves.size() >= 5) c.close();

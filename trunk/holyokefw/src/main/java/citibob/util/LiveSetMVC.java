@@ -9,6 +9,7 @@ public static interface Listener<TT extends LiveItem> {
 	public void itemRemoved(TT item) ;
 
 	public void itemUpdated(TT item) ;
+	public void beforeItemUpdated(TT item) ;
 
 	/**  The set of items has changed; listener should re-read them all */
 	public void itemsChanged() ;
@@ -21,6 +22,7 @@ implements LiveSetMVC.Listener<TT> {
 	public void itemRemoved(TT item) {}
 
 	public void itemUpdated(TT item) {}
+	public void beforeItemUpdated(TT item) {}
 
 	/**  The set of items has changed; listener should re-read them all */
 	public void itemsChanged() {}
@@ -52,6 +54,13 @@ public void fireItemUpdated(TT item)
 	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
 		LiveSetMVC.Listener l = (LiveSetMVC.Listener)ii.next();
 		l.itemUpdated(item);
+	}
+}
+public void fireBeforeItemUpdated(TT item) 
+{
+	for (java.util.Iterator ii=listeners.iterator(); ii.hasNext(); ) {
+		LiveSetMVC.Listener l = (LiveSetMVC.Listener)ii.next();
+		l.beforeItemUpdated(item);
 	}
 }
 public void fireItemsChanged() 
