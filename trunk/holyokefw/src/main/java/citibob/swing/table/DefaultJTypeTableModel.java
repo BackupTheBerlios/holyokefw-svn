@@ -40,7 +40,7 @@ implements JTypeTableModel
 
 protected citibob.types.JType[] jTypes;		// JType of each column
 
-public JTypeTableModel getModelU() { return null; }
+public JTypeTableModel getModelU() { return this; }
 public int getColU(int col) { return col; }
 /** Given a column in the underlying table, returns the corresponding
  * column in the visible table. */
