@@ -49,8 +49,8 @@ void processQueue() throws InterruptedException
 	// Get list of all available items we can process now
 	item = queue.take();	// blocks, can throw InterruptedException
 	cur.add(item);
-//	while ((item = queue.poll()) != null) cur.add(item);
-	queue.drainTo(cur);
+	while ((item = queue.poll()) != null) cur.add(item);
+//	queue.drainTo(cur);
 	
 	try {
 		processItems(cur);

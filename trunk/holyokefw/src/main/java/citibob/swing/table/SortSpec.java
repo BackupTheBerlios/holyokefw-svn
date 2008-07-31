@@ -108,6 +108,8 @@ public class SortSpec {
 			SortCol sc = new SortCol();
 			
 			String cspec = sspecs[i];
+			if (cspec.length() == 0) continue;
+			
 			char cdir = cspec.charAt(0);
 			switch(cdir) {
 				case '+' : sc.dir = 1; break;

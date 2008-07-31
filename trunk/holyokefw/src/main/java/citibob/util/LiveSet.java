@@ -2,6 +2,7 @@ package citibob.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -51,6 +52,11 @@ public Collection<TT> copyAll()
 	List<TT> list = new ArrayList(items.size());
 	for (TT tt : items.keySet()) list.add(tt);
 	return list;
+}
+
+public Iterator<TT> iterator()
+{
+	return items.keySet().iterator();
 }
 
 public TT getCreateItem(TT lookupKey) //TT lookupKey)

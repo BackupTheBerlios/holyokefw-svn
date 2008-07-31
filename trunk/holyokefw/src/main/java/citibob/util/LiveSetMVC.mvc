@@ -5,8 +5,8 @@ listeners LiveSetMVC
 	itemAdded(TrackerRow row);
 	itemRemoved(TrackerRow row);
 	/** Called just before we change the stuff in a row and then call itemUpdated(). */
-	beforeItemUpdated(TrackerRow row);
-	itemUpdated(TrackerRow row);
+	beforeItemUpdated(TrackerRow row, int segment);
+	itemUpdated(TrackerRow row, int segment);
 	/** The set of rows has changed; listener should re-read them all */
 	itemsChanged();
 }

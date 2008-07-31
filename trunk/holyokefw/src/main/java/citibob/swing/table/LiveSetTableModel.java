@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.swing.event.TableModelEvent;
@@ -31,12 +33,27 @@ implements SortableTableModel, LiveSet.Listener, Comparator<ItemType>
 protected boolean evtSetChanged;
 public boolean getSetChanged() { return evtSetChanged; }
 
-protected LiveSet liveSet;
+protected LiveSet<ItemType> liveSet;		// The liveSet we're listening to
 ExpHandler expHandler;
-ConsumerThread<LiveSetEvent> queue;
+//ConsumerThread<LiveSetEvent> queue;
+MyConsumerThread queue;
+Timer timer;
+long minRefreshMS = 0;		// Minimum time between row refreshes
 
+static final int RS_INITIAL = 0;
+static final int RS_TIMERSET = 1;
+static final int RS_TIMERSETANDTICK = 2;
+static final int RS_RESETTING = 3;
+static class ItemState<ItemType extends LiveItem> {
+	ItemType item;
+	int state;
+	public ItemState(ItemType item) {
+		this.item = item;
+	}
+}
 //TrackerCols<ItemType> cols;
 ArrayList<ItemType> items = new ArrayList();	// The data, sorted...
+ArrayList<ItemState<ItemType>> itemStates = new ArrayList();
 TreeMap<ItemType,Integer> iitems = new TreeMap();		// Gives the item index of each item
 boolean sorted;				// True if the table data is CURRENTLY sorted...
 
@@ -46,6 +63,10 @@ boolean sorted;				// True if the table data is CURRENTLY sorted...
 protected SortSpec spec;
 
 LinkedList<TableModelListener> listeners = new LinkedList();
+
+public void setMinRefreshMS(long minRefreshMS) {
+	this.minRefreshMS = minRefreshMS;
+}
 
 
 public Comparator getComparator(int col) { return DefaultComparator.instance; }
@@ -96,11 +117,13 @@ ConsumerThread<LiveSetEvent> getQueue() { return queue; }
 public void start()
 {
 	queue = new MyConsumerThread(expHandler);
+	timer = new Timer();
 	queue.start();
 }
 public void stop() throws Exception
 {
 	if (queue != null) queue.interrupt();
+	if (timer != null) timer.cancel();
 }
 // ============================================================
 // ================================================================
@@ -198,7 +221,7 @@ void resortFromQueueThread(final boolean setChanged)
 }
 
 /** This is called from the Swing or Pocono thread.  The resorting must take place
- * in the Playpen thread, hence dump on an event. */
+ * in the table's thread, hence dump on an event. */
 public void resort()
 {
 	if (queue == null) return;
@@ -284,6 +307,7 @@ System.out.println("***** trackerEvents processing " + xevents.size() + " events
 //	System.out.println("LiveSetTableModel A: item == null");
 //}
 						items.add(item);
+						itemStates.add(new ItemState(item));
 					}
 				}
 				needsRefresh = true;
@@ -300,6 +324,7 @@ System.out.println("***** trackerEvents processing " + xevents.size() + " events
 //	System.out.println("LiveSetTableModel B: item == null");
 //}
 				items.add(item);
+				itemStates.add(new ItemState(item));
 				iitems.put(item, items.size()-1);
 				needsRefresh = true;
 			} break;
@@ -311,9 +336,11 @@ System.out.println("***** trackerEvents processing " + xevents.size() + " events
 		ArrayList<ItemType> oldItems = items;
 		iitems.clear();
 		items =  new ArrayList(oldItems.size() - todel.size());
+		itemStates = new ArrayList(items.size());
 		int i=0;
 		for (ItemType item : oldItems) if (!todel.contains(item)) {
 			items.add(item);
+			itemStates.add(new ItemState(item));
 			iitems.put(item, i++);
 		}
 	}
@@ -339,10 +366,27 @@ System.out.println("***** trackerEvents processing " + xevents.size() + " events
 			EventQueue.invokeAndWait(new Runnable() {
 			public void run() {
 				for (Integer item : updateItems) {
-//			        fireTableChanged(new Event(
-//						TrackerTableModel.this, item, item, //firstItem, lastItem,
-//                        TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE));
-					fireTableRowsUpdated(item, item);
+					if (minRefreshMS == 0L) {
+						fireTableRowsUpdated(item, item);
+					} else {
+						ItemState state = itemStates.get(item);
+						switch(state.state) {
+							case RS_INITIAL : {
+								fireTableRowsUpdated(item, item);
+								//create a timer to notify us later
+								timer.schedule(new RefreshTask(state),
+									minRefreshMS);
+								state.state = RS_TIMERSET;
+							} break;
+							case RS_TIMERSET : {
+								state.state = RS_TIMERSETANDTICK;
+							} break;
+							case RS_RESETTING : {
+								fireTableRowsUpdated(item, item);					
+								state.state = RS_INITIAL;
+							}
+						}
+					}
 				}
 			}});
 		} catch(Exception e) {}
@@ -350,6 +394,7 @@ System.out.println("***** trackerEvents processing " + xevents.size() + " events
 	}
 }
 }
+// ================================================================
 // ================================================================
 // Utility functions
 /** Works only for tables bound to a TrackerTableModel. */
@@ -374,5 +419,21 @@ public static LiveItem getSelectedItem(JTypeColTable table)
 //		super(source, firstItem, lastItem, column, type);
 //	}
 //}
-
+// ================================================================
+// Should really run in the Playpen (or other source) thread
+class RefreshTask extends TimerTask
+{
+	ItemState state;
+	public RefreshTask(ItemState state) {
+		this.state = state;
+	}
+	public void run() {
+		int oldState = state.state;
+		state.state = RS_RESETTING;
+//		if (oldState == RS_TIMERSETANDTICK) {
+			queue.offer(new LiveSetEvent(
+				LiveSetEvent.ROWUPDATED, liveSet, state.item));
+//		}
+	}
+}
 }

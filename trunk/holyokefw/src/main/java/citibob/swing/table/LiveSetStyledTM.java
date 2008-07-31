@@ -19,6 +19,7 @@ implements LiveSet.Listener
 {
 //private LiveSetTableModel liveTM;
 public LiveSetTableModel<RowType> getLiveTM() { return ((LiveSetTableModel)modelU); }
+public LiveSet<RowType> getLiveSet() { return getLiveTM().liveSet; }
 
 public RowType getRow(int irow) { return getLiveTM().getItem(irow); }
 

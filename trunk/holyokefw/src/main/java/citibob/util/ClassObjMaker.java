@@ -9,10 +9,10 @@ package citibob.util;
  *
  * @author fiscrob
  */
-public class ClassMaker<TT> implements ObjMaker<TT>
+public class ClassObjMaker<TT> implements ObjMaker<TT>
 {
 	Class klass;
-	public ClassMaker(Class klass)
+	public ClassObjMaker(Class klass)
 	{
 		this.klass = klass;
 	}
