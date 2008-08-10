@@ -36,9 +36,11 @@ static class DbbDate
 	
 LinkedList<DbbDate> reserves = new LinkedList();	// Our reserve connections, not being used for now
 
+public RealConnPool(ConnFactory connFactory)
+{ super(connFactory); }
 
-public RealConnPool(String url, Properties props)
-{ super(url, props); }
+//public RealConnPool(String url, Properties props)
+//{ super(url, props); }
 
 //ExceptionHandler ehandler;
 //
@@ -61,7 +63,9 @@ public synchronized Connection checkout() throws SQLException
 		}
 		// Throw out connections > 1 minute stale
 //System.out.println("Throwing out connection: " + dd.dbb);
-		try { dd.dbb.close(); } catch(SQLException e) {}
+		try {
+			connFactory.close(dd.dbb);
+		} catch(SQLException e) {}
 	}
 	
 	// No reserves left; create a new connection

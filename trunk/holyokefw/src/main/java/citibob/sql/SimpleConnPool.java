@@ -25,16 +25,21 @@ import java.util.Properties;
 public abstract class SimpleConnPool implements ConnPool
 {
 
-String url;
-Properties props;
+ConnFactory connFactory;
 
-public SimpleConnPool() {}
-
-public SimpleConnPool(String url, Properties props)
+//String url;
+//Properties props;
+//
+public SimpleConnPool(ConnFactory connFactory)
 {
-	this.url = url;
-	this.props = props;
+	this.connFactory = connFactory;
 }
+//
+//public SimpleConnPool(String url, Properties props)
+//{
+//	this.url = url;
+//	this.props = props;
+//}
 
 //ExceptionHandler ehandler;
 //
@@ -47,7 +52,7 @@ public SimpleConnPool(String url, Properties props)
  * be called by user. */
 protected Connection create() throws SQLException
 {
-	return DriverManager.getConnection(url, props);
+	return connFactory.create();
 }
 
 /** Get a connection from the pool. */
@@ -60,7 +65,7 @@ public Connection checkout() throws SQLException
 /** Return a connection */
 public void checkin(Connection c) throws SQLException
 {
-	c.close();
+	connFactory.close(c);
 }
 public void dispose() {}
 
