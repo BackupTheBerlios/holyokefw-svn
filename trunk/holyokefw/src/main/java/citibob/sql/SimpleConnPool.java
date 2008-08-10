@@ -25,7 +25,7 @@ import java.util.Properties;
 public abstract class SimpleConnPool implements ConnPool
 {
 
-ConnFactory connFactory;
+protected ConnFactory connFactory;
 
 //String url;
 //Properties props;
@@ -48,18 +48,12 @@ public SimpleConnPool(ConnFactory connFactory)
 //	this.ehandler = eh;
 //}
 
-/** Create an actual connection --- used by pool implementations, should not
- * be called by user. */
-protected Connection create() throws SQLException
-{
-	return connFactory.create();
-}
 
 /** Get a connection from the pool. */
 public Connection checkout() throws SQLException
 {
 	//return new WrapperConn(create(), this);	// Caused inifinte recursion on checkin
-	return create();
+	return connFactory.create();
 }
 
 /** Return a connection */

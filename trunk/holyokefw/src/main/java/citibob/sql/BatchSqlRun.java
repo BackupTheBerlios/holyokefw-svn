@@ -52,6 +52,14 @@ public void popFlush() {
 		top().recursionDepth = 0;
 	}
 }
+
+/** Cancels pending transactions */
+//public void popNoFlush()
+//{
+//	if (0 >= --top().recursionDepth) {
+//		top().recursionDepth = 0;
+//	}
+//}
 /** Not really public */
 public int getRecursionDepth() { return top().recursionDepth; }
 

@@ -101,7 +101,7 @@ public Exception run(SqlTask r)
 	return null;
 }
 
-//public static Exception run(BatchRunnable r, ConnPool pool)
+//public static Exception run(BatchRunnable r, Con.nPool pool)
 //{
 //	Exception ret = null;
 //	Statement st = null;

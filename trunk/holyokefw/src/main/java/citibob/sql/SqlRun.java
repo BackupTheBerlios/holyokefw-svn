@@ -59,6 +59,9 @@ public void pushFlush();
 /** Reduces the "recursion depth" by one, and flushes if it's gotten to zero. */
 public void popFlush();
 
+/** Same as popFlush(), but throws away any pending SQL */
+//public void popNoFlush();
+
 ///** Conditional flush --- only flush if recursion depth is 0. */
 
 public void pushBatch();

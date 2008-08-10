@@ -127,7 +127,7 @@ throws SQLException
 }
 
 public static void uploadResource(ConnPool pool,
-final RtResKey curResKey, final int versionNo, File inFile)
+final RtResKey curResKey, final RtVers ver, File inFile)
 throws SQLException, IOException
 {
 	// Read resource back from temporary file

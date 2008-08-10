@@ -70,7 +70,7 @@ public synchronized Connection checkout() throws SQLException
 	
 	// No reserves left; create a new connection
 System.out.println("RealConnPool: Creating new database connection");
-	return create();
+	return connFactory.create();
 //TODO: Keep track of lastused date --- throw out connections after 10 minutes
 //Also.... in Exception handler, an SQLException should cause that connection to be closed and NOT returned.
 }
@@ -79,7 +79,7 @@ System.out.println("RealConnPool: Creating new database connection");
 public synchronized void checkin(Connection c) throws SQLException
 {
 //	c.close();
-	if (reserves.size() >= 5) c.close();
+	if (reserves.size() >= 5) connFactory.close(c);
 	else reserves.addLast(new DbbDate(c));
 }
 public void dispose() {}
