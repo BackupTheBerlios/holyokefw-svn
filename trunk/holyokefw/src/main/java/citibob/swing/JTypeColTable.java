@@ -57,8 +57,8 @@ public void setModelU(JTypeTableModel modelU, SwingerMap smap)
 {
 	DelegateStyledTM stm = new DelegateStyledTM(modelU);
 	stm.setDefaultModel(smap);
-	setAllEditable(false);
 	super.setStyledTM(stm);
+	setAllEditable(false);
 }
 
 
