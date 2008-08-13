@@ -69,6 +69,8 @@ public void setMinRefreshMS(long minRefreshMS) {
 }
 
 
+public LiveSet getLiveSet() { return liveSet; }
+
 public Comparator getComparator(int col) { return DefaultComparator.instance; }
 
 /** @param colSpecs: (name, jType) ordered pairs */
@@ -109,7 +111,7 @@ public int getColumnCount() { return colNames.length; }
 public abstract Object getValueAt(ItemType item, int col);
 // -----------------------------------------------------------
 
-protected LiveSet getLiveSet() { return liveSet; }
+//protected LiveSet getLiveSet() { return liveSet; }
 
 ConsumerThread<LiveSetEvent> getQueue() { return queue; }
 // ============================================================
@@ -269,7 +271,7 @@ public MyConsumerThread(ExpHandler expHandler)
 	{ super(expHandler); }
 
 public void processItems(LinkedList<LiveSetEvent> xevents) throws Exception {
-System.out.println("***** trackerEvents processing " + xevents.size() + " events");
+//System.out.println("***** LiveSet Events processing " + xevents.size() + " events");
 	boolean LiveItemsChanged = false;
 	boolean needsRefresh = false;		// True if we must punt and refresh the whole thing
 	int origSize = items.size();
