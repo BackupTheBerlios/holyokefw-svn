@@ -407,12 +407,18 @@ public void setSortString(String sspec)
 }
 public String getSortString()
 {
+	SortSpec spec = getSortSpec();
+	if (spec == null) return null;
+	return getSortSpec().getStringVal();	
+}
+public SortSpec getSortSpec()
+{
 	if (!(getStyledTM().getModelU() instanceof SortedTableModel))
 		return null;
 	SortedTableModel modelU = (SortedTableModel)getStyledTM().getModelU();
-	return modelU.getSortSpec().getStringVal();
-	
+	return modelU.getSortSpec();
 }
+
 // ======================================================================
 /** NOTE: Third Party Code.
  * SortableHeaderRenderer is Copyright (c) 1995 - 2008 by Sun Microsystems.
