@@ -46,7 +46,18 @@ public void clear()
 	fireItemsChanged();
 }
 
-/** Returns all items in this LiveSet. */
+/** Allows iteration through underlying items.  Only appropriate
+ * if we know there will be no changes in the set before we
+ * finish iterating (i.e. single-threaded case).  If you need
+ * thread safety, use copyAll();
+ */
+public Iterator<TT> iterator()
+{
+	return items.keySet().iterator();
+}
+
+/** Returns all items in this LiveSet.  Appropriate if we need
+ to iterate through from another thread. */
 public Collection<TT> copyAll()
 {
 	List<TT> list = new ArrayList(items.size());
@@ -54,10 +65,6 @@ public Collection<TT> copyAll()
 	return list;
 }
 
-public Iterator<TT> iterator()
-{
-	return items.keySet().iterator();
-}
 
 public TT getCreateItem(TT lookupKey) //TT lookupKey)
 {

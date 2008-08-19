@@ -105,6 +105,8 @@ public void setLiveSetNoListen(LiveSet xliveSet)
 String[] colNames;
 JType[] jTypes;
 
+public void setColumnName(int i, String name)
+	{ colNames[i] = name; }
 public String getColumnName(int i) { return colNames[i]; }
 //public JType getJType(int i) { return jTypes[i]; }
 public int getColumnCount() { return colNames.length; }
