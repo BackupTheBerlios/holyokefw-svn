@@ -95,7 +95,8 @@ public JComponent open(String name) throws Exception {
 		rec.instance = rec.maker.newInstance();
 		rec.topLevel = rec.instance;
 
-		swingPrefs.setPrefs(rec.instance, prefsRoot.node(rec.instance.getClass().getSimpleName()));
+//		swingPrefs.setPrefs(rec.instance, prefsRoot.node(rec.instance.getClass().getSimpleName()));
+		swingPrefs.setPrefs(rec.instance, prefsRoot.node(rec.maker.getName()));
 		
 		cmap.put(rec.instance, rec);
 		addTab(rec.maker.getTitle(), rec.instance);

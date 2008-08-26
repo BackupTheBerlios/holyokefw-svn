@@ -15,7 +15,6 @@ import citibob.swing.calendar.JDayChooser;
 import citibob.swing.typed.JKeyedMulti;
 import citibob.swing.typed.JKeyedMultiPanel;
 import citibob.util.IndexSet;
-import com.infosys.closeandmaxtabbedpane.SampleApp;
 import org.xnap.commons.gui.CloseableTabbedPane;
 
 /**
@@ -44,7 +43,6 @@ public static void main(String[] args) throws Exception {
 
 	AppLauncher.launch("holyokefw", new Class[] {
 		CloseableTabbedPane.class,
-		SampleApp.class,
 		JKeyedMulti.class,
 		JKeyedMultiPanel.class,
 		JDayChooser.class,
