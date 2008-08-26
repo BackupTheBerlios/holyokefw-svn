@@ -41,17 +41,12 @@
 package beans2nbm.gen;
 
 import java.io.BufferedOutputStream;
-import java.io.CharConversionException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.prefs.Preferences;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 
 /**
  *
@@ -78,11 +73,33 @@ public static class Params {
 		public String[] beanNames;
 }
 
+
+static void testNbm(String[] beanNames) throws Exception
+{
+	for (String name : beanNames) {
+		Class klass = Class.forName(name);
+		System.out.println("Testing class: " + klass);
+		final JFrame frame = new JFrame();
+		if (JComponent.class.isAssignableFrom(klass)) {
+			JComponent comp = (JComponent)klass.newInstance();
+			frame.getContentPane().add(comp);
+			frame.pack();
+	//        java.awt.EventQueue.invokeLater(new Runnable() {
+	//        public void run() {
+					frame.setVisible(true);
+					frame.setVisible(false);
+	 //       }});
+		}
+	}
+}
+
     /**
      * @param args the command line arguments
      */
     public static void makeNbm(Params prm) throws Exception
 	{
+		testNbm(prm.beanNames);
+
 		char sep = File.separatorChar;
 		String jarFileName = prm.projectHome + sep + prm.jarFolder + sep + prm.jarName + ".jar";
 		String destFileName = prm.projectHome + sep + prm.jarFolder + sep + prm.jarName + ".nbm";

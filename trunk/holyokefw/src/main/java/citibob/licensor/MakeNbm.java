@@ -18,8 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.licensor;
 
 import beans2nbm.gen.*;
+import citibob.gui.TabbedCompSet;
 import citibob.reflect.ClassPathUtils;
 import java.io.File;
+import org.xnap.commons.gui.CloseableTabbedPane;
 
 public class MakeNbm {
     
@@ -45,12 +47,12 @@ static String[] getBeanNames(Class[] klasses)
 		char sep = File.separatorChar;
 		Beans2Nbm.Params prm = new Beans2Nbm.Params();
 		
-		prm.version = "1.0";		// Must be numeric for NetBeans
+		prm.version = "1.1.1";		// Must be numeric for NetBeans
 //		prm.projectHome = "../.."; // Works for NetBeans running Maven project
 //		prm.projectHome = "c:\\fiscrob\\mvn\\holyokefw";
 		prm.projectHome = ClassPathUtils.getMavenProjectRoot().getPath();
 		prm.jarFolder = "target";		// For Maven
-		prm.jarName = "holyokefw-1.0.1";
+		prm.jarName = "holyokefw-1.1.1";
 		
 		prm.description = "Typed Widgets and other advanced Swing components" +
 			" for database applications";
@@ -88,12 +90,14 @@ static String[] getBeanNames(Class[] klasses)
 			citibob.swing.JDialogWiz.class,
 			citibob.swing.JTextAreaWriter.class,
 //			citibob.swing.JTypeColTable.class,
-			citibob.swing.StyledTable.class,
+//			citibob.swing.StyledTable.class,
 			citibob.swing.JTypeTable.class,
 			citibob.swing.LogPanel.class,
 			citibob.gui.ConsoleFrame.class,
 //			citibob.gui.DBPrefsDialog.class,
-			citibob.gui.ThreadConsoleGui.class
+			citibob.gui.ThreadConsoleGui.class,
+			CloseableTabbedPane.class,
+			TabbedCompSet.class
 		});
 		Beans2Nbm.makeNbm(prm);
 	}

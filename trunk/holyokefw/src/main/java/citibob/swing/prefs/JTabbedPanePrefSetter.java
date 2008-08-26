@@ -26,9 +26,6 @@ package citibob.swing.prefs;
 import java.awt.*;
 import java.util.prefs.*;
 import javax.swing.*;
-import java.awt.event.*;
-import javax.swing.table.*;
-import java.beans.*;
 import java.util.Map;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -45,8 +42,10 @@ public void setPrefs(Component comp, final Preferences prefs)
 {
 	final JTabbedPane pane = (JTabbedPane)comp;
 
-	pane.setSelectedIndex(
-		getInt(prefs, "selectedIndex", pane.getSelectedIndex()));
+	try {
+		pane.setSelectedIndex(
+			getInt(prefs, "selectedIndex", pane.getSelectedIndex()));
+	} catch(IndexOutOfBoundsException e) {}
 
 	pane.addChangeListener(new ChangeListener() {
 	public void stateChanged(ChangeEvent e) {

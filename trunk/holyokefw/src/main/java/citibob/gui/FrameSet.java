@@ -32,14 +32,11 @@ import java.util.prefs.Preferences;
 public class FrameSet {
 
 // ------------------------------
-public interface Maker
-{
-	public JFrame newFrame() throws Exception;
-}
+
 // ------------------------------
 protected class FrameRec {
 	public String name;
-	public Maker maker;
+	public FrameMaker maker;
 	public JFrame frame;
 }
 
@@ -57,7 +54,7 @@ public FrameSet(SwingPrefs swingPrefs, Preferences prefsRoot) {
 //	this(new SwingPrefs(), prefsRoot);		// Use default SwingPrefs
 //}
 
-public void addMaker(String frameName, Maker frameMaker)
+public void addMaker(String frameName, FrameMaker frameMaker)
 {
 	FrameRec rec = new FrameRec();
 		rec.name = frameName;
