@@ -65,10 +65,14 @@ public SwingPrefs swingPrefs() { return swingPrefs; }
  * @param c The widget tree
  * @param base Unique name to give the widget tree.
  */
+public void setUserPrefs(java.awt.Component c, String base, boolean reset)
+	{ swingPrefs().setPrefs(c, userRoot().node(base), reset); }
+public void setUserPrefs(java.awt.Component c, boolean reset)
+	{ setUserPrefs(c, c.getClass().getSimpleName(), reset); }
 public void setUserPrefs(java.awt.Component c, String base)
-	{ swingPrefs().setPrefs(c, userRoot().node(base)); }
+	{ setUserPrefs(c, base, false); }
 public void setUserPrefs(java.awt.Component c)
-	{ setUserPrefs(c, c.getClass().getSimpleName()); }
+	{ setUserPrefs(c, false); }
 
 protected Preferences userRoot;
 /** @returns Root user preferences node for this application */
