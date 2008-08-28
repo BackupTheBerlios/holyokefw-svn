@@ -39,7 +39,7 @@ public class JTablePrefSetter extends BasePrefSetter {
 public JTablePrefSetter(Map<String,String> baseVals)
 	{ super(baseVals); }
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component comp, final Preferences prefs)
+public void setPrefs(Component comp, final Preferences prefs, boolean reset)
 {
 	final JTable table = (JTable)comp;
 
@@ -50,6 +50,8 @@ public void setPrefs(Component comp, final Preferences prefs)
 		int w = getInt(prefs, propName + ".width", c.getWidth());
 		c.setPreferredWidth(w);
 //		c.setWidth(w);
+
+		if (reset) continue;
 
 		c.addPropertyChangeListener(new PropertyChangeListener() {
 		public void propertyChange(PropertyChangeEvent evt) {

@@ -39,12 +39,14 @@ public JFileChooserPrefSetter(Map<String,String> baseVals)
 	{ super(baseVals); }
 
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component comp, final Preferences prefs)
+public void setPrefs(Component comp, final Preferences prefs, boolean reset)
 {
 	final JFileChooser chooser = (JFileChooser)comp;
 //	String curDir = prefs.get("currentDirectory", null);
 	String curDir = getString(prefs, "currentDirectory", null);
 	if (curDir != null) chooser.setCurrentDirectory(new File(curDir));
+
+	if (reset) return;
 
 	// Hack: save the preferences whenever mouse enters this component.	
 	// There is no easy "column width changed" listener.

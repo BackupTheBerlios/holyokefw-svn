@@ -57,9 +57,11 @@ public SwingPrefs(Map<String,String> baseVals)
 }
 
 public void setPrefs(Component c, Preferences prefs)
+	{ setPrefs(c, prefs, false); }
+public void setPrefs(Component c, Preferences prefs, boolean reset)
 {
 	nullCount = new HashMap();
-	setPrefsRecurse(c, prefs);
+	setPrefsRecurse(c, prefs, reset);
 }
 
 public SwingPrefSetter getSetter(Class c)
@@ -74,7 +76,7 @@ public SwingPrefSetter getSetter(Class c)
 
 /** Loads preferences for an entire widget tree.  Also sets listeners
  * so they will be saved as they change. */
-private void setPrefsRecurse(Component c, Preferences prefs)
+private void setPrefsRecurse(Component c, Preferences prefs, boolean reset)
 {
 	SwingPrefSetter setter = getSetter(c.getClass());
 	if (setter != null || c instanceof PrefWidget) {
@@ -101,15 +103,15 @@ private void setPrefsRecurse(Component c, Preferences prefs)
 
 		// Take care of yourself
 //System.out.println("Setting Pref (node = " + prefs.absolutePath() + ") for " + c);
-		if (setter != null) setter.setPrefs(c, prefs);
-		else ((PrefWidget)c).setPrefs(prefs);
+		if (setter != null) setter.setPrefs(c, prefs, reset);
+		else ((PrefWidget)c).setPrefs(prefs, reset);
 	}
 
 	// Take care of your children
 	if (c instanceof Container) {
 	    Component[] child = ((Container)c).getComponents();
 	    for (int i = 0; i < child.length; ++i) {
-			setPrefsRecurse(child[i], prefs);
+			setPrefsRecurse(child[i], prefs, reset);
 		}
 	}
 }

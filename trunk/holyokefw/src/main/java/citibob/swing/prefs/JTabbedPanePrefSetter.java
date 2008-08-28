@@ -38,7 +38,7 @@ public class JTabbedPanePrefSetter extends BasePrefSetter {
 public JTabbedPanePrefSetter(Map<String,String> baseVals)
 	{ super(baseVals); }
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component comp, final Preferences prefs)
+public void setPrefs(Component comp, final Preferences prefs, boolean reset)
 {
 	final JTabbedPane pane = (JTabbedPane)comp;
 
@@ -47,12 +47,13 @@ public void setPrefs(Component comp, final Preferences prefs)
 			getInt(prefs, "selectedIndex", pane.getSelectedIndex()));
 	} catch(IndexOutOfBoundsException e) {}
 
+	if (reset) return;
+
 	pane.addChangeListener(new ChangeListener() {
 	public void stateChanged(ChangeEvent e) {
 		putInt(prefs, "selectedIndex",
 			pane.getSelectedIndex());
 	}});
-	
 }
 
 }

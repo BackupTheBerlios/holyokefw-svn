@@ -42,9 +42,9 @@ public class StyledTablePrefSetter extends JTablePrefSetter {
 public StyledTablePrefSetter(Map<String,String> baseVals)
 	{ super(baseVals); }
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component comp, final Preferences prefs)
+public void setPrefs(Component comp, final Preferences prefs, boolean reset)
 {
-	super.setPrefs(comp, prefs);
+	super.setPrefs(comp, prefs, reset);
 	
 	final StyledTable table = (StyledTable)comp;
 	table.setSortString(getString(prefs, "sortSpec", null));

@@ -39,13 +39,15 @@ public class JSplitPanePrefSetter extends BasePrefSetter {
 public JSplitPanePrefSetter(Map<String,String> baseVals)
 	{ super(baseVals); }
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component comp, final Preferences prefs)
+public void setPrefs(Component comp, final Preferences prefs, boolean reset)
 {
 	final JSplitPane pane = (JSplitPane)comp;
 
 	pane.setDividerLocation(
 		getInt(prefs, "dividerLocation",
 		pane.getDividerLocation()));
+
+	if (reset) return;
 
 	pane.addPropertyChangeListener(
 	new PropertyChangeListener() {

@@ -39,7 +39,7 @@ public JDialogPrefSetter(Map<String,String> baseVals)
 	{ super(baseVals); }
 	
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component c, final Preferences prefs)
+public void setPrefs(Component c, final Preferences prefs, boolean reset)
 {
 	final JDialog cc = (JDialog)c;
 
@@ -59,6 +59,8 @@ public void setPrefs(Component c, final Preferences prefs)
 	loc.x = getInt(prefs, "_location.x", loc.x);
 	loc.y = getInt(prefs, "_location.y", loc.y);
 	cc.setLocation(loc);
+
+	if (reset) return;
 
     // Set up listener(s) to save preferences as our geometry changes.
 	cc.addComponentListener(new ComponentAdapter() {

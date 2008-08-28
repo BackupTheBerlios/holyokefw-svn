@@ -32,6 +32,9 @@ import java.util.prefs.*;
  * @author citibob
  */
 public interface SwingPrefSetter {
-	/** Use prefix.xxx as name for our preferences. */
-	void setPrefs(Component c, Preferences prefs);
+	/** Use prefix.xxx as name for our preferences.
+	 @param reset true if we're re-setting the prefs here, in which we
+	 will just re-read, but not set any listeners (since they're already
+	 set for us). */
+	void setPrefs(Component c, Preferences prefs, boolean reset);
 }

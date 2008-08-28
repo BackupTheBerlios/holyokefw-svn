@@ -26,5 +26,5 @@ rely on the standard pref setters, based on the object class.
 */
 public interface PrefWidget
 {
-	void setPrefs(final Preferences prefs);
+	void setPrefs(final Preferences prefs, boolean reset);
 }

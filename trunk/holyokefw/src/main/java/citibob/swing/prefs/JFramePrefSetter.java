@@ -37,7 +37,7 @@ public class JFramePrefSetter extends BasePrefSetter {
 public JFramePrefSetter(Map<String,String> baseVals)
 	{ super(baseVals); }
 /** Use prefix.xxx as name for our preferences. */
-public void setPrefs(Component c, final Preferences prefs)
+public void setPrefs(Component c, final Preferences prefs, boolean reset)
 {
 	final JFrame cc = (JFrame)c;
 
@@ -58,7 +58,8 @@ public void setPrefs(Component c, final Preferences prefs)
 	cc.setLocation(loc);
 	
 //System.out.println("JFrame: got size = " + sz);
-    
+   	if (reset) return;
+
     // Set up listener(s) to save preferences as our geometry changes.
 	cc.addComponentListener(new ComponentAdapter() {
 		public void componentResized(ComponentEvent e) {
