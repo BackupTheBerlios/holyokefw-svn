@@ -153,26 +153,32 @@ public DataCols<Boolean> setEditableCols()
 //}
 // ==========================================================
 
-/** Makes up a default model based on modelU */
-public void setDefaultModel(SwingerMap smap)
+public void setDefaultSwingers(SwingerMap smap)
 {
-	// Set up the ColPermuteTableModel
-	setModel(new ColPermuteTableModel(modelU));
-	
 	// Set of swingers / types / etc.
 	RenderEditCols re = new RenderEditCols(this, smap);
 	this.setRenderEditModel(re);
 }
 
+/** Makes up a default model based on modelU */
+public void setDefaultModel(SwingerMap smap)
+{
+	// Set up the ColPermuteTableModel
+	setModel(new ColPermuteTableModel(modelU));
+	setDefaultSwingers(smap);
+}
+
 public void setColumns(SwingerMap smap,
-String[] colNames, String[] sColMap, boolean[] xeditable)
+String[] colNames, String[] sColMap)
 {
 	setModel(new ColPermuteTableModel(modelU, colNames, sColMap));
 
 	// Set of swingers / types / etc.
-	RenderEditCols re = new RenderEditCols(this, smap);
-	this.setRenderEditModel(re);
-	
+	setDefaultSwingers(smap);
+}
+
+public void setEditable(boolean... xeditable)
+{
 	// Do the editable stuff
 	if (xeditable == null) return;		// Use default...
 	int n = model.getColumnCount();
@@ -181,8 +187,8 @@ String[] colNames, String[] sColMap, boolean[] xeditable)
 		editable.data[i] = (xeditable[i] ? Boolean.TRUE : Boolean.FALSE);
 	}
 	this.setEditableModel(editable);
+	
 }
-
 
 
 /** @param smap may be null.
@@ -239,7 +245,7 @@ public void setColumns(SwingerMap smap, Object... fmtSpecs)
  * fmtSpecs must specifiy the same number of columns as is in model.
  * 
  */
-public void setToolTips(SFormatMap smap, Object... fmtSpecs)
+public void setTooltips(SFormatMap smap, Object... fmtSpecs)
 {
 	int n = fmtSpecs.length / 2;
 	String[] colMap = new String[n];
@@ -256,6 +262,14 @@ public void setToolTips(SFormatMap smap, Object... fmtSpecs)
 		if (spec != null) tt.setFormat(i, spec);
 	}
 	this.setTooltipModel(tt);
+}
+
+/** Classic tooltip setter.  For backwards compatibility
+ * @param ttColMap Column in underlying table to display as tooltip for each column in displayed table.
+*/
+public void setTooltips(String... ttColMap)
+{
+	setTooltipModel(new ColPermuteTableModel(getModelU(), null, ttColMap));
 }
 
 }

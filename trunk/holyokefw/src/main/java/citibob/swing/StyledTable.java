@@ -98,6 +98,79 @@ public void setStyledTM(StyledTM stm)
 public StyledTM getStyledTM()
 	{ return styledModel; }
 
+// ===============================================================
+// Old-style (simplified) model-setting
+
+/** Sets up a <b>read-only</b> model based on a naked model.  Does not
+ * reorder or rename columns.  One can call setTooltip
+ * @param smap
+ * @param modelU The model to use
+ */
+public void setModelU(SwingerMap smap, JTypeTableModel modelU)
+{
+	DelegateStyledTM stm = new DelegateStyledTM(modelU);
+	stm.setDefaultModel(smap);
+	stm.setEditableModel(new ConstDataGrid(Boolean.FALSE));
+	setStyledTM(stm);
+}
+/** @param modelU Underling data buffer to use.  If it's an instance of
+ * SortableTableModel, sortable features will be used.
+ * @param typeCol Name of type column in the schema
+ * @param xColNames Columns (other than type and status) from schema to display
+ * @param editable Whether each column is editable.  If null, use default.
+ */
+public void setModelU(SwingerMap smap, JTypeTableModel modelU,
+		String[] colNames, String[] sColMap)
+{
+	DelegateStyledTM stm = new DelegateStyledTM(modelU);
+	stm.setColumns(smap, colNames, sColMap);
+	setStyledTM(stm);
+}
+// --------------------------------------------------------------
+/** Once this has been set up with a <i>DelegateStyledTM</i>, sets tooltips on it,
+ * based on the UNDERLYING columns in modelU.  For backwards compatibility only.
+ * Otherwise, see DelegateStyledTM.setToolTips()
+ NOTE: Requires our underlying StyledTM is DelegateStyledTM.
+ * @param ttColMap Column in underlying table to display as tooltip for each column in displayed table.
+ */
+public void setTooltips(String... ttColMap)
+{
+	getDelegateStyledTM().setTooltips(ttColMap);
+}
+
+/** NOTE: Requires our underlying StyledTM is DelegateStyledTM. */
+public void setEditable(boolean... editable)
+	{ getDelegateStyledTM().setEditable(editable); }
+
+/** Sets a render/edit on a colum, by UNDERLYING column name.
+ NOTE: Requires our underlying StyledTM is DelegateStyledTM. */
+public void setFormatU(String underlyingName, Object fmt)
+{
+	DelegateStyledTM stm = getDelegateStyledTM();
+	RenderEditCols re = (RenderEditCols)stm.getRenderEditModel();
+	re.setFormatU(underlyingName, fmt);
+}
+// --------------------------------------------------------------
+public DelegateStyledTM getDelegateStyledTM()
+	{ return (DelegateStyledTM)styledModel; }
+
+/** Non-standard way to access any column of the selected row. */
+public Object getValue(int colU)
+{
+	int selRow = this.getSelectedRow();
+	if (selRow < 0) return null;
+	return getModelU().getValueAt(selRow, colU);
+}
+public Object getValue(String colNameU)
+{
+	int colU = getModelU().findColumn(colNameU);
+	return getValue(colU);
+}
+
+public JTypeTableModel getModelU() { return styledModel.getModelU(); }
+
+
+// ===============================================================
 public TableCellRenderer getCellRenderer(int row, int col)
 {
 	RenderEdit re = styledModel.getRenderEdit(row, col);

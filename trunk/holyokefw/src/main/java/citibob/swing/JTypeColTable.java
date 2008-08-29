@@ -55,25 +55,26 @@ public JTypeColTable()
 	
 public void setModelU(JTypeTableModel modelU, SwingerMap smap)
 {
-	DelegateStyledTM stm = new DelegateStyledTM(modelU);
-	stm.setDefaultModel(smap);
-	super.setStyledTM(stm);
-	setAllEditable(false);
+	super.setModelU(smap, modelU);
+//	DelegateStyledTM stm = new DelegateStyledTM(modelU);
+//	stm.setDefaultModel(smap);
+//	super.setStyledTM(stm);
+//	setAllEditable(false);
 }
 
 
-/** Non-standard way to access any column of the selected row. */
-public Object getValue(int colU)
-{
-	int selRow = this.getSelectedRow();
-	if (selRow < 0) return null;
-	return getModelU().getValueAt(selRow, colU);
-}
-public Object getValue(String colNameU)
-{
-	int colU = getModelU().findColumn(colNameU);
-	return getValue(colU);
-}
+///** Non-standard way to access any column of the selected row. */
+//public Object getValue(int colU)
+//{
+//	int selRow = this.getSelectedRow();
+//	if (selRow < 0) return null;
+//	return getModelU().getValueAt(selRow, colU);
+//}
+//public Object getValue(String colNameU)
+//{
+//	int colU = getModelU().findColumn(colNameU);
+//	return getValue(colU);
+//}
 
 
 /** @param modelU Underling data buffer to use.  If it's an instance of
@@ -85,9 +86,11 @@ public void setModelU(JTypeTableModel modelU,
 		String[] colNames, String[] sColMap, boolean[] editable,
 		citibob.swing.typed.SwingerMap smap)
 {
-	DelegateStyledTM stm = new DelegateStyledTM(modelU);
-	stm.setColumns(smap, colNames, sColMap, editable);
-	super.setStyledTM(stm);
+	super.setModelU(smap, modelU, colNames, sColMap);
+	super.setEditable(editable);
+//	DelegateStyledTM stm = new DelegateStyledTM(modelU);
+//	stm.setColumns(smap, colNames, sColMap, editable);
+//	super.setStyledTM(stm);
 }
 
 /** @param modelU Underling data buffer to use
@@ -99,36 +102,39 @@ public void setModelU(JTypeTableModel modelU,
 		String[] colNames, String[] sColMap, String[] ttColMap, boolean[] editable,
 		citibob.swing.typed.SwingerMap smap)
 {
-	DelegateStyledTM stm = new DelegateStyledTM(modelU);
-	stm.setColumns(smap, colNames, sColMap, editable);
-	stm.setTooltipModel(new ColPermuteTableModel(modelU, null, ttColMap));
-	
-//	// Nothing is editable if editable == null!
-//	if (editable == null) {
-//		DataCols<Boolean> ed = (DataCols)stm.getEditableModel();
-//		for (int i=0; i<colNames.length; ++i) {
-//			ed.setColumn(i, Boolean.FALSE);
-//		}
-//	}
-	setStyledTM(stm);
+	super.setModelU(smap, modelU, colNames, sColMap);
+	super.setEditable(editable);
+	super.setTooltips(ttColMap);
+//	DelegateStyledTM stm = new DelegateStyledTM(modelU);
+//	stm.setColumns(smap, colNames, sColMap, editable);
+//	stm.setTooltipModel(new ColPermuteTableModel(modelU, null, ttColMap));
+//
+////	// Nothing is editable if editable == null!
+////	if (editable == null) {
+////		DataCols<Boolean> ed = (DataCols)stm.getEditableModel();
+////		for (int i=0; i<colNames.length; ++i) {
+////			ed.setColumn(i, Boolean.FALSE);
+////		}
+////	}
+//	setStyledTM(stm);
 }
 
-public JTypeTableModel getModelU() { return styledModel.getModelU(); }
+//public JTypeTableModel getModelU() { return styledModel.getModelU(); }
 
 
 // =====================================================
 // From the old ColPermuteTable
 public void setAllEditable(boolean edit)
 {
-	((DelegateStyledTM)styledModel).setEditableModel(new ConstDataGrid(Boolean.FALSE));
+	getDelegateStyledTM().setEditableModel(new ConstDataGrid(Boolean.FALSE));
 }
 
-/** Sets a render/edit on a colum, by UNDERLYING column name. */
-public void setFormatU(String underlyingName, Object fmt)
-{
-	DelegateStyledTM stm = (DelegateStyledTM)styledModel;
-	RenderEditCols re = (RenderEditCols)stm.getRenderEditModel();
-	re.setFormatU(underlyingName, fmt);
-}
+///** Sets a render/edit on a colum, by UNDERLYING column name. */
+//public void setFormatU(String underlyingName, Object fmt)
+//{
+//	DelegateStyledTM stm = (DelegateStyledTM)styledModel;
+//	RenderEditCols re = (RenderEditCols)stm.getRenderEditModel();
+//	re.setFormatU(underlyingName, fmt);
+//}
 
 }
