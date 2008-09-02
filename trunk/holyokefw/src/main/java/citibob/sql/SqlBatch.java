@@ -113,7 +113,7 @@ System.out.println(
 
 		// See if this is a divider
 		ResultSetMetaData meta = rs.getMetaData();
-		if (meta.getColumnCount() > 0 && "__divider__".equals(meta.getColumnName(1))) {
+		if (meta.getColumnCount() > 0 && "__divider__".equals(meta.getColumnLabel(1))) {
 			rs.close();
 
 			// It was --- process all buffered result sets

@@ -58,6 +58,8 @@ public SqlTypeSet(TimeZone tz, int dateStyle, int timeStyle, int tsStyle)
 
 	date = newDate(true);
 	dateNotNullable = newDate(false);
+	timestamp = newTimestamp(true);
+	timestampNotNullable = newTimestamp(false);
 }
 	
 public SqlType getSqlType(ResultSet rs, int col) throws SQLException
@@ -76,9 +78,11 @@ public SqlDateType newTimestamp(boolean nullable)
 public SqlDateType newDate(boolean nullable)
 	{ return (SqlDateType)getSqlType(DATE, 0,0, nullable); }
 
-SqlDateType date, dateNotNullable;
+SqlDateType date, dateNotNullable, timestamp, timestampNotNullable;
 
 public SqlDateType date() { return date; }
 public SqlDateType dateNotNullable() { return dateNotNullable; }
+public SqlDateType timestamp() { return timestamp; }
+public SqlDateType timestampNotNullable() { return timestampNotNullable; }
 
 }

@@ -68,7 +68,7 @@ throws SQLException
 	int[] map = new int[md.getColumnCount()+1];
 	map[0] = -1;
 	for (int i=1; i<=md.getColumnCount(); ++i)
-		map[i] = b.findCol(md.getColumnName(i));
+		map[i] = b.findCol(md.getColumnLabel(i));
 	return map;
 }
 public static int[] newSchemaMap(Schema a, ResultSet rs)
