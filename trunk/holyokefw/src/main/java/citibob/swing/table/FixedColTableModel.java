@@ -30,6 +30,7 @@ boolean[] editable;
 
 public int getColumnCount() { return types.length; }
 
+/** @param editable may be null */
 public FixedColTableModel(String[] colNames, JType[] types, boolean[] editable)
 {
 	this.types = types;

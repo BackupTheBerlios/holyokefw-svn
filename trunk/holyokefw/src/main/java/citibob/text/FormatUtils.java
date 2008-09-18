@@ -68,7 +68,9 @@ public static Format newFormat(Class klass, String fmtString)
 {
 	if (Number.class.isAssignableFrom(klass))
 		return new DecimalFormat(fmtString);
-	else if (java.util.Date.class.isAssignableFrom(klass))
+	else if (klass == double.class || klass == int.class || klass == long.class) {
+		return new DecimalFormat(fmtString);
+	} else if (java.util.Date.class.isAssignableFrom(klass))
 		return new SimpleDateFormat(fmtString);
 //System.out.println("fmtString = '" + fmtString + "'");
 	throw new IllegalArgumentException("Cannot make Format for class " + klass);

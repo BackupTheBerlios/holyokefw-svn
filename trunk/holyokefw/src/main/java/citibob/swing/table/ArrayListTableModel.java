@@ -31,6 +31,8 @@ public ArrayListTableModel(String[] colNames, JType[] types, boolean[] editable)
 	super(colNames, types, editable);
 }
 
+public TT getRow(int rowIx) { return data.get(rowIx); }
+
 public int getRowCount()
 	{ return data.size(); }
 

@@ -57,7 +57,7 @@ public StringSFormat()
 /** Not to be used */
 public Object stringToValue(String text)
 {
-	if (nullText.equals(text)) return null;
+	if (nullText != null && nullText.equals(text)) return null;
 	return text;
 }
 public String  valueToString(Object value)

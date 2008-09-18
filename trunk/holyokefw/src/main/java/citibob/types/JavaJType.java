@@ -37,7 +37,13 @@ public class JavaJType implements JType
 		{ return klass; }
 
 	public boolean isInstance(Object o)
-		{ return (klass.isInstance(o) || (nullable && o == null)); }
+	{
+		if (klass.isPrimitive()) {
+			return klass.isInstance(o);
+		} else {
+			return (klass.isInstance(o) || (nullable && o == null));
+		}
+	}
 
 public String toString() { return "JavaJType(" + klass.getName() + ")"; }
 // =================================================================

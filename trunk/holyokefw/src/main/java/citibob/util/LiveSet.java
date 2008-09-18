@@ -56,6 +56,9 @@ public Iterator<TT> iterator()
 	return items.keySet().iterator();
 }
 
+public int size()
+{ return items.size(); }
+
 /** Returns all items in this LiveSet.  Appropriate if we need
  to iterate through from another thread. */
 public Collection<TT> copyAll()
