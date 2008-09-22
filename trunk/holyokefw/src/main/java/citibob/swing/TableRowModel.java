@@ -157,6 +157,7 @@ System.out.println("TableRowModel.tableChanged: " + e.getType());
 		} break;
 		case TableModelEvent.UPDATE :
 			if (getRowCount() > 0 && (curRow < 0 || curRow >= getRowCount())) {
+				// Go to first row when we start...
 				setCurRow(0);
 				//curRow = 0;
 			} else if (getRowCount() == 0) {
@@ -164,6 +165,10 @@ System.out.println("TableRowModel.tableChanged: " + e.getType());
 					curRow = MultiRowModel.NOROW;
 					fireAllValuesChanged();
 				}
+			} else if (e.getFirstRow() == 0 && e.getLastRow() > getRowCount()
+			&& e.getColumn() == TableModelEvent.ALL_COLUMNS) {
+				// Entire TableChanged --- act like we're re-reading...
+				fireCurRowChanged();
 			} else if (e.getFirstRow() <= curRow && curRow <= e.getLastRow()) {
 				// Our row has changed.
 				if (e.getColumn() == TableModelEvent.ALL_COLUMNS) {
