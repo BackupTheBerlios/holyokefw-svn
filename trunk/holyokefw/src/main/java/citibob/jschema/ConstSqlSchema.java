@@ -27,6 +27,7 @@ implements SqlSchema
 {
 
 protected String table;
+protected int schemaType = ST_TABLE;
 
 //public List getPrototypes()
 //{
@@ -102,4 +103,5 @@ public static ConstSqlSchema newSchema(Object... objs)
 public String getDefaultTable()
 	{ return table; }
 
+public int getType() { return schemaType; }
 }

@@ -50,10 +50,12 @@ public RenderEditCols(StyledTM styledModel, SwingerMap smap)
 	JTypeTableModel model = styledModel.getModel();
 	for (int col=0; col<data.length; ++col) {
 		JType jType = model.getJType(0, col);
+//System.out.print("RenderEditCols: jType = " + jType);
 		if (jType == null) continue;
 		int colU = model.getColU(col);
 		String name = styledModel.getModelU().getColumnName(colU);
 		Swinger swinger = smap.newSwinger(jType, name);
+//System.out.println(", name = " + name + ", swinger = " + swinger);
 		if (swinger == null) return;
 		setFormat(col, swinger);
 	}

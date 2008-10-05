@@ -21,6 +21,13 @@ import java.util.*;
 
 public interface SqlSchema extends Schema
 {
+	
+	public static final int ST_TABLE = 0;
+	public static final int ST_VIEW = 1;
+
+	/** ST_TABLE, ST_VIEW */
+	public int getType();
+	
 	/** The table with which this schema is MOST COMMONLY used. */
 	String getDefaultTable();
  

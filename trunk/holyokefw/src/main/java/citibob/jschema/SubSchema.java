@@ -52,6 +52,9 @@ public SubSchema(SqlSchema schema, String[] scols)
 /** The table with which this schema is MOST COMMONLY used. */
 public String getDefaultTable() { return schema.getDefaultTable(); }
 
+/** ST_TABLE, ST_VIEW */
+public int getType() { return SqlSchema.ST_VIEW; }
+
 /** Number of cols in this SqlSchema */
 public int size() { return cols.length; }
 
