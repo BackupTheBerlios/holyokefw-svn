@@ -16,65 +16,44 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.util;
-/*
- * IndexSet.java
- *
- * Created on November 17, 2005, 6:11 PM
- *
- * To change this template, choose Tools | Options and locate the template under
- * the Source Creation and Management node. Right-click the template and choose
- * Open. You can then make changes to the template in the Source Editor.
- */
 
 import java.util.*;
 
 /**
  * A set in which each item is indexed with an integer 0..size()-1.  The
  * index changes when the set changes.
- * @author fiscrob
  */
-public class IndexSet<TT> implements java.io.Serializable
+public abstract class IndexSet<TT> implements java.io.Serializable
 {
 
 TT[] sym;
-HashMap<TT,Integer> tsym;		// NOT TreeMap
+Map<TT,Integer> tsym;
 
+abstract protected Map<TT,Integer> newMap();
+
+// -----------------------------------------------
 protected IndexSet() { }
 public IndexSet(TT... sym)
 {
 	init(sym);
 }
-public IndexSet(List<TT> asym)
+public IndexSet(Collection<TT> asym)
 {
 	TT[] sym = (TT[])new Object[asym.size()];
 	asym.toArray(sym);
 	init(sym);
 }
+// -----------------------------------------------
 
-//public static TT[] subtract(TT[] a, TT[] b)
-//{
-//	TreeSet set = new TreeSet();
-//	for (int i=0; i<a.length; ++i) set.add(a[i]);
-//	for (int i=0; i<b.length; ++i) set.remove(b[i]);
-//	TT[] c = new TT[set.size()];
-//	int i=0;
-//	for (Iterator ii=set.iterator(); ii.hasNext();) {
-//		c[i++] = (TT)ii.next();
-//	}
-//	return c;
-//}
-//public static TT[] add(TT[] a, TT[] b)
-//{
-//	TreeSet set = new TreeSet();
-//	for (int i=0; i<a.length; ++i) set.add(a[i]);
-//	for (int i=0; i<b.length; ++i) set.add(b[i]);
-//	TT[] c = new TT[set.size()];
-//	int i=0;
-//	for (Iterator ii=set.iterator(); ii.hasNext();) {
-//		c[i++] = (TT)ii.next();
-//	}
-//	return c;
-//}
+protected void init(TT[] sym)
+{
+	this.sym = sym;
+	tsym = newMap();
+	for (int i=0; i<sym.length; ++i)
+		tsym.put(sym[i], new Integer(i));
+}
+
+// -----------------------------------------------
 
 public String toString() {
 	StringBuffer buf = new StringBuffer();
@@ -87,13 +66,6 @@ public String toString() {
 	return buf.toString();
 }
 
-protected void init(TT[] sym)
-{
-	this.sym = sym;
-	tsym = new HashMap();
-	for (int i=0; i<sym.length; ++i)
-		tsym.put(sym[i], new Integer(i));
-}
 
 public TT get(int ix)
 {
@@ -116,22 +88,8 @@ public TT[] getSymbols() { return sym; }
 
 public int toIx(TT s)
 {
-if (tsym == null) {
-	System.out.println("tsym is null");
-}
 	Integer ii = tsym.get(s);
 	return (ii == null ? -1 : ii.intValue());
-//	s = s.toUpperCase();
-//	int ix=-1;
-//	for (int t=0; t<sym.length; t++)
-//	{
-//		if (sym[t].equalsIgnoreCase(s))
-//		{
-//			ix=t;
-//			break;
-//		}
-//	}
-//	return ix;
 }
 
 /** Makes an index array of a sub-universe. */
@@ -153,7 +111,7 @@ public int size()
 // =========================================================
 public static void main(String[] args)
 {
-	IndexSet<String> set = new IndexSet("A", "B", "C");
+	IndexSet<String> set = new IndexHashSet("A", "B", "C");
 	System.out.println(set.toIx("B"));
 	System.out.println(set.get(2));
 
