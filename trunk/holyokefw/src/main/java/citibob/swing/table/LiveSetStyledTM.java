@@ -82,6 +82,18 @@ protected void init(ExpHandler expHandler, SwingerMap smap, Object... colSpecs)
 }
 public abstract Object getValueAt(RowType row, int col);
 
+public void setJTypeU(String colName, JType jType)
+{
+	int colU = super.getModel().findColumnU(colName);
+	((LiveSetTableModel)modelU).jTypes[colU] = jType;
+}
+public void setFormatU(String colName, Object fmtSpec)
+{
+	RenderEditCols re = (RenderEditCols)getRenderEditModel();
+	re.setFormatU(colName, fmtSpec);
+}
+
+
 //public void setLiveSet(LiveSet liveSet)
 //	{ liveTM.setLiveSet(liveSet); }
 
