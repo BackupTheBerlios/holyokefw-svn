@@ -31,7 +31,7 @@ package citibob.task;
  *
  * @author citibob
  */
-public interface StRunnable extends CBTask {
+public interface StTask extends CBTask {
 
 public void run(java.sql.Statement st) throws Exception;
 	

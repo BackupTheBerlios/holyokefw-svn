@@ -30,14 +30,22 @@ public class DbRawRun implements RawRun
 {
 
 App app;
-//ConnPool pool;
+ConnPool pool;
 //SqlBatchSet batchSet;
 //int recursionDepth;
 
-public ConnPool getPool() { return app.pool(); }
+public ConnPool getPool() { return pool; }
 public DbRawRun(App app)
 {
 	this.app = app;
+	this.pool = app.pool();
+}
+
+/** Will not work for SqlTask */
+public DbRawRun(ConnPool pool)
+{
+	this.app = null;
+	this.pool = pool;
 }
 
 public static Exception run(ETask r)
@@ -51,7 +59,7 @@ public static Exception run(ETask r)
 	return null;
 }
 
-public static Exception run( ConnPool pool,StRunnable r)
+public static Exception run( ConnPool pool,StTask r)
 {
 	Exception ret = null;
 	Statement st = null;
@@ -153,8 +161,8 @@ public Exception doRun(CBTask rr)
 	} else if (rr instanceof ETask) {
 		ETask r = (ETask)rr;
 		ret = run(r);
-	} else if (rr instanceof StRunnable) {
-		StRunnable r = (StRunnable)rr;
+	} else if (rr instanceof StTask) {
+		StTask r = (StTask)rr;
 		ret = run( app.pool(),r);
 	} else if (rr instanceof DbTask) {
 		DbTask r = (DbTask)rr;

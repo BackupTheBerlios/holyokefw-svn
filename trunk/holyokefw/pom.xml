@@ -4,7 +4,7 @@
   <groupId>org.citibob</groupId>
   <artifactId>holyokefw</artifactId>
   <packaging>jar</packaging>
-  <version>1.1.5</version>
+  <version>1.1.6</version>
   <name>holyokefw</name>
   <url>http://maven.apache.org</url>
   <build>
