@@ -30,7 +30,7 @@ import citibob.resource.ResSet;
 import citibob.swing.prefs.*;
 import citibob.text.SFormatMap;
 import citibob.version.Version;
-import java.io.File;
+import java.net.URL;
 import java.util.prefs.Preferences;
 
 public abstract class App
@@ -39,9 +39,10 @@ public abstract class App
 // =================================================================
 // Configuration, Properts and Preferences
 
-protected File configDir;
+protected URL configURL;
 /** Directory containing configuration files, etc. for this application. */
-public java.io.File configDir() { return configDir; }
+public URL configURL() { return configURL; }
+//public java.io.File configDir() { return configDir; }
 
 protected Properties props;
 /** Gets properties loaded from an application configuration file. */
