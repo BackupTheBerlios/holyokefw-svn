@@ -26,12 +26,12 @@ import javax.swing.table.TableCellRenderer;
 public class SwingerUtils {
 
 
-public RenderEdit newRenderEdit(Swinger swinger)
+public static RenderEdit newRenderEdit(Swinger swinger)
 	{ return swinger.newRenderEdit(); }
-public RenderEdit newRenderEdit(KeyedModel kmodel)
+public static RenderEdit newRenderEdit(KeyedModel kmodel)
 	{ return new KeyedRenderEdit(kmodel); }
 
-public RenderEdit newRenderEdit(SFormat sformat)
+public static RenderEdit newRenderEdit(SFormat sformat)
 {
 	TableCellRenderer rr = new SFormatRenderer(sformat);
 	JTypedTextField tw = new JTypedTextField();
@@ -41,20 +41,20 @@ public RenderEdit newRenderEdit(SFormat sformat)
 	return re;
 }
 
-public RenderEdit newRenderEdit(Class klass, String fmtString)
+public static RenderEdit newRenderEdit(Class klass, String fmtString)
 {
 	SFormat sfmt = FormatUtils.toSFormat(klass, fmtString);
 	return newRenderEdit(sfmt);
 }
-public RenderEdit newRenderEdit(java.text.Format fmt, int horizAlign)
+public static RenderEdit newRenderEdit(java.text.Format fmt, int horizAlign)
 {
 	SFormat sfmt = FormatUtils.toSFormat(fmt, horizAlign);
 	return newRenderEdit(sfmt);
 }
 // ===================================================================
-public SFormat newSFormat(KeyedModel kmodel)
+public static SFormat newSFormat(KeyedModel kmodel)
 	{ return new KeyedSFormat(kmodel); }
-public SFormat newSFormat(Class klass, String fmtString)
+public static SFormat newSFormat(Class klass, String fmtString)
 	{ return FormatUtils.toSFormat(klass, fmtString); }
 // ===================================================================
 

@@ -30,6 +30,7 @@ import javax.swing.table.TableCellRenderer;
  */
 public class RenderEditCols extends DataCols<RenderEdit>
 {
+protected StyledTM styledModel;		// Used for isEditable
 
 //StyledTableModel model;		// Used for isEditable
 //RenderEdit[] redits;

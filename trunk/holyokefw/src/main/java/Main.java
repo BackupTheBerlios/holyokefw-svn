@@ -42,6 +42,7 @@ public static void main(String[] args) throws Exception {
 //System.exit(0);
 
 	AppLauncher.launch("holyokefw", new Class[] {
+		PojoTMTest.class,
 		CloseableTabbedPane.class,
 		JKeyedMulti.class,
 		JKeyedMultiPanel.class,

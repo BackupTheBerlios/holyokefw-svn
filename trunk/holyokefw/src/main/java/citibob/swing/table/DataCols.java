@@ -15,7 +15,6 @@ import java.lang.reflect.Array;
 public class DataCols<TT> implements DataGrid<TT>
 {
 
-protected StyledTM styledModel;		// Used for isEditable
 TT[] data;
 
 public TT getValueAt(int row, int col) { return data[col]; }
