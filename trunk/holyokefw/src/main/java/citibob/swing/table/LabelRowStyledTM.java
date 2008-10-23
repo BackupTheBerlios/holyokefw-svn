@@ -15,7 +15,7 @@ extends DelegateStyledTM
 {
 
 SwingerMap smap;
-Object[] fmtSpecs;
+protected Object[] fmtSpecs;
 
 	
 /** Auto-set column types, RenderEdits, etc.
@@ -52,7 +52,7 @@ public void SetModelU(LabelRowTM modelU)
 public void refreshModel()
 {
 	int nrow = modelU.getRowCount();
-	int noverride = fmtSpecs.length / 2;
+	int noverride = (fmtSpecs == null ? 0 : fmtSpecs.length / 2);
 	
 	// Set of swingers / types / etc.
 	RenderEditLabelRows re = new RenderEditLabelRows(this, smap);

@@ -16,14 +16,15 @@ import citibob.swing.typed.SwingerMap;
 public class PojoStyledTM extends LabelRowStyledTM
 {
 
-public PojoStyledTM(SwingerMap smap, Object... fmtSpecs)
+public PojoStyledTM(SwingerMap smap)
 {
-	super.init(smap, fmtSpecs);
+	super.init(smap, (Object[])null);
 	super.SetModelU(new PojoTM());
 }
 
-public void setPojo(Object pojo)
+public void setPojo(Object pojo, Object[] fmtSpecs)
 {
+	this.fmtSpecs = fmtSpecs;
 	((PojoTM)getModelU()).setPojo(pojo);
 	super.refreshModel();
 }
