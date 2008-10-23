@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.resource;
 
-import citibob.gui.BareBonesOpen;
+import citibob.gui.RobustOpen;
 import citibob.sql.ConnPool;
 import citibob.sql.RsTasklet;
 import citibob.sql.SqlRun;
@@ -200,7 +200,7 @@ throws IOException
 	str.execUpdate(new UpdTasklet() {
 	public void run() throws Exception {
 		// Open the resource
-		BareBonesOpen.open(tmpFile);
+		RobustOpen.open(tmpFile);
 
 		// Wait for user to edit and save
 		int option = JOptionPane.showConfirmDialog(parentComponent,
