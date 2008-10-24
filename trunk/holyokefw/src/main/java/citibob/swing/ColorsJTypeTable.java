@@ -39,6 +39,7 @@ import java.awt.*;
  * TODO: use prepareRenderer instead
  * See: http://www.exampledepot.com/egs/javax.swing.tabe/Tips.html?l=rel
  * @author citibob
+ * @deprecated
  */
 public abstract class ColorsJTypeTable extends JTypeTable implements TableCellRenderer
 {
