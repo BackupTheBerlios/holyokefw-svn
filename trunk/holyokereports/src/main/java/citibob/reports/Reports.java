@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.reports;
 
 import citibob.app.*;
+import citibob.gui.RobustOpen;
 import citibob.reports.*;
 import citibob.swing.table.*;
 import javax.swing.*;
@@ -223,29 +224,31 @@ com.lowagie.text.DocumentException
 // ===================================================================
 public void viewJodPdfs(List models, File templateDir,
 String templateName, int uversionid)
-throws IOException, InterruptedException,
-net.sf.jooreports.templates.DocumentTemplateException,
-com.lowagie.text.DocumentException
+throws Exception
+//IOException, InterruptedException,
+//net.sf.jooreports.templates.DocumentTemplateException,
+//com.lowagie.text.DocumentException
 {
 	viewPdf(writeJodPdfs(models, templateDir, templateName, uversionid, null));
 }
 public void viewJodPdf(Map map, File templateDir,
 String templateName, int uversionid)
-throws IOException, InterruptedException,
-net.sf.jooreports.templates.DocumentTemplateException,
-com.lowagie.text.DocumentException
+throws Exception
+//throws IOException, InterruptedException,
+//net.sf.jooreports.templates.DocumentTemplateException,
+//com.lowagie.text.DocumentException
 {
 	viewPdf(writeJodPdf(map, templateDir, templateName, uversionid, null));
 }
 // ===================================================================
-public File viewPdf(File file) throws IOException
+public File viewPdf(File file) throws Exception
 {
 	if (file == null) {
 		javax.swing.JOptionPane.showMessageDialog(null,
 			"The report has no pages.");
 		return null;
 	} else {
-		citibob.gui.BareBonesOpen.open(file);
+		citibob.gui.RobustOpen.open(file);
 //		citibob.gui.BareBonesPdf.view(file);
 		return file;
 	}
@@ -388,10 +391,10 @@ throws IOException
 
 public void viewXls(Map<String,Object> models, File templateDir,
 String templateName, int uversionid)
-throws IOException
+throws Exception
 {
 	File f = writeXls(models, templateDir, templateName, uversionid, null);
-	citibob.gui.BareBonesOpen.open(f);
+	RobustOpen.open(f);
 }
 
 }
