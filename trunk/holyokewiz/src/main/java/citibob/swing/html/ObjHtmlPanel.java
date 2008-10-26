@@ -206,14 +206,21 @@ System.out.println("HtmlDialog: loading resourceName " + resourceName);
 	Reader in = null;
 	try {
 		in = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(resourceName));
-		org.xamjwg.html.HtmlRendererContext rendererContext =
-			new MyRendererContext();
-		setDocument(in, null, rendererContext);
-		in.close();
+		loadHtml(in);
 	} finally {
 		try { in.close(); } catch(Exception e) {}
 	}
 }
+
+
+protected void loadHtml(Reader htmlIn)
+throws org.xml.sax.SAXException, java.io.IOException
+{
+	org.xamjwg.html.HtmlRendererContext rendererContext = new MyRendererContext();
+	setDocument(htmlIn, null, rendererContext);
+	htmlIn.close();
+}
+
 
 //protected void loadHtml()
 //throws org.xml.sax.SAXException, java.io.IOException
