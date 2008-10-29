@@ -123,8 +123,12 @@ public class ObjNServer implements Runnable
 				ObjectInputStream oin = new ObjectInputStream(in);
 				ObjectOutputStream oout = new ObjectOutputStream(out);
 				ObjQuery q = (ObjQuery)oin.readObject();
-				
-				objMain.handleQuery(queryNo, q, socket, oin, oout);
+
+				if (syncObj != null) synchronized(syncObj) {
+					objMain.handleQuery(queryNo, q, socket, oin, oout);
+				} else {
+					objMain.handleQuery(queryNo, q, socket, oin, oout);
+				}
 //System.out.println("writing 289");
 //oout.writeObject(new Integer(289));
 //System.out.println("Exiting query...");
