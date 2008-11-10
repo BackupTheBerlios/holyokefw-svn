@@ -56,6 +56,7 @@ public class FormatSFormat extends BaseSFormat
 	public Object stringToValue(String text)  throws java.text.ParseException
 	{
 		if (nullText.equals(text)) return null;
+//System.out.println("fmt = " + fmt + " text = " + text);
 		return fmt.parseObject(text);
 	}
 	public String valueToString(Object value) throws java.text.ParseException

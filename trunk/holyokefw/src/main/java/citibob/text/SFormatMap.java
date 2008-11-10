@@ -84,6 +84,8 @@ public SFormat newSFormat(Object fmtSpec)
 	if (fmtSpec == null) return null;
 	if (fmtSpec instanceof SFormat)
 		return (SFormat)fmtSpec;
+	if (fmtSpec instanceof Format)
+		return new FormatSFormat((Format)fmtSpec);
 	if (fmtSpec instanceof JType)
 		return newSFormat((JType)fmtSpec, null);
 	if (fmtSpec instanceof Class)

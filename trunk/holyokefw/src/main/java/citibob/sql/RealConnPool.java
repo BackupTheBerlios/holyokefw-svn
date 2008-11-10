@@ -65,7 +65,13 @@ public synchronized Connection checkout() throws SQLException
 //System.out.println("Throwing out connection: " + dd.dbb);
 		try {
 			connFactory.close(dd.dbb);
-		} catch(SQLException e) {}
+		} catch(SQLException e) {
+		} catch(NullPointerException ne) {
+			// This should never happen, because null is being checked on checkin()
+			System.err.println("ConnPool has a null reserve connection!");
+			ne.printStackTrace();
+		}
+		
 	}
 	
 	// No reserves left; create a new connection
@@ -76,11 +82,14 @@ System.out.println("RealConnPool: Creating new database connection");
 }
 
 /** Return a connection */
-public synchronized void checkin(Connection c) throws SQLException
+public synchronized void checkin(Connection dbb) throws SQLException
 {
+	if (dbb == null) {
+		throw new IllegalArgumentException("Cannot checkin a null reference!");
+	}
 //	c.close();
-	if (reserves.size() >= 5) connFactory.close(c);
-	else reserves.addLast(new DbbDate(c));
+	if (reserves.size() >= 5) connFactory.close(dbb);
+	else reserves.addLast(new DbbDate(dbb));
 }
 public void dispose() {}
 
