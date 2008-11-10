@@ -62,7 +62,7 @@ synchronized public boolean run(Job r)
 /** Convenience function */
 public void doRun(String name, CBTask r)
 {
-	Job task = new Job(name, r);
+	Job task = new Job(r);
 	run(task);
 }
 public void run(CBTask r)
