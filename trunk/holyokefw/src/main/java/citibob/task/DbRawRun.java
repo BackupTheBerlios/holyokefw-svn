@@ -163,10 +163,10 @@ public Exception doRun(CBTask rr)
 		ret = run(r);
 	} else if (rr instanceof StTask) {
 		StTask r = (StTask)rr;
-		ret = run( app.pool(),r);
+		ret = run(pool,r);
 	} else if (rr instanceof DbTask) {
 		DbTask r = (DbTask)rr;
-		ret = run( app.pool(),r);
+		ret = run(pool,r);
 	} else {
 		ret = new ClassCastException("CBRunnable of class " + rr.getClass() + " is not one of ERunnable, StRunnable or DbRunnable");
 	}
