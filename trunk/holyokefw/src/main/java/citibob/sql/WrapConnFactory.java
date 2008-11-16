@@ -9,10 +9,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- *
+ * Wraps the results of one ConnFactory is some way.  This class
+ * is meant to be extended.
  * @author citibob
  */
-public class WrapConnFactory implements ConnFactory
+public abstract class WrapConnFactory implements ConnFactory
 {
 
 ConnFactory sub;

@@ -33,13 +33,13 @@ private URL key, trust ;
 //Default constructor takes the filename of the keystore and truststore , 
 //the password of the stores and the password of the private key
 public SSLConnection(URL key , URL trust , char[] storepass, char[]
-keypass)
+storeKeyPass, char[] trustPass)
 throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException,
 CertificateException, IOException, UnrecoverableKeyException, KeyManagementException
 {
 	this.key = key;
 	this.trust = trust ;
-	initSSLContext(storepass , keypass );
+	initSSLContext(storepass , storeKeyPass, trustPass);
 }
 
 
@@ -47,7 +47,7 @@ CertificateException, IOException, UnrecoverableKeyException, KeyManagementExcep
 
 /* mykey holding my own certificate and private key, mytrust holding all the 
 certificates that I trust */
-public void initKeyStores(URL key , URL trust , char[] storepass)
+public void initKeyStores(URL key , URL trust , char[] storepass, char[] trustpass)
 throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException,
 CertificateException, IOException
 {
@@ -56,27 +56,27 @@ CertificateException, IOException
 	mytrust = KeyStore.getInstance("JKS", "SUN");
 
 	//load the keystores
-	InputStream keyStream = null;
+	InputStream storeStream = null;
 	InputStream trustStream = null;
 	try {
-		keyStream = key.openStream();
+		storeStream = key.openStream();
 		trustStream = trust.openStream();
-		mykey.load(keyStream, storepass);
-		mytrust.load(trustStream, storepass );
+		mykey.load(storeStream, storepass);
+		mytrust.load(trustStream, trustpass );
 	} finally {
-		keyStream.close();
+		storeStream.close();
 		trustStream.close();
 	}
 }
 
 
 
-public void initSSLContext(char[] storepass , char[] keypass)
+public void initSSLContext(char[] storePass, char[] storeKeyPass , char[] trustPass)
 throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException,
 CertificateException, IOException, UnrecoverableKeyException, KeyManagementException
 { 
     ctx = SSLContext.getInstance("TLSv1" , "SunJSSE");
-    initKeyStores(key , trust , storepass) ;
+    initKeyStores(key , trust , storePass, trustPass);
     //Create the key and trust manager factories for handing the cerficates 
     //in the key and trust stores
     TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509" , 
@@ -85,7 +85,7 @@ CertificateException, IOException, UnrecoverableKeyException, KeyManagementExcep
     
     KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509" , 
     "SunJSSE");
-    kmf.init(mykey , keypass);
+    kmf.init(mykey , storeKeyPass);
     
     ctx.init(kmf.getKeyManagers() , tmf.getTrustManagers() ,null) ;
 

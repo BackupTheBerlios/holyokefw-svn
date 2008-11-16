@@ -19,27 +19,33 @@ import javax.net.ssl.*;
 import java.io.*;
 
 
-public class SSLRelayClient extends SSLConnection {
-
-	private SSLSocket ss;
-	private ServerSocket locals;
-	private DataInputStream in , secureIn ;
-	private DataOutputStream out, secureOut ;
-	private InetAddress dest;
-	private int destPort;
+public class SSLRelayClient
+extends SSLConnection
+{
 	
-	RelayIntoOut ApptoProxy;
-	RelayIntoOut ProxytoApp;
+private SSLSocket ss;
+private ServerSocket locals;
+private DataInputStream in , secureIn ;
+private DataOutputStream out, secureOut ;
+private InetAddress dest;
+private int destPort;
+
+RelayIntoOut ApptoProxy;
+RelayIntoOut ProxytoApp;
+
+Thread thread;
+
 
 public static class Params
 {
-	public URL key;
-	public URL trust;
-	public char[] storePass;
-	public char[] keyPass;
-	public InetAddress dest;
-	public int destPort;
-	public int localPort = -1;		// -1 means choose a free port
+	public URL storeURL;		// JKS file for our public/private keypair
+	public URL trustURL;		// JKS file for server certificate(s)
+	public char[] storePass;		// Our public & private key pair
+	public char[] storeKeyPass;	// Password to our private key in clientStorePass
+	public char[] trustPass;		// Certificate of server we connect to
+	public InetAddress dest;		// Server we're tunneling to
+	public int destPort;			// Port on server to connect to
+	public int localPort = -1;		// Port we'll conn-1 means choose a free port
 }
 	
 public int getLocalPort() { return locals.getLocalPort(); }
@@ -48,12 +54,13 @@ public int getLocalPort() { return locals.getLocalPort(); }
 public SSLRelayClient(Params prm)
 throws Exception
 {
-	super(prm.key, prm.trust, prm.storePass, prm.keyPass);
+	super(prm.storeURL, prm.trustURL,
+		prm.storePass, prm.storeKeyPass, prm.trustPass);
 	System.out.println("Starting relayapp ...");
 	this.dest = prm.dest;
 	this.destPort = prm.destPort;
 	initLocalConnection(prm.localPort);
-	startListen();
+//	startListen();
 }
 
 
@@ -92,32 +99,25 @@ throws IOException
 	}
 }
 
-public void startListen()
+
+public void startRelays()
+throws Exception
 {
+	Socket sock=locals.accept();
 
-	while(true) { 
-		try{
-			Socket sock=locals.accept();
+	initSecuredConnection(dest, destPort);   
+	in = new DataInputStream (
+		new BufferedInputStream(	// Not sure this should be buffered...
+		sock.getInputStream() ));
+	out = new DataOutputStream(
+		new BufferedOutputStream(
+		sock.getOutputStream() ));
 
-			initSecuredConnection(dest, destPort);   
-			in = new DataInputStream (
-				new BufferedInputStream(	// Not sure this should be buffered...
-				sock.getInputStream() ));
-			out = new DataOutputStream(
-				new BufferedOutputStream(
-				sock.getOutputStream() ));
-			
-			ApptoProxy = new RelayIntoOut(in ,secureOut, "ApptoSecureout");
-			ProxytoApp = new RelayIntoOut(secureIn , out, "SecureintoApp"  );   
-		} catch(Exception e) {
-			e.printStackTrace();
-//			System.err.println(e);
-		}  
-	}	      
-
+	ApptoProxy = new RelayIntoOut(in ,secureOut, "ApptoSecureout");
+	ProxytoApp = new RelayIntoOut(secureIn , out, "SecureintoApp"  );   
 }
 
-public void closeAll()
+public void stopRelays()
 {
 	ApptoProxy.closeall();
 	ProxytoApp.closeall();
@@ -125,9 +125,10 @@ public void closeAll()
 
 public static void main(String[] args) throws Exception {     
 	SSLRelayClient.Params prm = new SSLRelayClient.Params();
-		prm.key = new File("/Users/citibob/mvn/oassl/clienttruststore").toURL();
-		prm.trust = prm.key;
+		prm.storeURL = new File("/Users/citibob/mvn/oassl/clienttruststore").toURL();
+		prm.trustURL = prm.storeURL;
 		prm.storePass = "oaclient7".toCharArray();
+		prm.trustPass = prm.storePass;
 		prm.dest = InetAddress.getByAddress(new byte[] {127,0,0,1});
 		prm.destPort = 5433;
 		prm.localPort = 4001;	// Set this to -1
