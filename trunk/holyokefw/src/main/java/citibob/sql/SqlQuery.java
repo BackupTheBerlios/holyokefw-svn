@@ -34,8 +34,10 @@ public interface SqlQuery
 {
 public static final int JT_NONE = 0;
 public static final int JT_INNER = 1;
-public static final int JT_OUTER = 2;
-public static final String[] sJoinTypes = {"", "inner join", "outer join"};
+public static final int JT_LEFT_OUTER = 2;
+public static final int JT_RIGHT_OUTER = 3;
+public static final String[] sJoinTypes = {"", "inner join",
+	"left outer join", "right outer join"};
 
 
 	

@@ -24,10 +24,10 @@ protected int localPort;
 
 public int getLocalPort() { return localPort; }
 
-    public SSLRelayServer(URL key , URL trust, char[] storepass, char[]
-    keypass , int  localport, int destport  ) throws Exception 
+    public SSLRelayServer(URL key , URL trust, char[] storePass, char[]
+    storeKeypass , char[] trustPass, int  localport, int destport  ) throws Exception 
     {
-      super(key, trust , storepass, keypass ); 
+      super(key, trust , storePass, storeKeypass, trustPass ); 
       initSSLServerSocket(localport);
       startListen(localport , destport );
      }
@@ -115,24 +115,24 @@ public void startListen(int localport , int destport)
      
      
 
-     public static void main(String[] args) throws Exception
-	 {
-     
-	 
-			
-	// Keystore with the certificate in it
-	URL key = new File("/Users/citibob/mvn/oassl/serverstore").toURL();
-	
-	// Keystore with the private key in it.
-	URL trust = key;
-	
-	String serverStorepass = "oasslont1me";
-	
-	SSLRelayServer relays = new SSLRelayServer(
-		key, trust, serverStorepass.toCharArray(), serverStorepass.toCharArray(),
-		5433,5432);
-	 
-	  }
+//     public static void main(String[] args) throws Exception
+//	 {
+//     
+//	 
+//			
+//	// Keystore with the certificate in it
+//	URL key = new File("/Users/citibob/mvn/oassl/serverstore").toURL();
+//	
+//	// Keystore with the private key in it.
+//	URL trust = key;
+//	
+//	String serverStorepass = "oasslont1me";
+//	
+//	SSLRelayServer relays = new SSLRelayServer(
+//		key, trust, serverStorepass.toCharArray(), serverStorepass.toCharArray(),
+//		5433,5432);
+//	 
+//	  }
          
      
      

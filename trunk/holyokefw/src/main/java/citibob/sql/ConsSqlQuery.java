@@ -63,7 +63,8 @@ public static class TableJoin
 		switch(joinType) {
 			case JT_NONE : sb.append(first ? " FROM " :  ", "); break;
 			case JT_INNER : sb.append(" inner join "); break;
-			case JT_OUTER : sb.append(" outer join "); break;
+			case JT_LEFT_OUTER : sb.append(" left outer join "); break;
+			case JT_RIGHT_OUTER : sb.append(" right outer join "); break;
 		}
 
 		// Name of Table
