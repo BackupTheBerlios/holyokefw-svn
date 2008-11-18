@@ -20,12 +20,20 @@ package citibob.task;
 public class SimpleExpHandler extends BaseExpHandler
 {
 
+boolean exitOnExp = true;
+
+public SimpleExpHandler() { this(true); }
+public SimpleExpHandler(boolean exitOnExp)
+{
+	this.exitOnExp = exitOnExp;
+}
+	
 public void consume(Throwable e)
 {
 	e = getRootCause(e);
 	
 	e.printStackTrace(System.out);
-	System.exit(-1);
+	if (exitOnExp) System.exit(-1);
 }
 	
 }

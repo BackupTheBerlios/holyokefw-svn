@@ -102,6 +102,7 @@ throws IOException
 	// Write the socket number to out file.
 	//new FileOutputStream(sockFilename).close();
 	//OS.setPrivate(sockFilename);
+	sockFile.getParentFile().mkdirs();
 	PrintWriter out = new PrintWriter(new FileOutputStream(sockFile));
 	out.println(getLocalPort());
 	out.println(hexEncode(cookie));
