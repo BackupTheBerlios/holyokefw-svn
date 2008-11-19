@@ -40,6 +40,7 @@ Boolean val;
 
 String trueLabel = "Y";
 String falseLabel = "N";
+String nullLabel = "";
 JType jType;
 
 /** Returns last legal value of the widget.  Same as method in JFormattedTextField */
@@ -56,7 +57,7 @@ public void setValue(Object d)
 		throw new ClassCastException("Expected Boolean");
 	Object oldVal = val;
 	val = (Boolean)d;
-	setText(val == null ? "-" : val.booleanValue() ? trueLabel : falseLabel);
+	setText(val == null ? nullLabel : val.booleanValue() ? trueLabel : falseLabel);
 	this.firePropertyChange("value", oldVal, val);
 }
 
@@ -104,4 +105,14 @@ public JBoolButton()
 public void setValue(boolean b)
 	{ setValue(b ? Boolean.TRUE : Boolean.FALSE); }
 
+public void setTrueLabel ( String text ) {
+	trueLabel = text ; 
+}
+public void setFalseLabel ( String text ) {
+	falseLabel = text ; 
+}
+public void setNullLabel(String text)
+{
+	nullLabel = text;
+}
 }

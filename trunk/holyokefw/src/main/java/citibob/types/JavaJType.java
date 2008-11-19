@@ -48,11 +48,17 @@ public class JavaJType implements JType
 public String toString() { return "JavaJType(" + klass.getName() + ")"; }
 // =================================================================
 public static final JavaJType jtObject = new JavaJType(Object.class);
+public static final JavaJType jtObjectNotNull = new JavaJType(Object.class, false);
 public static final JavaJType jtInteger = new JavaJType(Integer.class);
+public static final JavaJType jtIntegerNotNull = new JavaJType(Integer.class, false);
 public static final JavaJType jtLong = new JavaJType(Long.class);
+public static final JavaJType jtLongNotNull = new JavaJType(Long.class, false);
 public static final JavaJType jtBoolean= new JavaJType(Boolean.class);
+public static final JavaJType jtBooleanNotNull= new JavaJType(Boolean.class, false);
 public static final JavaJType jtDouble= new JavaJType(Double.class);
+public static final JavaJType jtDoubleNotNull= new JavaJType(Double.class, false);
 public static final JavaJType jtString= new JavaJType(String.class);
+public static final JavaJType jtStringNotNull= new JavaJType(String.class, false);
 //public static final JavaJType jtFile= new JavaJType(File.class);
 //public static final JavaJType jt= new JavaJType(.class);
 
