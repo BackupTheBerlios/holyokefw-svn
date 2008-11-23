@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.sql;
 
 import citibob.io.sslrelay.SSLRelayClient;
-import java.io.IOException;
+import citibob.task.ExpHandler;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -33,10 +33,14 @@ public class SSLConnFactory implements ConnFactory
 String urlTemplate;		// Connecion URL, without the port
 Properties props;
 SSLRelayClient.Params prm;
+ExpHandler expHandler;
+ConnPool pool;		// OPTIONAL: Check ourselves in when connection dies
 
 Map<Connection,SSLRelayClient> fwdMap = new HashMap();
 
-	
+public void setConnPool(ConnPool pool)
+{ this.pool = pool; }
+
 /**
  * 
  * @param urlTemplate Template of URL, with the port number replaced
@@ -48,11 +52,13 @@ Map<Connection,SSLRelayClient> fwdMap = new HashMap();
  * <li>password</li>
  */
 public SSLConnFactory(String urlTemplate,
-SSLRelayClient.Params prm, Properties props)
+SSLRelayClient.Params prm, Properties props,
+ExpHandler expHandler)
 {
 	this.urlTemplate = urlTemplate;
 	this.prm = prm;
 	this.props = props;
+	this.expHandler = expHandler;
 }
 
 /** Create an actual connection --- used by pool implementations, should not
@@ -61,7 +67,21 @@ public Connection create() throws SQLException
 {
 SSLRelayClient relay;
 	try {
-		relay = new SSLRelayClient(prm);
+		relay = new SSLRelayClient(prm, null) {
+		protected void connectionClosed() {
+			// Remove ourselves from the connection pool
+			// if the SSL link goes down.
+			try {
+				System.out.println("***** Removing connection from pool: " + getDbb());
+				if (pool != null) {
+// Don't know why this is ever null.
+					if (getDbb() != null) pool.close(this.getDbb());
+//					pool.closeAll();
+				}
+			} catch(Exception e) {
+				expHandler.consume(e);
+			}
+		}};
 		relay.startRelays();
 	} catch(Exception e) {
 		SQLException ioe = new SQLException(e.getMessage());
@@ -73,6 +93,8 @@ SSLRelayClient relay;
 	int port = relay.getLocalPort();
 	String url = urlTemplate.replace("%port%", ""+port);
 	Connection dbb = DriverManager.getConnection(url, props);
+System.out.println("SSLConnFactory created connection: " + dbb);
+	relay.setDbb(dbb);
 	
 	fwdMap.put(dbb, relay);
 	return dbb;

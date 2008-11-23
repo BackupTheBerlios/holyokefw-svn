@@ -35,6 +35,7 @@ import java.io.*;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.net.*;
+import javax.swing.SwingUtilities;
 import javax.swing.text.*;
 
 /**
@@ -58,71 +59,75 @@ public class MailExpHandler extends BaseExpHandler
 		this.bugRecipient = bugRecipient;
 		this.programName = programName;
 	}
-	public void consume(Throwable e)
+	public void consume(final Throwable eMain)
 	{
-		e = getRootCause(e);
-
-		// Get the last bit of the Java console stdout
-		String outMsg = "";
-		if (stdoutDoc != null) {
-			try {
-				int nsave = 4000;
-				int docLen = stdoutDoc.getLength();
-				int start = docLen - nsave;
-				if (start < 0) start = 0;
-				outMsg = stdoutDoc.getText(start, docLen - start);
-			} catch(BadLocationException ee) {
-			}
-		}
-		
-		// Get the stack trace
-		StringWriter ss = new StringWriter();
-		PrintWriter pw = new PrintWriter(ss);
-		e.printStackTrace(pw);
-		String msgText = 
-			"Bug in: " + programName + " " + app.version() + "\n" +
-			"Version: " + app.version() + "\n" +
-			"User: " + System.getProperty("user.name") + "\n" +
-			"Config URL: " + app.configURL() + "\n\n" +
-//			e.toString() + "\n" +
-			ss.getBuffer().toString() + "\n" +
-			"=================================================\n" +
-			outMsg + "\n";
-		System.out.println(ss.toString());
-//		System.err.println(msgText);
-		
-		// Get other info
-		String userName = System.getProperty("user.name");
-		
-		
-		// Let user fiddle with the stack trace
-		boolean askUser = app.props().getProperty("mail.bugs.askuser").toLowerCase().equals("true");
-		askUser = askUser && !(e instanceof AppError);
-		final MailExpDialog dialog = new MailExpDialog(null, programName,
-			e, msgText, askUser,
-			app.swingPrefs(), app.userRoot().node("MailExpDialog"));
-		dialog.setVisible(true);
-
-		if (e instanceof FatalAppError) System.exit(-1);
-		if (askUser && !dialog.isReportError()) return;
-		
-
-		new Thread() {
+		SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-			try {
-				// Define message
-				MimeMessage msg = new MimeMessage(app.mailSender().getSession());
-				//msg.setFrom(new InternetAddress("citibob@earthlink.net"));
-				msg.setSubject("Bug in " + programName);
-				msg.setText(dialog.getMsg());
-				msg.addRecipient(Message.RecipientType.TO, bugRecipient);
-				
-				app.mailSender().sendMessage(msg);
-			} catch(Exception ee) {
-				System.out.println("Could not send bug report!!!");
-				ee.printStackTrace(System.out);
+			Throwable e = getRootCause(eMain);
+
+			// Get the last bit of the Java console stdout
+			String outMsg = "";
+			if (stdoutDoc != null) {
+				try {
+					int nsave = 4000;
+					int docLen = stdoutDoc.getLength();
+					int start = docLen - nsave;
+					if (start < 0) start = 0;
+					outMsg = stdoutDoc.getText(start, docLen - start);
+				} catch(BadLocationException ee) {
+				}
 			}
-		}}.start();
+
+			// Get the stack trace
+			StringWriter ss = new StringWriter();
+			PrintWriter pw = new PrintWriter(ss);
+			pw.print(getNestedMessages(eMain));
+			e.printStackTrace(pw);
+			String msgText = 
+				"Bug in: " + programName + " " + app.version() + "\n" +
+				"Version: " + app.version() + "\n" +
+				"User: " + System.getProperty("user.name") + "\n" +
+				"Config URL: " + app.configURL() + "\n\n" +
+	//			e.toString() + "\n" +
+				ss.getBuffer().toString() + "\n" +
+				"=================================================\n" +
+				outMsg + "\n";
+			System.out.println(ss.toString());
+	//		System.err.println(msgText);
+
+			// Get other info
+			String userName = System.getProperty("user.name");
+
+
+			// Let user fiddle with the stack trace
+			boolean askUser = app.props().getProperty("mail.bugs.askuser").toLowerCase().equals("true");
+			askUser = askUser && !(e instanceof AppError);
+			final MailExpDialog dialog = new MailExpDialog(null, programName,
+				e, msgText, askUser,
+				app.swingPrefs(), app.userRoot().node("MailExpDialog"));
+			dialog.setVisible(true);
+
+			if (e instanceof FatalAppError) System.exit(-1);
+			if (askUser && !dialog.isReportError()) return;
+
+
+			new Thread() {
+			public void run() {
+				try {
+					// Define message
+					MimeMessage msg = new MimeMessage(app.mailSender().getSession());
+					//msg.setFrom(new InternetAddress("citibob@earthlink.net"));
+					msg.setSubject("Bug in " + programName);
+					msg.setText(dialog.getMsg());
+					msg.addRecipient(Message.RecipientType.TO, bugRecipient);
+
+					app.mailSender().sendMessage(msg);
+				} catch(Exception ee) {
+					System.out.println("Could not send bug report!!!");
+					ee.printStackTrace(System.out);
+				}
+			}}.start();
+		}});
 	}
 
 	/** Creates a new instance of MailExpHandler */

@@ -16,4 +16,11 @@ import java.sql.SQLException;
 public interface ConnFactory {
 	public Connection create() throws SQLException;
 	public void close(Connection dbb) throws SQLException;
+
+	/** ConnFactory can remove itself from the pool when a
+	 * connection it created goes down, thereby eliminating
+	 * future exceptions.
+	 * @param pool
+	 */
+	public void setConnPool(ConnPool pool);
 }

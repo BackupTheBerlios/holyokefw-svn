@@ -26,6 +26,8 @@ public JDBCConnFactory(String url, Properties props)
 	this.props = props;
 }
 
+public void setConnPool(ConnPool pool)
+	{  }
 
 
 /** Create an actual connection --- used by pool implementations, should not

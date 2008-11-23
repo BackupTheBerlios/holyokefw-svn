@@ -31,6 +31,10 @@ public WrapConnFactory(ConnFactory sub)
 		return sub.create();
 	}
 
+public void setConnPool(ConnPool pool)
+{
+	sub.setConnPool(pool);
+}
 
 	
 }

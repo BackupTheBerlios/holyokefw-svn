@@ -14,9 +14,12 @@ Chianglin Jan 2003
 ******************************************************************* */
 
 
+import citibob.task.ExpHandler;
+import citibob.task.SimpleExpHandler;
 import java.net.*;
 import javax.net.ssl.*;
 import java.io.*;
+import java.sql.Connection;
 
 
 public class SSLRelayClient
@@ -30,11 +33,17 @@ private DataOutputStream out, secureOut ;
 private InetAddress dest;
 private int destPort;
 
-RelayIntoOut ApptoProxy;
-RelayIntoOut ProxytoApp;
+MyRelay ApptoProxy;
+MyRelay ProxytoApp;
 
 Thread thread;
+ExpHandler expHandler;
 
+Connection dbb;
+boolean calledConnectionClosed = false;
+
+public Connection getDbb() { return dbb; }
+public void setDbb(Connection dbb) { this.dbb = dbb; }
 
 public static class Params
 {
@@ -45,27 +54,29 @@ public static class Params
 	public char[] trustPass;		// Certificate of server we connect to
 	public InetAddress dest;		// Server we're tunneling to
 	public int destPort;			// Port on server to connect to
-	public int localPort = -1;		// Port we'll conn-1 means choose a free port
+	public int localPort = 0;		// Port we'll present as server; 0 means choose a free port
 }
 	
 public int getLocalPort() { return locals.getLocalPort(); }
 
 //default constructor
-public SSLRelayClient(Params prm)
+public SSLRelayClient(Params prm, ExpHandler expHandler)
 throws Exception
 {
 	super(prm.storeURL, prm.trustURL,
 		prm.storePass, prm.storeKeyPass, prm.trustPass);
-	System.out.println("Starting relayapp ...");
+//	System.out.println("Starting relayapp ...");
 	this.dest = prm.dest;
 	this.destPort = prm.destPort;
-	initLocalConnection(prm.localPort);
+	locals = new ServerSocket(prm.localPort);
+	this.expHandler = expHandler;
 //	startListen();
 }
 
 
 //creates the secured SSL link
-public void initSecuredConnection(InetAddress dest , int destport) throws Exception
+public void initSecuredConnection(InetAddress dest , int destport)
+throws Exception
 {
 
 	//get the Socketfactory from the SSLContext 	   
@@ -89,38 +100,59 @@ public void initSecuredConnection(InetAddress dest , int destport) throws Except
 	System.out.println("Got remote secured connection");
 }
 
-public void initLocalConnection(int localPort)
-throws IOException
-{
-	if (localPort < 0) {
-		locals = new ServerSocket();
-	} else {
-		locals = new ServerSocket(localPort);
-	}
-}
-
-
 public void startRelays()
 throws Exception
 {
-	Socket sock=locals.accept();
-
 	initSecuredConnection(dest, destPort);   
-	in = new DataInputStream (
-		new BufferedInputStream(	// Not sure this should be buffered...
-		sock.getInputStream() ));
-	out = new DataOutputStream(
-		new BufferedOutputStream(
-		sock.getOutputStream() ));
+	thread = new Thread() {
+	public void run() {
+		if (this.isInterrupted()) {
+			callConnectionClosed();
+			return;
+		}
+		try {
+			// "Server" listens for JUST ONE socket connection
+			// from JDBC, then exits.
+			Socket sock=locals.accept();
 
-	ApptoProxy = new RelayIntoOut(in ,secureOut, "ApptoSecureout");
-	ProxytoApp = new RelayIntoOut(secureIn , out, "SecureintoApp"  );   
+			in = new DataInputStream (
+				new BufferedInputStream(	// Not sure this should be buffered...
+				sock.getInputStream() ));
+			out = new DataOutputStream(
+				new BufferedOutputStream(
+				sock.getOutputStream() ));
+		} catch(Exception e) {
+			if (expHandler == null) e.printStackTrace();
+			else expHandler.consume(e);
+		}
+
+		ApptoProxy = new MyRelay(in ,secureOut, "ApptoSecureout");
+		ProxytoApp = new MyRelay(secureIn , out, "SecureintoApp"  ); 
+//RelayIntoOut needs to be an inner class.
+//And it needs to call connectionClosed() as appropriate.
+//And since there are TWO threads here, it needs to
+//arbitrate which one "gets" to call connectionClosed().
+//		connectionClosed();
+	}};
+	thread.start();
+}
+
+/** Override this for a callback */
+protected void connectionClosed() {}
+
+synchronized void callConnectionClosed() {
+	if (!calledConnectionClosed) {
+		calledConnectionClosed = true;	// Prevent infinitie recursion
+		connectionClosed();
+	}
 }
 
 public void stopRelays()
 {
 	ApptoProxy.closeall();
 	ProxytoApp.closeall();
+	thread.interrupt();		// This will be ineffective...
+	callConnectionClosed();	// This is redundant
 }
 
 public static void main(String[] args) throws Exception {     
@@ -132,11 +164,83 @@ public static void main(String[] args) throws Exception {
 		prm.dest = InetAddress.getByAddress(new byte[] {127,0,0,1});
 		prm.destPort = 5433;
 		prm.localPort = 4001;	// Set this to -1
-	new SSLRelayClient(prm);
+	new SSLRelayClient(prm, new SimpleExpHandler());
 //	new SSLRelayClient(key, trust, clientStorepassword.toCharArray(), clientStorepassword.toCharArray(),
 //		"127.0.0.1", 5433, 4001);
 }
 
+
+// ===============================================================
+class MyRelay extends Thread {
+
+
+	private DataInputStream in ;
+	private DataOutputStream out ;
+	private String name;
+
+	public MyRelay ( DataInputStream in,
+	DataOutputStream out , String name) 
+	{
+		super(name);
+		this.name = name;
+		this.in = in;
+		this.out = out ;
+		setDaemon(true);
+		this.start();
+	}
+
+	public MyRelay ( DataInputStream in, DataOutputStream out) 
+	{
+		this.name = getName();
+		this.in = in;
+		this.out = out ;
+		setDaemon(true);
+		this.start();
+	}
+
+
+
+	public void run(){
+
+		int size ;
+		byte[] buffer = new byte[8192];
+
+		try {
+			while(true) {
+				size = in.read(buffer);
+				if(size > 0 ) {
+					System.out.println(name + " receive from in connection" + size);
+					out.write(buffer,0, size);
+					out.flush();
+					System.out.println(name  + " finish forwarding to out connection");    	       
+				} else if (size == -1) { //end of stream 
+					System.out.println(name + " EOF detected!");
+					out.close();
+					return ;
+				}	    
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			//	       System.err.println(name + e);
+			closeall();
+		} 
+
+
+	}
+
+	/** Causes the thread to stop! */
+	public void closeall(){
+		try{
+			if(in != null ) in.close();
+			if(out != null) out.close();
+			callConnectionClosed();
+		} catch(IOException e){
+			e.printStackTrace();
+	//		    System.err.println(e);
+		}
+	}
+}
 
 }//end of class
 

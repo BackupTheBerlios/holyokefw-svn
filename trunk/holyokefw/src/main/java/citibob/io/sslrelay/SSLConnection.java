@@ -60,12 +60,14 @@ CertificateException, IOException
 	InputStream trustStream = null;
 	try {
 		storeStream = key.openStream();
+		if (storeStream == null) throw new IOException("Cannot open URL: " + key);
 		trustStream = trust.openStream();
+		if (trustStream == null) throw new IOException("Cannot open URL: " + trust);
 		mykey.load(storeStream, storepass);
 		mytrust.load(trustStream, trustpass );
 	} finally {
-		storeStream.close();
-		trustStream.close();
+		if (storeStream != null) storeStream.close();
+		if (trustStream != null) trustStream.close();
 	}
 }
 

@@ -17,8 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.sql;
 
-import citibob.app.App;
+import citibob.task.BaseExpHandler;
 import citibob.task.ExpHandler;
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
@@ -126,13 +127,25 @@ void runBatches() throws Exception
 	try {
 		dbb = pool.checkout();
 		st = dbb.createStatement();
-		runBatches(st);
+		try {
+			runBatches(st);
+		} catch(Exception e) {
+			// Try to detect if the SSL tunnel (or other connectivity)
+			// If so, try to reset ourselves by closing all connections in the pool
+			Throwable ee = BaseExpHandler.findCauseByClass(e, IOException.class);
+			if (ee != null) {
+				if (dbb != null) pool.checkin(dbb);
+				pool.closeAll();
+				dbb = null;
+			}
+			throw e;
+		}
 	} finally {
 		try {
 			if (st != null) st.close();
 		} catch(SQLException se) {}
 		try {
-			pool.checkin(dbb);
+			if (dbb != null) pool.checkin(dbb);
 		} catch(SQLException se) {}
 	}
 }

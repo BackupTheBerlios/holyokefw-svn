@@ -27,6 +27,7 @@ static class DbbDate
 {
 	Connection dbb;
 	long lastUsedMS;
+	boolean closed;		// Set to true if this is a closed (stale) connection
 	
 	public DbbDate(Connection dbb) {
 		this.dbb = dbb;
@@ -54,8 +55,10 @@ public synchronized Connection checkout() throws SQLException
 {
 //return create();
 	long ms = System.currentTimeMillis();
+System.out.println("checkout: reserves.size = " + reserves.size() + " " + reserves);
 	while (reserves.size() > 0) {
 		DbbDate dd = reserves.removeFirst();
+		if (dd.closed) continue;
 		if (ms - dd.lastUsedMS < 60 * 1000L) {
 			// Good connection, less than 1 minute stale
 //System.out.println("Re-using good connection: " + dd.dbb);
@@ -90,7 +93,33 @@ public synchronized void checkin(Connection dbb) throws SQLException
 //	c.close();
 	if (reserves.size() >= 5) connFactory.close(dbb);
 	else reserves.addLast(new DbbDate(dbb));
+System.out.println("checkin: reserves.size = " + reserves.size() + " " + reserves);
 }
+
+//public synchronized void close(Connection dbb) throws SQLException
+//{
+//	if (dbb == null) {
+//		throw new IllegalArgumentException("Cannot checkin a null reference!");
+//	}
+//	connFactory.close(dbb);
+//}
+
+public synchronized void closeAll() throws SQLException
+{
+	for (DbbDate dbbd : reserves) {
+		dbbd.closed = true;
+		connFactory.close(dbbd.dbb);
+	}
+//	reserves.clear();
+System.out.println("Cleared: reserves.size = " + reserves.size() + " " + reserves);
+}
+
+public void close(Connection dbb)
+throws SQLException
+{
+	connFactory.close(dbb);
+}
+
 public void dispose() {}
 
 //public void doRun(StRunnable r)

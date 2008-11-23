@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.sql;
 
-import citibob.task.DbRawRun;
 import citibob.task.DbTask;
 import java.sql.*;
 
@@ -29,11 +28,17 @@ Connection checkout() throws SQLException;
 /** Return a connection.  This is thread-safe. */
 void checkin(Connection c) throws SQLException;
 
+/** Returns a connection, destroying any resources it used */
+void closeAll() throws SQLException;
+
 /** Free up resources when you'return done with this conn pool. */
 public void dispose();
 
 //public void doRun(StRunnable r);
 ////	{ DefaultRawRunner.run(r, this); }
 public Exception exec(DbTask r);
+
+public void close(Connection dbb)
+throws SQLException;
 
 }
