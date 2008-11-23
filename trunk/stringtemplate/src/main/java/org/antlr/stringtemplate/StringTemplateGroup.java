@@ -60,6 +60,9 @@ import java.lang.reflect.Constructor;
 public class StringTemplateGroup {
 	/** What is the group name */
 	protected String name;
+	
+	/** ClassLoader used to load templates */
+	protected ClassLoader classLoader;
 
 	/** Maps template name to StringTemplate object */
 	protected Map templates = new HashMap();
@@ -220,6 +223,13 @@ public class StringTemplateGroup {
 	 */
 	public StringTemplateGroup(String name) {
 		this(name,null,null);
+	}
+	/** Create a group manager for some templates, all of which are
+	 *  loaded as resources via the classloader.
+	 */
+	public StringTemplateGroup(String name, ClassLoader classLoader) {
+		this(name);
+		this.classLoader = classLoader;
 	}
 
 	public StringTemplateGroup(String name, Class lexer) {
@@ -564,7 +574,9 @@ public class StringTemplateGroup {
 		String name = getTemplateNameFromFileName(fileName);
 		// if no rootDir, try to load as a resource in CLASSPATH
 		if ( rootDir==null ) {
-			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+//			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+			ClassLoader cl = (classLoader != null ? classLoader :
+				Thread.currentThread().getContextClassLoader());
 			InputStream is = cl.getResourceAsStream(fileName);
 			if ( is==null ) {
 				cl = this.getClass().getClassLoader();

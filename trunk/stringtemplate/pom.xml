@@ -4,7 +4,7 @@
   <groupId>org.citibob</groupId>
   <artifactId>stringtemplate</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-MODIFIED</version>
+  <version>3.1-MODIFIED-2</version>
   <name>stringtemplate</name>
   <url>http://maven.apache.org</url>
   <dependencies>
@@ -21,4 +21,11 @@
             <scope>compile</scope>
         </dependency>
   </dependencies>
+  <distributionManagement>
+    <repository>
+	  <id>offstagearts-releases</id>
+      <name>OffstageArts Releases</name>
+	  <url>http://dirk.merseine.nu:8081/nexus/content/repositories/releases</url>
+    </repository>
+  </distributionManagement>
 </project>
