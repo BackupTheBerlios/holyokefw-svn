@@ -47,8 +47,8 @@ public void setDbb(Connection dbb) { this.dbb = dbb; }
 
 public static class Params
 {
-	public URL storeURL;		// JKS file for our public/private keypair
-	public URL trustURL;		// JKS file for server certificate(s)
+	public byte[] storeBytes;		// JKS file for our public/private keypair
+	public byte[] trustBytes;		// JKS file for server certificate(s)
 	public char[] storePass;		// Our public & private key pair
 	public char[] storeKeyPass;	// Password to our private key in clientStorePass
 	public char[] trustPass;		// Certificate of server we connect to
@@ -63,7 +63,7 @@ public int getLocalPort() { return locals.getLocalPort(); }
 public SSLRelayClient(Params prm, ExpHandler expHandler)
 throws Exception
 {
-	super(prm.storeURL, prm.trustURL,
+	super(prm.storeBytes, prm.trustBytes,
 		prm.storePass, prm.storeKeyPass, prm.trustPass);
 //	System.out.println("Starting relayapp ...");
 	this.dest = prm.dest;
@@ -155,19 +155,19 @@ public void stopRelays()
 	callConnectionClosed();	// This is redundant
 }
 
-public static void main(String[] args) throws Exception {     
-	SSLRelayClient.Params prm = new SSLRelayClient.Params();
-		prm.storeURL = new File("/Users/citibob/mvn/oassl/clienttruststore").toURL();
-		prm.trustURL = prm.storeURL;
-		prm.storePass = "oaclient7".toCharArray();
-		prm.trustPass = prm.storePass;
-		prm.dest = InetAddress.getByAddress(new byte[] {127,0,0,1});
-		prm.destPort = 5433;
-		prm.localPort = 4001;	// Set this to -1
-	new SSLRelayClient(prm, new SimpleExpHandler());
-//	new SSLRelayClient(key, trust, clientStorepassword.toCharArray(), clientStorepassword.toCharArray(),
-//		"127.0.0.1", 5433, 4001);
-}
+//public static void main(String[] args) throws Exception {     
+//	SSLRelayClient.Params prm = new SSLRelayClient.Params();
+//		prm.storeURL = new File("/Users/citibob/mvn/oassl/clienttruststore").toURL();
+//		prm.trustURL = prm.storeURL;
+//		prm.storePass = "oaclient7".toCharArray();
+//		prm.trustPass = prm.storePass;
+//		prm.dest = InetAddress.getByAddress(new byte[] {127,0,0,1});
+//		prm.destPort = 5433;
+//		prm.localPort = 4001;	// Set this to -1
+//	new SSLRelayClient(prm, new SimpleExpHandler());
+////	new SSLRelayClient(key, trust, clientStorepassword.toCharArray(), clientStorepassword.toCharArray(),
+////		"127.0.0.1", 5433, 4001);
+//}
 
 
 // ===============================================================

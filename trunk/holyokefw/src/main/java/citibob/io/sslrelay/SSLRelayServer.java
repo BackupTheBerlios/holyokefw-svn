@@ -24,7 +24,7 @@ protected int localPort;
 
 public int getLocalPort() { return localPort; }
 
-    public SSLRelayServer(URL key , URL trust, char[] storePass, char[]
+    public SSLRelayServer(byte[] key , byte[] trust, char[] storePass, char[]
     storeKeypass , char[] trustPass, int  localport, int destport  ) throws Exception 
     {
       super(key, trust , storePass, storeKeypass, trustPass ); 

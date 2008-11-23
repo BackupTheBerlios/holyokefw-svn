@@ -27,18 +27,18 @@ public class SSLConnection {
 
 private SSLContext ctx ;
 private KeyStore mykey , mytrust ;
-private URL key, trust ;
+private byte[] keyBytes, trustBytes ;
 
 
 //Default constructor takes the filename of the keystore and truststore , 
 //the password of the stores and the password of the private key
-public SSLConnection(URL key , URL trust , char[] storepass, char[]
+public SSLConnection(byte[] keyBytes , byte[] trustBytes , char[] storepass, char[]
 storeKeyPass, char[] trustPass)
 throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException,
 CertificateException, IOException, UnrecoverableKeyException, KeyManagementException
 {
-	this.key = key;
-	this.trust = trust ;
+	this.keyBytes = keyBytes;
+	this.trustBytes = trustBytes ;
 	initSSLContext(storepass , storeKeyPass, trustPass);
 }
 
@@ -47,7 +47,7 @@ CertificateException, IOException, UnrecoverableKeyException, KeyManagementExcep
 
 /* mykey holding my own certificate and private key, mytrust holding all the 
 certificates that I trust */
-public void initKeyStores(URL key , URL trust , char[] storepass, char[] trustpass)
+public void initKeyStores(byte[] keyBytes , byte[] trustBytes , char[] storepass, char[] trustpass)
 throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException,
 CertificateException, IOException
 {
@@ -56,19 +56,21 @@ CertificateException, IOException
 	mytrust = KeyStore.getInstance("JKS", "SUN");
 
 	//load the keystores
-	InputStream storeStream = null;
-	InputStream trustStream = null;
-	try {
-		storeStream = key.openStream();
-		if (storeStream == null) throw new IOException("Cannot open URL: " + key);
-		trustStream = trust.openStream();
-		if (trustStream == null) throw new IOException("Cannot open URL: " + trust);
-		mykey.load(storeStream, storepass);
-		mytrust.load(trustStream, trustpass );
-	} finally {
-		if (storeStream != null) storeStream.close();
-		if (trustStream != null) trustStream.close();
-	}
+	mykey.load(new ByteArrayInputStream(keyBytes), storepass);
+	mytrust.load(new ByteArrayInputStream(trustBytes), trustpass);
+//	InputStream storeStream = null;
+//	InputStream trustStream = null;
+//	try {
+//		storeStream = key.openStream();
+//		if (storeStream == null) throw new IOException("Cannot open URL: " + key);
+//		trustStream = trust.openStream();
+//		if (trustStream == null) throw new IOException("Cannot open URL: " + trust);
+//		mykey.load(storeStream, storepass);
+//		mytrust.load(trustStream, trustpass );
+//	} finally {
+//		if (storeStream != null) storeStream.close();
+//		if (trustStream != null) trustStream.close();
+//	}
 }
 
 
@@ -78,7 +80,7 @@ throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException,
 CertificateException, IOException, UnrecoverableKeyException, KeyManagementException
 { 
     ctx = SSLContext.getInstance("TLSv1" , "SunJSSE");
-    initKeyStores(key , trust , storePass, trustPass);
+    initKeyStores(keyBytes , trustBytes , storePass, trustPass);
     //Create the key and trust manager factories for handing the cerficates 
     //in the key and trust stores
     TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509" , 
