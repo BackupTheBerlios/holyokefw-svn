@@ -19,17 +19,19 @@ public abstract class WrapConnFactory implements ConnFactory
 ConnFactory sub;
 
 public WrapConnFactory(ConnFactory sub)
+	{ init(sub); }
+protected WrapConnFactory() {}
+protected void init(ConnFactory sub)
 {
 	this.sub = sub;
 }
+public void close(Connection dbb) throws SQLException {
+	sub.close(dbb);
+}
 
-	public void close(Connection dbb) throws SQLException {
-		sub.close(dbb);
-	}
-
-	public Connection create() throws SQLException {
-		return sub.create();
-	}
+public Connection create() throws SQLException {
+	return sub.create();
+}
 
 public void setConnPool(ConnPool pool)
 {
