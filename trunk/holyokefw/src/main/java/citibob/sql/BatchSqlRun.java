@@ -132,7 +132,7 @@ void runBatches() throws Exception
 		} catch(Exception e) {
 			// Try to detect if the SSL tunnel (or other connectivity)
 			// If so, try to reset ourselves by closing all connections in the pool
-			Throwable ee = BaseExpHandler.findCauseByClass(e, IOException.class);
+			Throwable ee = expHandler.findCauseByClass(e, IOException.class);
 			if (ee != null) {
 				if (dbb != null) pool.checkin(dbb);
 				pool.closeAll();

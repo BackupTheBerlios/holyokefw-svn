@@ -19,4 +19,17 @@ package citibob.task;
 
 public interface ExpHandler {
 	void consume(Throwable e);
+
+
+public Throwable getRootCause(Throwable t);
+
+public String getNestedMessages(Throwable t);
+
+/** Sees if this exception or any of its causes is of a certain class.
+ * If so, returns the first one it finds.
+ * @param t
+ * @return
+ */
+public Throwable findCauseByClass(Throwable t, Class klass);
+
 }

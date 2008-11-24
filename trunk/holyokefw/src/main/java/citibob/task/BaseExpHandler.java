@@ -3,7 +3,7 @@ package citibob.task;
 public abstract class BaseExpHandler implements ExpHandler
 {
 
-protected static Throwable getRootCause(Throwable t)
+public Throwable getRootCause(Throwable t)
 {
 	Throwable cause = t.getCause();
 	while (cause != null) {
@@ -13,7 +13,7 @@ protected static Throwable getRootCause(Throwable t)
 	return t;
 }
 
-protected static String getNestedMessages(Throwable t)
+public String getNestedMessages(Throwable t)
 {
 	StringBuffer sb = new StringBuffer();
 	Throwable cause = t.getCause();
@@ -30,7 +30,7 @@ protected static String getNestedMessages(Throwable t)
  * @param t
  * @return
  */
-public static Throwable findCauseByClass(Throwable t, Class klass)
+public Throwable findCauseByClass(Throwable t, Class klass)
 {
 	for (; t!= null; t = t.getCause()) {
 		if (klass.isInstance(t)) return t;
