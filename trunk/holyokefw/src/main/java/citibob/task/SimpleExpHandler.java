@@ -17,14 +17,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.task;
 
+import java.io.PrintStream;
+
 public class SimpleExpHandler extends BaseExpHandler
 {
 
 boolean exitOnExp = true;
+PrintStream out;
 
-public SimpleExpHandler() { this(true); }
-public SimpleExpHandler(boolean exitOnExp)
+public SimpleExpHandler()
+	{ this(System.out, true); }
+public SimpleExpHandler(PrintStream out, boolean exitOnExp)
 {
+	this.out = out;
 	this.exitOnExp = exitOnExp;
 }
 	
@@ -32,7 +37,7 @@ public void consume(Throwable e)
 {
 	e = getRootCause(e);
 	
-	e.printStackTrace(System.out);
+	e.printStackTrace(out);
 	if (exitOnExp) System.exit(-1);
 }
 	
