@@ -135,6 +135,13 @@
             <scope>compile</scope>
         </dependency>
 
+	<!-- CSV Parser -->
+    <dependency>
+      <groupId>org.citibob.jar</groupId>
+      <artifactId>ostermillerutils</artifactId>
+      <version>1_04_03_for_java_1_4</version>
+      <scope>compile</scope>
+    </dependency>
 
 
 
