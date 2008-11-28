@@ -45,6 +45,7 @@ import javax.swing.table.*;
  */
 public class StringTableModel extends ColPermuteTableModel<String> {
 
+String nullValue = null;			// Convert null values to this!
 SFormat[] formatters;		// Formatter for each column
 //JTypeTableModel mod;
 //int[] colMap;					// The columns we want to do
@@ -79,6 +80,9 @@ public StringTableModel(JTypeTableModel mod, SFormat[] sfmt)
 	super.init(mod, null, null, false);
 	this.formatters = sfmt;
 }
+
+public void setNullValue(String nullValue)
+{ this.nullValue = nullValue; }
 
 protected void init(JTypeTableModel mod, String[] sColMap, boolean[] editable,
 boolean forwardEvents, SFormatMap smap)
@@ -179,7 +183,9 @@ public String getValueAt(int row, int col) {
 //		Object val = modelU.getValueAt(row,colU);
 		Object val = super.getValueAt(row, col);
 		SFormat fmt = formatters[col];
-		return fmt.valueToString(val);
+		String ret = fmt.valueToString(val);
+		if (ret == null) ret = nullValue;
+		return ret;
 	} catch(Exception e) {
 		e.printStackTrace();
 		return e.toString();
