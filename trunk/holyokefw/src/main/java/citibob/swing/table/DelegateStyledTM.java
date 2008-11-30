@@ -237,7 +237,7 @@ public void setColumns(SwingerMap smap, Object... fmtSpecs)
 	this.setRenderEditModel(re);
 }
 
-/** @param fmtSpecs.  Array of blocks of four:
+/** @param fmtSpecs.  Array of blocks of two:
 <nl>
 <li>Underlying column in modelU that provides tooltip (String)</li>
 <li>Format Spec: Swinger, SFormat, JType, Class, etc.  If null: get from SwingerMap.</li>

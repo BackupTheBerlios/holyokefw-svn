@@ -30,6 +30,7 @@ import citibob.resource.ResSet;
 import citibob.swing.prefs.*;
 import citibob.text.SFormatMap;
 import citibob.version.Version;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
@@ -40,8 +41,11 @@ public abstract class App
 // Configuration, Properts and Preferences
 
 protected URL configURL;
+protected String configResourceFolder;
+
 /** Directory containing configuration files, etc. for this application. */
-public URL configURL() { return configURL; }
+public URL getConfigResource(String name) throws MalformedURLException
+	{ return new URL(configURL, name); }
 //public java.io.File configDir() { return configDir; }
 
 protected Properties props;

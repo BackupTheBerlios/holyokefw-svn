@@ -83,11 +83,17 @@ public class MailExpHandler extends BaseExpHandler
 			PrintWriter pw = new PrintWriter(ss);
 			pw.print(getNestedMessages(eMain));
 			e.printStackTrace(pw);
+			URL url;
+			try {
+				url = app.getConfigResource("");
+			} catch(Exception e2) {
+				url = null;
+			}
 			String msgText = 
 				"Bug in: " + programName + " " + app.version() + "\n" +
 				"Version: " + app.version() + "\n" +
 				"User: " + System.getProperty("user.name") + "\n" +
-				"Config URL: " + app.configURL() + "\n\n" +
+					"Config URL: " + url + "\n\n" +
 	//			e.toString() + "\n" +
 				ss.getBuffer().toString() + "\n" +
 				"=================================================\n" +

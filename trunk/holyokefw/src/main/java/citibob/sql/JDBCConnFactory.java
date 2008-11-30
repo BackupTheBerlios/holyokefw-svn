@@ -34,6 +34,7 @@ public void setConnPool(ConnPool pool)
  * be called by user. */
 public Connection create() throws SQLException
 {
+	System.out.println("JDBCConnFactory URL = " + url);
 	Connection conn = DriverManager.getConnection(url, props);
 	return conn;
 }

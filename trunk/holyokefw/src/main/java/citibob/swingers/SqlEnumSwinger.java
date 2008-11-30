@@ -43,8 +43,13 @@ public citibob.swing.typed.TypedWidget createWidget()
 public void configureWidget(TypedWidget w)
 {
 	JEnum etype = (JEnum)jType;
-	JKeyedComboBox ww = (JKeyedComboBox)w;
-	ww.setKeyedModel(etype);
+	if (w instanceof JKeyedComboBox) {
+		JKeyedComboBox ww = (JKeyedComboBox)w;
+		ww.setKeyedModel(etype);
+	} else if (w instanceof JTypedLabel) {
+		JTypedLabel ww = (JTypedLabel)w;
+		ww.setJType(etype, new KeyedSFormat(etype.getKeyedModel()));
+	}
 }
 
 }
