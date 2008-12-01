@@ -48,6 +48,9 @@ public DateFlexiFormat(String displaySfmt, String[] sfmts, TimeZone tz)
 	super(newFormat(displaySfmt, tz), newFormats(sfmts, tz));
 }
 
+public DateFlexiFormat(DateFormat[] fmts, TimeZone tz)
+	{ this(fmts[0], fmts, tz); }
+
 public DateFlexiFormat(DateFormat displayFmt, DateFormat[] fmts, TimeZone tz)
 {
 	super(displayFmt, fmts);
