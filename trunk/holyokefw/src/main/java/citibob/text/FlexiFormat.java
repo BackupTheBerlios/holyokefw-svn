@@ -26,6 +26,11 @@ public class FlexiFormat extends Format
 {
 	Format displayFormat;	// The format we'll use to display
 	Format[] formats;		// The formats we'll use to try to parse
+	public void setFormat(int i, Format fmt) {
+		if (i == 0) displayFormat = fmt;
+		else formats[i-1] = fmt;
+	}
+
 	public FlexiFormat(Format[] formats)
 		{ this(formats[0], formats); }
 	public FlexiFormat(Format displayFormat, Format[] formats) {

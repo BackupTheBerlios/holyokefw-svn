@@ -14,6 +14,7 @@ import citibob.reflect.ClassPathUtils;
 import citibob.swing.calendar.JDayChooser;
 import citibob.swing.typed.JKeyedMulti;
 import citibob.swing.typed.JKeyedMultiPanel;
+import citibob.text.NoYearDateFormat;
 import citibob.util.IndexSet;
 import org.xnap.commons.gui.CloseableTabbedPane;
 
@@ -42,6 +43,7 @@ public static void main(String[] args) throws Exception {
 //System.exit(0);
 
 	AppLauncher.launch("holyokefw", new Class[] {
+		NoYearDateFormat.class,
 		PojoTMTest.class,
 		CloseableTabbedPane.class,
 		JKeyedMulti.class,

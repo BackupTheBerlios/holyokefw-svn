@@ -48,6 +48,12 @@ public DateFlexiFormat(String displaySfmt, String[] sfmts, TimeZone tz)
 	super(newFormat(displaySfmt, tz), newFormats(sfmts, tz));
 }
 
+public DateFlexiFormat(DateFormat displayFmt, DateFormat[] fmts, TimeZone tz)
+{
+	super(displayFmt, fmts);
+	displayFmt.setTimeZone(tz);
+	for (DateFormat fmt : fmts) fmt.setTimeZone(tz);
+}
 public static Format[] newFormats(String[] sfmts, TimeZone tz)
 {
 	Format[] fmts = new Format[sfmts.length];
