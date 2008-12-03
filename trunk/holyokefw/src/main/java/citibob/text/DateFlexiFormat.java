@@ -74,8 +74,8 @@ public static DateFormat newFormat(String sfmt, TimeZone tz)
 	if (tz != null) dff.setTimeZone(tz);
 	return dff;
 }
-public Date parseObject(String str) throws ParseException
-{
-	return (Date)super.parseObject(str);
-}
+//public Date parseObject(String str) throws ParseException
+//{
+//	return (Date)super.parseObject(str);
+//}
 }
