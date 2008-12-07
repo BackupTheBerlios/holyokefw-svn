@@ -127,7 +127,9 @@ static class WindowsOpen extends MultiOpen {
 
 static class LinuxOpen extends MultiOpen {
 public LinuxOpen() {
-	super(new CmdOpen("gnome-open", true));
+	super(
+		new CmdOpen("gnome-open", true),
+		new CmdOpen("kde-open", true));
 }}
 
 // ==========================================================	
