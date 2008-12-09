@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.app;
+import citibob.config.StreamSetList;
 import citibob.gui.FrameSet;
 import citibob.swing.typed.SwingerMap;
 import java.util.*;
@@ -30,8 +31,6 @@ import citibob.resource.ResSet;
 import citibob.swing.prefs.*;
 import citibob.text.SFormatMap;
 import citibob.version.Version;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.prefs.Preferences;
 
 public abstract class App
@@ -40,16 +39,22 @@ public abstract class App
 // =================================================================
 // Configuration, Properts and Preferences
 
-protected URL configURL;
-protected String configResourceFolder;
+	
+	
+//protected URL configURL;
+//protected String configResourceFolder;
+//
+///** Directory containing configuration files, etc. for this application. */
+//public URL getConfigResource(String name) throws MalformedURLException
+//	{ return new URL(configURL, name); }
+////public java.io.File configDir() { return configDir; }
 
-/** Directory containing configuration files, etc. for this application. */
-public URL getConfigResource(String name) throws MalformedURLException
-	{ return new URL(configURL, name); }
-//public java.io.File configDir() { return configDir; }
-
+protected StreamSetList ssets;
+/** Returns a list of configuration file-bundles in decreasing priority */
+public StreamSetList getStreamSets() { return ssets; }
+	
 protected Properties props;
-/** Gets properties loaded from an application configuration file. */
+/** Gets properties loaded from a the StreamSetList. */
 public Properties props() { return props; }
 
 protected ResSet resSet;

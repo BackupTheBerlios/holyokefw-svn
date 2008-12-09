@@ -15,5 +15,7 @@ import java.io.InputStream;
 public interface StreamSet {
 
 public InputStream openStream(String name) throws IOException;
-	
+
+public byte[] getStreamBytes(String name) throws IOException;
+
 }

@@ -5,6 +5,7 @@
 
 package citibob.config;
 
+import citibob.io.IOUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,4 +32,13 @@ throws IOException
 	if (!f.exists()) return null;
 	return new FileInputStream(f);
 }
+
+public byte[] getStreamBytes(String name) throws IOException
+{
+	InputStream in = openStream(name);
+	byte[] ret = IOUtils.getBytes(in);
+	in.close();
+	return ret;
+}
+
 }

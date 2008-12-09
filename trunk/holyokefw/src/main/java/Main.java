@@ -1,4 +1,6 @@
 
+import citibob.config.ZipStreamSet;
+import citibob.config.ZipStreamSetWriter;
 import citibob.gui.AppLauncher;
 import citibob.licensor.Licensor;
 import citibob.licensor.MakeNbm;
@@ -43,6 +45,8 @@ public static void main(String[] args) throws Exception {
 //System.exit(0);
 
 	AppLauncher.launch("holyokefw", new Class[] {
+		ZipStreamSet.class,
+		ZipStreamSetWriter.class,
 		NoYearDateFormat.class,
 		PojoTMTest.class,
 		CloseableTabbedPane.class,

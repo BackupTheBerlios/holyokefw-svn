@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * and open the template in the editor.
  */
 
-package citibob.config;
+package citibob.crypt;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -36,7 +36,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -46,32 +45,32 @@ public class PBECrypt {
 	
 
 // Salt
-byte[] salt = {
+static byte[] salt = {
 	(byte)0xc7, (byte)0x73, (byte)0x21, (byte)0x8c,
 	(byte)0x7e, (byte)0xc8, (byte)0xee, (byte)0x99
 };
 
 // Iteration count
-int count = 20;
+static int count = 20;
 
-PBEKeySpec pbeKeySpec;
-PBEParameterSpec pbeParamSpec;
-SecretKeyFactory keyFac;
+//PBEKeySpec pbeKeySpec;
+//PBEParameterSpec pbeParamSpec;
+//SecretKeyFactory keyFac;
 
-byte[] crypt(byte[] cleartext, char[] password, int cipherMode)
+static byte[] crypt(byte[] cleartext, char[] password, int cipherMode)
 throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException,
 InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException
 {
     // Create PBE parameter set
-    pbeParamSpec = new PBEParameterSpec(salt, count);
+    PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, count);
 
     // Prompt user for encryption password.
     // Collect user password as char array (using the
     // "readPasswd" method from above), and convert
     // it into a SecretKey object, using a PBE key
     // factory.
-    pbeKeySpec = new PBEKeySpec(password);
-    keyFac = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+    PBEKeySpec pbeKeySpec = new PBEKeySpec(password);
+    SecretKeyFactory keyFac = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
     SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
 
     // Create PBE Cipher
@@ -102,7 +101,7 @@ InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingExcepti
 public static final String BEGIN_ENCRYPTED = "--- BEGIN ENCRYPTED ---";
 public static final String END_ENCRYPTED = "--- END ENCRYPTED ---";
 
-public String encrypt(byte[] clearBytes, char[] password)
+public static String encrypt(byte[] clearBytes, char[] password)
 throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException,
 InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException,
 UnsupportedEncodingException
@@ -115,7 +114,7 @@ UnsupportedEncodingException
 		"\n" + END_ENCRYPTED + "\n";
 	return cipherText;
 }
-public byte[] decrypt(String cipherText, char[] password)
+public static byte[] decrypt(String cipherText, char[] password)
 throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException,
 InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException,
 UnsupportedEncodingException
@@ -130,14 +129,35 @@ UnsupportedEncodingException
 //	return clearText;
 }
 
-public void encrypt(File fin, File fout, char[] password)
-throws Exception
+public static byte[] decrypt(String cipherText, PBEAuth auth)
+//throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException,
+//InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException,
+//UnsupportedEncodingException
 {
-//	String plain = FileUtils.readFileToString(fin);
-	byte[] plain = FileUtils.readFileToByteArray(fin);
-	String cipher = encrypt(plain, password);
-	FileUtils.writeStringToFile(fout, cipher);
+	for (;;) {
+		byte[] clearBytes;
+		try {
+			char[] password = auth.getPassword();
+			if (password == null) return null;	// User cancelled
+			clearBytes = decrypt(cipherText, password);
+			auth.validatePassword();
+			return clearBytes;
+		} catch(Exception e) {
+			// Password was bad; retry
+		}
+	}
 }
+
+
+
+//public static void encrypt(File fin, File fout, char[] password)
+//throws Exception
+//{
+////	String plain = FileUtils.readFileToString(fin);
+//	byte[] plain = FileUtils.readFileToByteArray(fin);
+//	String cipher = encrypt(plain, password);
+//	FileUtils.writeStringToFile(fout, cipher);
+//}
 
 public static void main(String[] args) throws Exception
 {
@@ -150,7 +170,7 @@ public static void main(String[] args) throws Exception
 		String name = fin.getName();
 		if (name.endsWith(".properties") || name.endsWith(".jks")) {
 			File fout = new File(outDir, fin.getName());
-			pbe.encrypt(fin, fout, password);
+//			encrypt(fin, fout, password);
 		}
 	}
 	

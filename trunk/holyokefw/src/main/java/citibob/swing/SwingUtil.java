@@ -56,6 +56,27 @@ public static void resizeJPanel(JPanel p)
 		p.setPreferredSize(d);
 }
 
-
+/** Repositions a frame to be centered on the screen */
+public static void center(Dialog frame)
+{
+    Toolkit tk = Toolkit.getDefaultToolkit();
+    Dimension screen = tk.getScreenSize();
+	Dimension win = frame.getSize();
+    //frame.setSize(screenWidth / 2, screenHeight / 2);
+    frame.setLocation(
+		(screen.width - win.width) / 2,
+		(screen.height - win.height) / 2);
+}
+/** Repositions a frame to be centered on the screen */
+public static void center(Frame frame)
+{
+    Toolkit tk = Toolkit.getDefaultToolkit();
+    Dimension screen = tk.getScreenSize();
+	Dimension win = frame.getSize();
+    //frame.setSize(screenWidth / 2, screenHeight / 2);
+    frame.setLocation(
+		(screen.width - win.width) / 2,
+		(screen.height - win.height) / 2);
+}
 
 }
