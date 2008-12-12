@@ -7,19 +7,13 @@ package citibob.config;
 
 import citibob.crypt.PBECrypt;
 import citibob.io.IOUtils;
-import citibob.reflect.ClassPathUtils;
-import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.Properties;
 
 public abstract class StreamSetWriter {
 	
@@ -80,6 +74,16 @@ void writeEntry(String name, String clearText, boolean encrypt)
 throws IOException
 {
 	writeEntry(name, clearText.getBytes(), encrypt);
+}
+
+
+/** Writes a Java properties file */
+void writeEntry(String name, Properties props, boolean encrypt)
+throws IOException
+{
+	ByteArrayOutputStream bout = new ByteArrayOutputStream();
+	props.store(bout, null);
+	writeEntry(name, bout.toByteArray(), encrypt);
 }
 // -------------------------------------------------------------------
 /**

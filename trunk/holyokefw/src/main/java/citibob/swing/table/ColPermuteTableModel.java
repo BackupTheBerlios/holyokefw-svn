@@ -182,6 +182,10 @@ to columns by their UNDERLYING name, not their display name.
 public int findColumnU(String s)
 {
 	int col_u = modelU.findColumn(s);
+	if (col_u < 0) {
+		System.err.println("WARNING: ColPermuteTableModle.findColumnU: cannot find column named " + s);
+		return col_u;
+	}
 	int col_t = iColMap[col_u];
 	return col_t;
 }

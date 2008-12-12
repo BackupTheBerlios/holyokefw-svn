@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.app;
-import citibob.config.StreamSetList;
+import citibob.config.Config;
 import citibob.gui.FrameSet;
 import citibob.swing.typed.SwingerMap;
 import java.util.*;
@@ -49,9 +49,9 @@ public abstract class App
 //	{ return new URL(configURL, name); }
 ////public java.io.File configDir() { return configDir; }
 
-protected StreamSetList ssets;
+protected Config ssets;
 /** Returns a list of configuration file-bundles in decreasing priority */
-public StreamSetList getStreamSets() { return ssets; }
+public Config getConfig() { return ssets; }
 	
 protected Properties props;
 /** Gets properties loaded from a the StreamSetList. */

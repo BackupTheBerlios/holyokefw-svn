@@ -119,7 +119,10 @@ public void setFormat(int colNo, SFormat sformat)
 	formatters[colNo] = sformat;
 }
 public void setFormat(int col, KeyedModel kmodel)
-	{ setFormat(col, FormatUtils.toSFormat(kmodel)); }
+{
+	if (col < 0) return;
+	setFormat(col, FormatUtils.toSFormat(kmodel));
+}
 
 /** Sets a text-based renderer and editor pair at once, for a column,
 without going through Swingers or anything.  Works for simpler text-based

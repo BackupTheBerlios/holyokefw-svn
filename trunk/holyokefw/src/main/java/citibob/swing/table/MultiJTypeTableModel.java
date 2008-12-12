@@ -199,6 +199,7 @@ public int findColumn(String name)
 //if (rec == null) {
 //System.out.println("hoi");
 //}
+	if (rec == null) return -1;
 	return rec.col;
 }
 // ===============================================================
