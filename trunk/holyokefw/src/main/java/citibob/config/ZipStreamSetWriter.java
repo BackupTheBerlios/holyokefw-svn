@@ -5,15 +5,11 @@
 
 package citibob.config;
 
-import citibob.io.IOUtils;
 import citibob.reflect.ClassPathUtils;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -25,7 +21,7 @@ ZipOutputStream zout;
 
 public ZipStreamSetWriter(OutputStream out)
 {
-	super(null);
+	this(out, null);
 	
 }
 public ZipStreamSetWriter(OutputStream out, char[] password)
@@ -44,6 +40,11 @@ throws IOException
 	zout.write(bytes);
 	zout.closeEntry();
 }
+
+public void finish() throws IOException
+{ zout.finish(); }
+public void close() throws IOException
+{ zout.close(); }
 // =================================================================
 public static void main(String[] args) throws Exception
 {

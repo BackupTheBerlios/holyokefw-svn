@@ -49,9 +49,9 @@ public abstract class App
 //	{ return new URL(configURL, name); }
 ////public java.io.File configDir() { return configDir; }
 
-protected Config ssets;
+protected Config config;
 /** Returns a list of configuration file-bundles in decreasing priority */
-public Config getConfig() { return ssets; }
+public Config getConfig() { return config; }
 	
 protected Properties props;
 /** Gets properties loaded from a the StreamSetList. */
@@ -94,23 +94,35 @@ public java.util.prefs.Preferences systemRoot() { return systemRoot; }
 // =================================================================
 // Connection Pools, Exception Handlers and Runners
 
-protected ConnPool pool;
-/** Connection pool of the default database */
-public ConnPool pool() { return pool; }
-
-protected FrameSet frameSet;
-/** Set of windows managed by this application */
-public citibob.gui.FrameSet frameSet() { return frameSet; }
 
 protected ExpHandler expHandler;
 /** Handler for all unhandled exceptions */
 public ExpHandler expHandler() { return expHandler; }
+
+protected ConnPool pool;
+/** Connection pool of the default database */
+public ConnPool pool() { return pool; }
 
 protected SqlRun sqlRun;
 /** Used for batched SQL queries, or to obtain any non-GUI database handle. */
 public SqlRun sqlRun() { return sqlRun; }
 //public void pushSqlBatch() {}
 //public void popSqlBatch() {}
+
+/** Sets up pool and sqlRun.  expHandler must already be set up. */
+protected void setSqlRun(ConnFactory connFactory)
+{
+	// Set up database connections, etc.
+//	OffstageConnFactory connFactory = new OffstageConnFactory(this); //props, expHandler);
+	pool = new RealConnPool(connFactory);
+	connFactory.setConnPool(pool);
+	sqlRun = new BatchSqlRun(pool, expHandler);
+}
+
+protected FrameSet frameSet;
+/** Set of windows managed by this application */
+public citibob.gui.FrameSet frameSet() { return frameSet; }
+
 
 
 //protected JobRun appRun;

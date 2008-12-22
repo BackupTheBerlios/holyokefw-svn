@@ -11,16 +11,12 @@ import citibob.io.IOUtils;
 import citibob.reflect.ClassPathUtils;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -47,6 +43,7 @@ public static StreamSet loadFromStream(InputStream in) throws IOException
 //System.out.println("Read entry " + ze.getName() + " of size " + bout.size());
 		ret.streams.put(ze.getName(), bout.toByteArray());
 	}
+	return ret;
 //	zin.close();
 }
 
@@ -90,10 +87,11 @@ public static StreamSet loadFromFile(File file) throws IOException
 public static void main(String[] args) throws Exception
 {
 	File root = ClassPathUtils.getMavenProjectRoot();
-	InputStream in = new FileInputStream(new File(root, "config.zip"));
+//	InputStream in = new FileInputStream();
+	File file = new File(root, "config.zip");
 //	PBEAuth auth = new ConstPBEAuth("password".toCharArray());
 	PBEAuth auth = new DialogPBEAuth(null, "Please enter launcher password:");
-	StreamSet sset = new PBEStreamSet(new ZipStreamSet(in), auth);
+	StreamSet sset = new PBEStreamSet(ZipStreamSet.loadFromFile(file), auth);
 	
 	InputStream inn = sset.openStream("app.properties");
 	Reader reader = new InputStreamReader(inn);

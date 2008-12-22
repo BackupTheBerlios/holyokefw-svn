@@ -22,10 +22,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.util;
 
+import citibob.sql.RsTasklet;
+import citibob.sql.SqlRun;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  *
  * @author fiscrob
  */
 public class IntVal {
 	public int val;
+
+	public void setVal(SqlRun str, String sql) {
+		str.execSql(sql, new RsTasklet() {
+		public void run(ResultSet rs)  throws SQLException {
+			rs.next();
+			val = rs.getInt(1);
+		}});
+	}
+	
+	public static IntVal getVal(SqlRun str, String sql) {
+		IntVal val = new IntVal();
+		val.setVal(str, sql);
+		return val;
+	}
 }

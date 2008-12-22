@@ -20,11 +20,6 @@ public abstract class StreamSetWriter {
 char[] password;
 
 
-static FileFilter trueFilter = new FileFilter() {
-public boolean accept(File arg0) { return true; }};
-
-static FileFilter falseFilter = new FileFilter() {
-public boolean accept(File arg0) { return false; }};
 
 
 public StreamSetWriter(char[] password)
@@ -41,7 +36,7 @@ public void close() throws IOException
 abstract void writeSimpleEntry(String name, byte[] bytes)
 throws IOException;
 
-void writeEntry(String name, byte[] clearBytes, boolean encrypt)
+public void writeEntry(String name, byte[] clearBytes, boolean encrypt)
 throws IOException
 {
 	byte[] bytes = null;
@@ -58,11 +53,12 @@ throws IOException
 			ioe.initCause(e);
 			throw ioe;
 		}
-	}
+	} else bytes = clearBytes;
+	
 	writeSimpleEntry(name, bytes);
 }
 
-void writeEntry(String name, InputStream in, boolean encrypt)
+public void writeEntry(String name, InputStream in, boolean encrypt)
 throws IOException
 {
 	byte[] clearBytes = IOUtils.getBytes(in);
@@ -70,7 +66,7 @@ throws IOException
 	
 	writeEntry(name, clearBytes, encrypt);
 }
-void writeEntry(String name, String clearText, boolean encrypt)
+public void writeEntry(String name, String clearText, boolean encrypt)
 throws IOException
 {
 	writeEntry(name, clearText.getBytes(), encrypt);
@@ -78,7 +74,7 @@ throws IOException
 
 
 /** Writes a Java properties file */
-void writeEntry(String name, Properties props, boolean encrypt)
+public void writeEntry(String name, Properties props, boolean encrypt)
 throws IOException
 {
 	ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -105,9 +101,9 @@ throws IOException
 		if (dir.getName().startsWith(".")) return false;
 		return true;
 	}};
-	if (includeFiles == null) includeFiles = trueFilter;
+	if (includeFiles == null) includeFiles = IOUtils.trueFilter;
 	if (cryptFiles == null) {
-		if (password == null) cryptFiles = falseFilter;
+		if (password == null) cryptFiles = IOUtils.falseFilter;
 		cryptFiles = new FileFilter() {
 		public boolean accept(File dir) {
 			if (dir.getName().endsWith(".crypt")) return false;
@@ -117,13 +113,6 @@ throws IOException
 	writeDir(dir, dir, includeDirs, includeFiles, cryptFiles);
 }
 
-/** Strips baseDir off a pathname, leaving a relative pathname.  f must
- be a descendant of baseDir*/
-static String getRelative(File baseDir, File f)
-{
-	String rel = f.getPath().substring(baseDir.getPath().length()+1);
-	return rel.replace(File.separatorChar, '/');
-}
 
 void writeDir(File baseDir, File dir,
 FileFilter includeDirs,
@@ -143,7 +132,7 @@ throws IOException
 
 			// Create entry in Zip file
 			boolean encrypt = cryptFiles.accept(f);
-			String name = getRelative(baseDir, f);
+			String name = IOUtils.getRelative(baseDir, f);
 			
 			writeEntry(name, new FileInputStream(f), encrypt);
 		}

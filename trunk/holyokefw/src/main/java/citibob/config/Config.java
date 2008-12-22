@@ -5,11 +5,13 @@
 
 package citibob.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -51,6 +53,7 @@ public byte[] getStreamBytes(String name) throws IOException
 
 /** Retrieves a composite properties file from the Config. */
 public Properties getProperties(String name)
+throws IOException
 {
 	Properties props = new Properties();
 	for (int i=size()-1; i >= 0; --i) {
@@ -85,8 +88,9 @@ public static Config merge(Config... configs)
 }
 
 // =====================================================
-/** Read configurations form launcher */
+/** Read configurations from config server */
 public static Config loadFromStream(InputStream in)
+throws IOException
 {
 	Config config = new Config();
 	
@@ -101,22 +105,28 @@ public static Config loadFromStream(InputStream in)
 		}
 	}
 	in.close();
+	
+	config.setNameFromFirst();
+	return config;
+}
 
+void setNameFromFirst()
+throws IOException
+{
 	// Determine the Config's name by parsing from the first StreamSet
-	StreamSet sset = config.get(0);
-	InputStream xin = sset.openStream("config.properties");
+	StreamSet sset = get(0);
+	InputStream xin = sset.openStream("app.properties");
 	if (xin != null) {
 		Properties props = new Properties();
 		props.load(xin);
 		xin.close();
-		config.setName(props.getProperty("config.name"));
+		setName(props.getProperty("config.name"));
 	}
-	
-	return config;
 }
 
 /** Read configurations from launcher on local machine */
 public static Config loadFromLauncher(InetAddress host, int port)
+throws UnknownHostException, IOException
 {
 	if (host == null) host = InetAddress.getLocalHost();
 	Socket sock = new Socket(host, port);
@@ -124,8 +134,9 @@ public static Config loadFromLauncher(InetAddress host, int port)
 	return loadFromStream(in);
 }
 
-/** Read configurations from config server */
+/** Read configurations from config server (via SSL Socket) */
 public static Config loadFromConfigServer(InetAddress host, int port)
+throws UnknownHostException, IOException
 {
 	if (host == null) host = InetAddress.getLocalHost();
 	Socket sock = new Socket(host, port);
@@ -133,7 +144,16 @@ public static Config loadFromConfigServer(InetAddress host, int port)
 	return loadFromStream(in);
 }
 
-
+public static Config loadFromRawConfig(RawConfig rconfig)
+throws IOException
+{
+	Config config = new Config();
+	for (byte[] bytes : rconfig) {
+		StreamSet sset = ZipStreamSet.loadFromStream(new ByteArrayInputStream(bytes));
+		config.add(sset);
+	}
+	return config;
+}
 
 
 }
