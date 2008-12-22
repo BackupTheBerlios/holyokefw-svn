@@ -196,9 +196,6 @@ public int colU2col(int colU)
 public int findColumn(String name)
 {
 	ColRec rec = colMap.get(name);
-//if (rec == null) {
-//System.out.println("hoi");
-//}
 	if (rec == null) return -1;
 	return rec.col;
 }
