@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -25,12 +26,12 @@ import java.util.zip.ZipInputStream;
  * it as the StreamSet.
  * @author citibob
  */
-public class ZipStreamSet
+public class ZipConfig
 {
 
-public static StreamSet loadFromStream(InputStream in) throws IOException
+public static void loadFromStream(MemConfig ret, InputStream in)
+throws IOException
 {
-	MemStreamSet ret = new MemStreamSet();
 	byte[] buf = new byte[1024];
 	ByteArrayOutputStream bout = new ByteArrayOutputStream();
 	
@@ -43,11 +44,18 @@ public static StreamSet loadFromStream(InputStream in) throws IOException
 //System.out.println("Read entry " + ze.getName() + " of size " + bout.size());
 		ret.streams.put(ze.getName(), bout.toByteArray());
 	}
+	
+}
+public static Config loadFromStream(InputStream in)
+throws IOException
+{
+	MemConfig ret = new MemConfig();
+	loadFromStream(ret, in);
 	return ret;
 //	zin.close();
 }
 
-public static StreamSet loadFromFile(File file) throws IOException
+public static Config loadFromFile(File file) throws IOException
 {
 	InputStream in = new FileInputStream(file);
 	try {
@@ -91,7 +99,7 @@ public static void main(String[] args) throws Exception
 	File file = new File(root, "config.zip");
 //	PBEAuth auth = new ConstPBEAuth("password".toCharArray());
 	PBEAuth auth = new DialogPBEAuth(null, "Please enter launcher password:");
-	StreamSet sset = new PBEStreamSet(ZipStreamSet.loadFromFile(file), auth);
+	Config sset = new PBEConfig(ZipConfig.loadFromFile(file), auth);
 	
 	InputStream inn = sset.openStream("app.properties");
 	Reader reader = new InputStreamReader(inn);

@@ -14,17 +14,17 @@ import java.io.OutputStream;
  *
  * @author citibob
  */
-public class DirStreamSetWriter extends StreamSetWriter
+public class DirConfigWriter extends ConfigWriter
 {
 
 File dir;
 
-public DirStreamSetWriter(File dir)
+public DirConfigWriter(File dir)
 {
 	super(null);
 	this.dir = dir;
 }
-public DirStreamSetWriter(File dir, char[] password)
+public DirConfigWriter(File dir, char[] password)
 {
 	super(password);
 	this.dir = dir;

@@ -1,6 +1,6 @@
 package citibob.config;
 
-import citibob.config.StreamSet;
+import citibob.config.Config;
 import citibob.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,17 +11,17 @@ import java.io.InputStream;
  *
  * @author citibob
  */
-public class ResourceStreamSet implements StreamSet
+public class ResourceConfig implements Config
 {
 
 ClassLoader cl;
 String base;
 
-public ResourceStreamSet(String xbase)
+public ResourceConfig(String xbase)
 {
-	this(ResourceStreamSet.class.getClassLoader(), xbase);
+	this(ResourceConfig.class.getClassLoader(), xbase);
 }
-public ResourceStreamSet(ClassLoader cl, String xbase)
+public ResourceConfig(ClassLoader cl, String xbase)
 {
 	this.cl = cl;
 	this.base = xbase;

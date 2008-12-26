@@ -15,12 +15,12 @@ import java.io.InputStream;
  *
  * @author citibob
  */
-public class DirStreamSet implements StreamSet
+public class DirConfig implements Config
 {
 
 File root;
 	
-public DirStreamSet(File root)
+public DirConfig(File root)
 {
 	this.root = root;
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * a StreamSet using ZipStreamSet.
  * @author citibob
  */
-public class RawConfig extends ArrayList<byte[]>
+public class RawConfigChain extends ArrayList<byte[]>
 {
 
 }

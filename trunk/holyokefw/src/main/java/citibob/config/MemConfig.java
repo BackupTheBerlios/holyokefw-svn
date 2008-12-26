@@ -15,7 +15,7 @@ import java.util.TreeMap;
  *
  * @author citibob
  */
-public class MemStreamSet implements StreamSet
+public class MemConfig implements Config
 {
 
 Map<String,byte[]> streams = new TreeMap();
@@ -33,5 +33,6 @@ public byte[] getStreamBytes(String name) throws IOException
 	return streams.get(name);
 }
 
+public int size() { return streams.size(); }
 
 }

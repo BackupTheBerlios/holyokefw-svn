@@ -14,17 +14,17 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ZipStreamSetWriter extends StreamSetWriter
+public class ZipConfigWriter extends ConfigWriter
 {
 	
 ZipOutputStream zout;
 
-public ZipStreamSetWriter(OutputStream out)
+public ZipConfigWriter(OutputStream out)
 {
 	this(out, null);
 	
 }
-public ZipStreamSetWriter(OutputStream out, char[] password)
+public ZipConfigWriter(OutputStream out, char[] password)
 {
 	super(password);
 	zout = new ZipOutputStream(new BufferedOutputStream(out));
@@ -51,7 +51,7 @@ public static void main(String[] args) throws Exception
 	File root = ClassPathUtils.getMavenProjectRoot();
 	OutputStream out = new FileOutputStream(new File(root, "config.zip"));
 	char[] password = "password".toCharArray();
-	ZipStreamSetWriter zzout = new ZipStreamSetWriter(out, password);
+	ZipConfigWriter zzout = new ZipConfigWriter(out, password);
 
 	zzout.writeEntry("url.txt", "http://offstagearts.org", false);
 	zzout.writeDir(new File(root, "../oamisc/ballettheatre/config_lan"),

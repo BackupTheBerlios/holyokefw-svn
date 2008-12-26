@@ -47,7 +47,18 @@ public class SqlBytea implements citibob.sql.SqlType
 		{ return rs.getObject(col); }
 	public Object get(java.sql.ResultSet rs, String col) throws SQLException
 		{ return rs.getObject(col); }
-
+// ------------------------------------------------
+private static char toDigit(int digit)
+	{ return (char)('0' + digit); }
+static String toOctal(int byt)
+{
+	return "" +
+		toDigit((byt & 0xc0) >> 6) +
+		toDigit((byt & 0x38) >> 3) +
+		toDigit((byt & 0x07));
+}
+// ------------------------------------------------
+	
 /** Converts a Java String to a form appropriate for inclusion in an
 Sql query.  This is done by single-quoting the input and repeating any
 single qoutes found in it (Sql convention for quoting a quote).  If
@@ -56,26 +67,31 @@ the input is null, the string "null" is returned. */
 	{
 		
 		StringBuffer sbuf = new StringBuffer();
-		if (quotes) sbuf.append('\'');
+		if (quotes) sbuf.append("('");
 		byte[] bo = (byte[])o;
 		for (int i=0; i<bo.length; ++i) {
-			int byt = bo[i];
+			int byt = bo[i] & 0xff;
 			switch(byt) {
 				case 0 :
 				case 39 :
 				case 92 :
-					sbuf.append("\\\\" + Integer.toOctalString(byt));
+					sbuf.append("\\\\" + toOctal(byt));
 				break;
 				default :
 					if (byt > 31 && byt < 127) {
 						sbuf.append((char)byt);
 					} else {
-						sbuf.append("\\\\" + Integer.toOctalString(byt));
+						sbuf.append("\\\\" + toOctal(byt));
 					}
 				break;
 			}
+			
+//			if ((i%70) == 69) {	// Add line break
+//				sbuf.append("' ||\n'");
+//			}
+			
 		}
-		if (quotes) sbuf.append('\'');
+		if (quotes) sbuf.append("')");
 		return sbuf.toString();
 	}
 	public static String sql(byte[] o)

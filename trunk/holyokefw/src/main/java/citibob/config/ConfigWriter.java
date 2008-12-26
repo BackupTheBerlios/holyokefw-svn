@@ -15,14 +15,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public abstract class StreamSetWriter {
+public abstract class ConfigWriter {
 	
 char[] password;
 
 
 
 
-public StreamSetWriter(char[] password)
+public ConfigWriter(char[] password)
 {
 	this.password = password;
 }
@@ -104,7 +104,7 @@ throws IOException
 	if (includeFiles == null) includeFiles = IOUtils.trueFilter;
 	if (cryptFiles == null) {
 		if (password == null) cryptFiles = IOUtils.falseFilter;
-		cryptFiles = new FileFilter() {
+		else cryptFiles = new FileFilter() {
 		public boolean accept(File dir) {
 			if (dir.getName().endsWith(".crypt")) return false;
 			return true;

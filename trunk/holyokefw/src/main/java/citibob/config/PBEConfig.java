@@ -26,13 +26,13 @@ import java.util.zip.ZipOutputStream;
  *
  * @author citibob
  */
-public class PBEStreamSet implements StreamSet
+public class PBEConfig implements Config
 {
-StreamSet sub;
+Config sub;
 PBEAuth auth;
 //PBECrypt crypt;
 
-public PBEStreamSet(StreamSet sub, PBEAuth auth)
+public PBEConfig(Config sub, PBEAuth auth)
 {
 	this.sub = sub;
 	this.auth = auth;

@@ -110,4 +110,28 @@ public static boolean deleteDir(File dir) {
 	return dir.delete();
 }
 
+/** Recursively scans a directory */
+public static long maxLastModified(File file)
+{
+	long max = file.lastModified();
+	if (file.isFile()) return max;
+	
+	for (File f : file.listFiles()) {
+		max = Math.max(max, maxLastModified(f));
+	}
+	return max;
+}
+
+/** Recursively scans a directory */
+public static long minLastModified(File file)
+{
+	long min = file.lastModified();
+	if (file.isFile()) return min;
+	
+	for (File f : file.listFiles()) {
+		min = Math.min(min, maxLastModified(f));
+	}
+	return min;
+}
+
 }

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.sql;
 
 import citibob.app.App;
-import citibob.config.Config;
+import citibob.config.ConfigChain;
 import citibob.io.sslrelay.SSLRelayClient;
 import citibob.sql.ConnFactory;
 import citibob.sql.JDBCConnFactory;
@@ -43,7 +43,7 @@ import java.util.Properties;
 public class ConfigConnFactory extends WrapConnFactory
 {
 
-private static ConnFactory newSSLSub(Config config, Properties props, ExpHandler expHandler)
+private static ConnFactory newSSLSub(ConfigChain config, Properties props, ExpHandler expHandler)
 throws ClassNotFoundException, UnknownHostException, MalformedURLException, IOException
 {
 	
@@ -116,7 +116,7 @@ throws ClassNotFoundException
 }
 
 
-public ConfigConnFactory(Config config, String propFileName, ExpHandler expHandler)
+public ConfigConnFactory(ConfigChain config, String propFileName, ExpHandler expHandler)
 throws ClassNotFoundException, UnknownHostException, MalformedURLException, IOException
 {
 	if (propFileName == null) propFileName = "app.properties";
