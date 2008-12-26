@@ -5,9 +5,9 @@
 
 package citibob.hokserver;
 
-import citibob.config.RawConfig;
-import citibob.config.StreamSetWriter;
-import citibob.config.ZipStreamSetWriter;
+import citibob.config.RawConfigChain;
+import citibob.config.ConfigWriter;
+import citibob.config.ZipConfigWriter;
 import citibob.sql.RssTasklet;
 import citibob.sql.SqlRun;
 import citibob.sql.pgsql.SqlString;
@@ -92,14 +92,14 @@ throws SQLException, IOException
 	props.setProperty("user.name", users_name);
 
 	ByteArrayOutputStream bout = new ByteArrayOutputStream();
-	StreamSetWriter zout = new ZipStreamSetWriter(bout);
+	ConfigWriter zout = new ZipConfigWriter(bout);
 	zout.writeEntry("config.properties", props, false);
 	zout.close();
 	
 	return bout.toByteArray();
 }
 	
-public static RawConfig getRawConfig(SqlRun str,
+public static RawConfigChain getRawConfig(SqlRun str,
 String appName, String custName, String userName, char[] password)
 {
 	String sql =
@@ -134,7 +134,7 @@ String appName, String custName, String userName, char[] password)
 		
 		// rss[1]: Overall system default config
 		" select config from apps where appid = 0;\n";		
-	final RawConfig config = new RawConfig();
+	final RawConfigChain config = new RawConfigChain();
 	str.execSql(sql, new RssTasklet() {
 		void add(byte[] bconfig) throws IOException {
 			if (bconfig == null) return;

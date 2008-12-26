@@ -7,8 +7,9 @@ package citibob.hokserver.admin;
 
 import citibob.hokserver.ConfigApp;
 import citibob.app.App;
-import citibob.config.Config;
-import citibob.config.DirStreamSet;
+import citibob.config.ConfigChain;
+import citibob.config.DirConfig;
+import citibob.config.MemConfig;
 import citibob.io.IOUtils;
 import citibob.sql.SqlRun;
 import citibob.sql.pgsql.SqlString;
@@ -198,6 +199,7 @@ throws IOException, InterruptedException
 	File PEMHASH = new File(SERVERSSLDIR, "capath/" + hash + ".0");
 	PEMHASH.delete();
 	
+//	IOUtils.getRelative(configDir, PEM)
 	cmd = "ln -s " + PEM.getPath() + " " + PEMHASH.getPath();
 	exec(cmd, null, null);
 
@@ -274,7 +276,8 @@ throws IOException, InterruptedException
 	System.out.println("===== Creating configuration " + custsDir);
 	File inDir = new File(custsDir, "_proto");
 	File outDir = new File(custsDir, custName);
-	ConfigTree.copyConfig(inDir, outDir, map, null, null, null);
+	ConfigTree ct = new ConfigTree(null, null, null);
+	ct.copyConfig(inDir, outDir, map);
 	
 	// Create keys (and symlink them into config too)
 	System.out.println("===== Creating keys for " + custName);
@@ -305,12 +308,22 @@ throws IOException, InterruptedException
 	str.execSql("select w_custs_del(" + SqlString.sql(custName) + ");");
 	
 }
+
+String app_custs_dbname(String appName, String custName)
+{
+	return custName + "_" + appName;
+}
+String app_vers_dbname(String appName, String versName)
+{
+	return appName + "_" + versName;
+}
+
 void w_apps_addcust(SqlRun str, String appName, String custName, String version)
 throws IOException, InterruptedException
 {
 	// Set up map to do templates in config directory
 	Map<String,Object> map = new TreeMap();
-	String dbName = custName + "_" + appName;
+	String dbName = app_custs_dbname;
 	map.put("db.database", dbName);
 	
 	// Create config directory
@@ -318,7 +331,8 @@ throws IOException, InterruptedException
 	File custsDir = new File(configRoot, "app_custs");
 	File inDir = new File(custsDir, "_proto");
 	File outDir = new File(custsDir, dbName);
-	ConfigTree.copyConfig(inDir, outDir, map, null, null, null);
+	ConfigTree ct = new ConfigTree(null, null, null);
+	ct.copyConfig(inDir, outDir, map);
 	
 	// Make the database
 	createClientDb(dbName, custName);
@@ -348,22 +362,37 @@ throws IOException, InterruptedException
 		SqlString.sql(custName) + ");");	
 }
 // ------------------------------------------------------
+// ------------------------------------------------------
 public static void main(String[] args) throws Exception
 {
 	// Set up connection to config database
 	String sconfig = "/export/home/citibob/tmp/config.sset";
-	Config config0 = new Config();
-	config0.add(new DirStreamSet(new File(sconfig)));
-	App app = new ConfigApp(config0);
+	ConfigChain config0 = new ConfigChain();
+	config0.add(new DirConfig(new File(sconfig)));
+	App app = new ConfigApp(new File("/export/home/citibob/tmp/config.sset"));
 
-	File configRoot = new File("/export/home/citibob/mvn/oassl/configs");
-	File keyRoot = new File("/export/home/citibob/mvn/oassl/keys");
+	File configRoot = new File("/export/home/citibob/mvn/hokserver/configs");
+	File keyRoot = new File("/export/home/citibob/mvn/hokserver/keys");
 	String psqlCmd = "psql -U postgres";
 	ConfigAdmin ca = new ConfigAdmin(app, configRoot, keyRoot, psqlCmd);
+
+	ConfigTree ct = new ConfigTree(null, null, null);
+	
 	
 	SqlRun str = app.sqlRun();
-	ca.w_custs_add(str, "cust1");
-	ca.w_apps_addcust(str, "oa", "cust1", null);
+	
+//	ca.w_custs_add(str, "ballettheatre");
+	ConfigDb.uploadConfig(str,
+		new File(configRoot, "custs/ballettheatre"),
+		new File(keyRoot, "client"),
+		null, "custs", "name = " + SqlString.sql("ballettheatre"));
+	MemConfig config = ConfigDb.readConfig(str, "custs", "name = " + SqlString.sql("ballettheatre"));
+	
+//	ca.w_apps_addcust(str, "oa", "cust1", null);
 	str.flush();
+	
+	System.out.println(new String(config.getStreamBytes("app.properties")));
+	
+	System.out.println("hoi");
 }
 }

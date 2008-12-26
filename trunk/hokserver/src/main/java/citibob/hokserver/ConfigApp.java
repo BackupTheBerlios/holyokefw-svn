@@ -6,11 +6,13 @@
 package citibob.hokserver;
 
 import citibob.app.App;
-import citibob.config.Config;
+import citibob.config.ConfigChain;
+import citibob.config.DirConfig;
 import citibob.sql.ConfigConnFactory;
 import citibob.sql.ConnFactory;
 import citibob.sql.pgsql.PgsqlSwingerMap;
 import citibob.task.SimpleExpHandler;
+import java.io.File;
 import java.util.TimeZone;
 
 /**
@@ -24,7 +26,7 @@ public class ConfigApp extends App
  * @param config A configuration, probably read from a directory
  * @throws java.io.IOException
  */
-public ConfigApp(Config config) throws Exception
+protected void init(ConfigChain config) throws Exception
 {
 	this.config = config;
 	expHandler = new SimpleExpHandler(System.out, false);
@@ -36,5 +38,14 @@ public ConfigApp(Config config) throws Exception
 	TimeZone tz = TimeZone.getDefault();
 //	schemaSet = new HokconfigSchemaSet(sqlRun(), null, tz);
 }
+
+public ConfigApp(File configDir) throws Exception
+{
+	ConfigChain config0 = new ConfigChain();
+	config0.add(new DirConfig(configDir));
+	init(config0);
+	
+}
+
 	
 }

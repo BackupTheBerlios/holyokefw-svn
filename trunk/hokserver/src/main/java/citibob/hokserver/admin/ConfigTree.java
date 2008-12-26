@@ -5,16 +5,28 @@
 
 package citibob.hokserver.admin;
 
+import citibob.config.Config;
+import citibob.config.MemConfig;
+import citibob.config.ZipConfig;
+import citibob.config.ZipConfigWriter;
 import citibob.io.IOUtils;
+import citibob.sql.RsTasklet;
+import citibob.sql.RsTasklet2;
 import citibob.sql.SqlRun;
+import citibob.sql.pgsql.SqlBytea;
 import citibob.sql.pgsql.SqlTimestamp;
 import citibob.template.Template;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -117,55 +129,49 @@ throws IOException
 
 void copyConfig(File inDir, File outDir,
 Map<String,Object> map)
+throws IOException
 {
 	copyConfig(inDir, inDir, outDir, map);	
 }
 
 
 // =============================================================
-/**
- * 
- * @param dir
- * @return The last modified date of one config (Stream Set)
- */
-public long getConfigTS(File dir, long ts)
-{
-	// Do files in this directory
-	File[] files = dir.listFiles();
-	for (File f : files) {
-		
-		if (f.isDirectory()) {
-			if (includeDirs.accept(f)) {
-				ts = Math.max(ts, getConfigTS(f, ts));
-			}
-		} else {
-			if (!includeFiles.accept(f)) continue;
-			ts = Math.max(ts, f.lastModified());
-		}
-	}	
-}
-
-public void writeConfig(SqlRun str,
-byte[] configBytes, long lastModifiedMS,
-String tableName, String whereClause)
-{
-	SqlTimestamp sts = new SqlTimestamp("GMT");
-	String sql =
-		" update " + tableName +
-		" set config = " + SqlBytea.
-}
+///**
+// * 
+// * @param dir
+// * @return The last modified date of one config (Stream Set)
+// */
+//public long getConfigTS(File dir, long ts)
+//throws IOException
+//{
+//	// Do files in this directory
+//	File[] files = dir.listFiles();
+//	for (File f : files) {
+//		
+//		if (f.isDirectory()) {
+//			if (includeDirs.accept(f)) {
+//				ts = Math.max(ts, getConfigTS(f, ts));
+//			}
+//		} else {
+//			if (!includeFiles.accept(f)) continue;
+//			ts = Math.max(ts, f.lastModified());
+//		}
+//	}
+//	return ts;
+//}
 // =============================================================
 public static void main(String[] args) throws Exception
 {
-	File configRoot = new File("/export/home/citibob/mvn/oassl/config");
-	File inDir = new File(configRoot, "users/_proto");
-	File outDir = new File(configRoot, "users/ballettheatre");
+	File configRoot = new File("/export/home/citibob/mvn/hokserver/configs");
+	File inDir = new File(configRoot, "custs/_proto");
+	File outDir = new File(configRoot, "custs/ballettheatre");
 
 	Map<String,Object> map = new TreeMap();
 	map.put("custname", "ballettheatre");
 	map.put("db.password", "xyzxyz");
 	
-	copyConfig(inDir, outDir, map, null, null, null);
+	ConfigTree ct = new ConfigTree(null, null, null);
+	ct.copyConfig(inDir, outDir, map);
 }
 
 
