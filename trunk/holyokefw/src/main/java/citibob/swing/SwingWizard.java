@@ -77,7 +77,7 @@ public SwingWizard(String wizardName, App app, java.awt.Frame frame)
 	this.frame = frame;
 //	this.startState = startState;
 //	states = new HashMap();
-	wizardPref = app.userRoot().node("wizard").node(wizardName);
+	wizardPref = app.guiRoot().node("wizard").node(wizardName);
 	swingPrefs = app.swingPrefs();
 //	this.app = app;
 }

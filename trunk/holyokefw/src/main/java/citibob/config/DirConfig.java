@@ -15,14 +15,21 @@ import java.io.InputStream;
  *
  * @author citibob
  */
-public class DirConfig implements Config
+public class DirConfig extends BaseConfig
 {
 
 File root;
-	
+
+public DirConfig(File root, String name)
+{
+	super(name);
+	this.root = root;
+
+}
 public DirConfig(File root)
 {
-	this.root = root;
+	this(root, root.getAbsolutePath());
+
 }
 
 public InputStream openStream(String name)
@@ -33,12 +40,5 @@ throws IOException
 	return new FileInputStream(f);
 }
 
-public byte[] getStreamBytes(String name) throws IOException
-{
-	InputStream in = openStream(name);
-	byte[] ret = IOUtils.getBytes(in);
-	in.close();
-	return ret;
-}
 
 }

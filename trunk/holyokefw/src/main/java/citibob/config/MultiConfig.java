@@ -9,7 +9,6 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -21,17 +20,28 @@ import java.util.Properties;
  * Stores a set of StreamSets, in order of decreasing priority.
  * @author citibob
  */
-public class ConfigChain extends ArrayList<Config>
+public class MultiConfig extends BaseConfig
 {
 
-String name;
+ArrayList<Config> configs;
 
+public MultiConfig()
+{
+	super(null);
+	configs = new ArrayList();
+}
 
-public void setName(String name) { this.name = name; }
+public MultiConfig(Config... configs)
+{
+	this();
+	for (Config config : configs) add(config);
+}
+public void add(Config config)
+	{ configs.add(config); }
+public Config get(int i)
+	{ return configs.get(i); }
+public int size() { return configs.size(); }
 
-/** Descriptive name of this configuration */
-public String getName() { return name; }
-	
 /** Opens the named stream from the first (highest priority) StreamSet that has it. */
 public InputStream openStream(String name) throws IOException
 {
@@ -53,47 +63,45 @@ public byte[] getStreamBytes(String name) throws IOException
 }
 
 /** Retrieves a composite properties file from the Config. */
-public Properties getProperties(String name)
+public boolean loadProperties(String name, Properties props)
 throws IOException
 {
-	Properties props = new Properties();
+	int nloaded = 0;
 	for (int i=size()-1; i >= 0; --i) {
 		Config sset = get(i);
-		InputStream xin = sset.openStream(name);
-		if (xin != null) {
-			// Load properties file
-			Properties nprops = new Properties();
-			nprops.load(xin);
-			xin.close();
+		
+		// Load properties file
+		Properties nprops = new Properties();
+		if (sset.loadProperties(name, nprops)) ++nloaded;
 			
-			// Copy to our master properties
-			for (Entry en : nprops.entrySet()) {
-				String key = (String)en.getKey();
-				String val = (String)en.getValue();
-				props.setProperty(key, val);
-			}
+		// Copy to our master properties
+		for (Entry en : nprops.entrySet()) {
+			String key = (String)en.getKey();
+			String val = (String)en.getValue();
+			props.setProperty(key, val);
 		}
 	}
-	return props;
+	return (nloaded > 0);
 }
 
 
-public static ConfigChain merge(ConfigChain... configs)
+public static MultiConfig merge(MultiConfig... configs)
 {
-	ConfigChain ret = new ConfigChain();
-	ret.setName(configs[0].getName());
-	for (ConfigChain config : configs) {
-		ret.addAll(config);
+	MultiConfig ret = new MultiConfig();
+	ret.name = configs[0].getName();
+	for (MultiConfig config : configs) {
+		for (Config c : config.configs) ret.add(c);
+//		ret.addAll(config);
 	}
 	return ret;
 }
 
 // =====================================================
 /** Read configurations from config server */
-public static ConfigChain loadFromStream(InputStream in)
+public static MultiConfig loadFromStream(InputStream in)
 throws IOException
 {
-	ConfigChain config = new ConfigChain();
+	MultiConfig config = new MultiConfig();
 	
 	// Load the configurations over the port
 	for (;;) {
@@ -121,12 +129,12 @@ throws IOException
 		Properties props = new Properties();
 		props.load(xin);
 		xin.close();
-		setName(props.getProperty("config.name"));
+		name = props.getProperty("config.name");
 	}
 }
 
 /** Read configurations from launcher on local machine */
-public static ConfigChain loadFromLauncher(InetAddress host, int port)
+public static MultiConfig loadFromLauncher(InetAddress host, int port)
 throws UnknownHostException, IOException
 {
 	if (host == null) host = InetAddress.getLocalHost();
@@ -136,7 +144,7 @@ throws UnknownHostException, IOException
 }
 
 /** Read configurations from config server (via SSL Socket) */
-public static ConfigChain loadFromConfigServer(InetAddress host, int port)
+public static MultiConfig loadFromConfigServer(InetAddress host, int port)
 throws UnknownHostException, IOException
 {
 	if (host == null) host = InetAddress.getLocalHost();
@@ -145,10 +153,10 @@ throws UnknownHostException, IOException
 	return loadFromStream(in);
 }
 
-public static ConfigChain loadFromRawConfig(RawConfigChain rconfig)
+public static MultiConfig loadFromRawConfig(RawConfigChain rconfig)
 throws IOException
 {
-	ConfigChain config = new ConfigChain();
+	MultiConfig config = new MultiConfig();
 	for (byte[] bytes : rconfig) {
 		Config sset = ZipConfig.loadFromStream(new ByteArrayInputStream(bytes));
 		config.add(sset);

@@ -110,7 +110,7 @@ public class MailExpHandler extends BaseExpHandler
 			askUser = askUser && !(e instanceof AppError);
 			final MailExpDialog dialog = new MailExpDialog(null, programName,
 				e, msgText, askUser,
-				app.swingPrefs(), app.userRoot().node("MailExpDialog"));
+				app.swingPrefs(), app.guiRoot().node("MailExpDialog"));
 			dialog.setVisible(true);
 
 			if (e instanceof FatalAppError) System.exit(-1);

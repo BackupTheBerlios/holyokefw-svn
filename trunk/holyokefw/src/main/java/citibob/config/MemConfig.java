@@ -15,11 +15,15 @@ import java.util.TreeMap;
  *
  * @author citibob
  */
-public class MemConfig implements Config
+public class MemConfig extends BaseConfig
 {
-
-Map<String,byte[]> streams = new TreeMap();
 	
+Map<String,byte[]> streams = new TreeMap();
+
+public MemConfig() {
+	super(null);
+}
+
 /** Stores a StreamSet in memory... */
 public InputStream openStream(String name) throws IOException
 {

@@ -23,10 +23,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- *
+ * Wrapper applies password-based encryption to a config.
  * @author citibob
  */
-public class PBEConfig implements Config
+public class PBEConfig extends BaseConfig
 {
 Config sub;
 PBEAuth auth;
@@ -34,6 +34,7 @@ PBEAuth auth;
 
 public PBEConfig(Config sub, PBEAuth auth)
 {
+	super(sub.getName());
 	this.sub = sub;
 	this.auth = auth;
 //	crypt = new PBECrypt();

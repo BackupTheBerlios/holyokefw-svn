@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package citibob.app;
-import citibob.config.ConfigChain;
+import citibob.config.Config;
 import citibob.gui.FrameSet;
 import citibob.swing.typed.SwingerMap;
 import java.util.*;
@@ -39,7 +39,9 @@ public abstract class App
 // =================================================================
 // Configuration, Properts and Preferences
 
-	
+protected String name;
+/** Name of application */
+public String name() { return name; }
 	
 //protected URL configURL;
 //protected String configResourceFolder;
@@ -49,9 +51,9 @@ public abstract class App
 //	{ return new URL(configURL, name); }
 ////public java.io.File configDir() { return configDir; }
 
-protected ConfigChain config;
+protected Config config;
 /** Returns a list of configuration file-bundles in decreasing priority */
-public ConfigChain getConfig() { return config; }
+public Config config() { return config; }
 	
 protected Properties props;
 /** Gets properties loaded from a the StreamSetList. */
@@ -76,7 +78,7 @@ public SwingPrefs swingPrefs() { return swingPrefs; }
  * @param base Unique name to give the widget tree.
  */
 public void setUserPrefs(java.awt.Component c, String base, boolean reset)
-	{ swingPrefs().setPrefs(c, userRoot().node(base), reset); }
+	{ swingPrefs().setPrefs(c, guiRoot().node(base), reset); }
 public void setUserPrefs(java.awt.Component c, boolean reset)
 	{ setUserPrefs(c, c.getClass().getSimpleName(), reset); }
 public void setUserPrefs(java.awt.Component c, String base)
@@ -88,9 +90,14 @@ protected Preferences userRoot;
 /** @returns Root user preferences node for this application */
 public java.util.prefs.Preferences userRoot() { return userRoot; }
 
-protected Preferences systemRoot;
-/** @returns Root system preferences node for this application */
-public java.util.prefs.Preferences systemRoot() { return systemRoot; }
+/** For compatibility... */
+public java.util.prefs.Preferences guiRoot() { return userRoot().node("gui"); }
+//public java.util.prefs.Preferences configRoot() { return userRoot().node("config"); }
+
+
+//protected Preferences systemRoot;
+///** @returns Root system preferences node for this application */
+//public java.util.prefs.Preferences systemRoot() { return systemRoot; }
 // =================================================================
 // Connection Pools, Exception Handlers and Runners
 
