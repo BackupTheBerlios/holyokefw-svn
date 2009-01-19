@@ -38,6 +38,7 @@ public Config newConfig(App app)
 			throw new IllegalArgumentException("class " + obj.getClass());
 		}
 	}
+	if (ret.size() == 1) return ret.get(0);
 	return ret;
 }
 

@@ -7,9 +7,6 @@ package citibob.config;
 
 import citibob.app.App;
 import citibob.config.dialog.ConfigDialog;
-import citibob.swingers.JavaSwingerMap;
-import java.util.TimeZone;
-import java.util.prefs.Preferences;
 
 /**
  *

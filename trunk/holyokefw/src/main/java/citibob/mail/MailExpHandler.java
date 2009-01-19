@@ -93,7 +93,7 @@ public class MailExpHandler extends BaseExpHandler
 				"Bug in: " + programName + " " + app.version() + "\n" +
 				"Version: " + app.version() + "\n" +
 				"User: " + System.getProperty("user.name") + "\n" +
-					"Config Name: " + app.getConfig().getName() + "\n\n" +
+					"Config Name: " + app.config().getName() + "\n\n" +
 	//			e.toString() + "\n" +
 				ss.getBuffer().toString() + "\n" +
 				"=================================================\n" +
