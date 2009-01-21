@@ -7,6 +7,8 @@ package citibob.config;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -35,6 +37,7 @@ public MultiConfig(Config... configs)
 {
 	this();
 	for (Config config : configs) add(config);
+	setNameFromFirst();
 }
 public void add(Config config)
 	{ configs.add(config); }
@@ -120,19 +123,20 @@ throws IOException
 }
 
 void setNameFromFirst()
-throws IOException
+//throws IOException
 {
-	// Determine the Config's name by parsing from the first StreamSet
-	Config sset = get(0);
-	InputStream xin = sset.openStream("app.properties");
-	if (xin != null) {
-		Properties props = new Properties();
-		props.load(xin);
-		xin.close();
-		name = props.getProperty("config.name");
-	}
+	name = get(0).getName();
 }
 
+/** Read configurations from launcher on local machine */
+public static MultiConfig loadFromFile(File file)
+throws UnknownHostException, IOException
+{
+	InputStream in = new FileInputStream(file);
+	MultiConfig ret = loadFromStream(in);
+	ret.name = file.getName();
+	return ret;
+}
 /** Read configurations from launcher on local machine */
 public static MultiConfig loadFromLauncher(InetAddress host, int port)
 throws UnknownHostException, IOException

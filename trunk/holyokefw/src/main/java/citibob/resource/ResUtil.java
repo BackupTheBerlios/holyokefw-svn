@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.resource;
 
-import citibob.gui.RobustOpen;
+import citibob.io.RobustOpen;
 import citibob.sql.ConnPool;
 import citibob.sql.RsTasklet;
 import citibob.sql.SqlRun;

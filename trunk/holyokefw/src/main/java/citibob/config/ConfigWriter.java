@@ -106,6 +106,7 @@ throws IOException
 		if (password == null) cryptFiles = IOUtils.falseFilter;
 		else cryptFiles = new FileFilter() {
 		public boolean accept(File dir) {
+			// Encrypt everything not already encrypted
 			if (dir.getName().endsWith(".crypt")) return false;
 			return true;
 		}};
@@ -114,7 +115,7 @@ throws IOException
 }
 
 
-void writeDir(File baseDir, File dir,
+private void writeDir(File baseDir, File dir,
 FileFilter includeDirs,
 FileFilter includeFiles,
 FileFilter cryptFiles)

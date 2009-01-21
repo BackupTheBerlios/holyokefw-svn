@@ -20,9 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * and open the template in the editor.
  */
 
-package citibob.gui;
+package citibob.io;
 
-import citibob.gui.RobustOpen.ExtOS;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -41,28 +40,41 @@ public class RobustOpen {
 // ==========================================================	
 static interface Opener {
 	public void open(File f) throws Exception;
+	public void open(URL url) throws Exception;
 }
 
+/** Does a general "open" command on a Macintosh */
 static class MacURLOpen implements Opener {
 	public void open(File f) throws Exception {
 		URL url = f.toURL();
+		open(url);
+	}
+	public void open(URL url) throws Exception {
 		Class fileMgr = Class.forName("com.apple.eio.FileManager");
 		Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] {String.class});
-		openURL.invoke(null, new Object[] {url.toExternalForm()});
+		openURL.invoke(null, new Object[] {url.toExternalForm()});		
 	}
 	public String toString() { return "MacURLOpen"; }
 }
 
+/** Does a general "open" command on Windows */
 static class WindowsURLOpen implements Opener {
 	public void open(File f) throws Exception {
-		String[] cmd = {"rundll32", "url.dll,FileProtocolHandler", null};
 		URL url = f.toURL();
+		open(url);
+	}
+	public void open(URL url) throws Exception {
+		String[] cmd = {"rundll32", "url.dll,FileProtocolHandler", null};
 		cmd[2] = url.toExternalForm();
 		Runtime.getRuntime().exec(cmd);
 	}
 	public String toString() { return "WindowsURLOpen"; }
 }
 
+
+/** Opens a file  by running a command (eg. "gnome-open" or a type-specific
+ * command such as javaws, acroread, etc.
+ */
 static class CmdOpen implements Opener {
 	String cmd;
 	boolean waitForExit;		// if true, wait for the subprocess to exit
@@ -84,9 +96,21 @@ static class CmdOpen implements Opener {
 					toString() + " " + f + " returns bad exit value of " + proc.exitValue());
 		}
 	}
+	public void open(URL url) throws Exception {
+		String[] cmdLine = {cmd, url.toExternalForm()};
+		Process proc = Runtime.getRuntime().exec(cmdLine);
+		if (waitForExit) {
+			proc.waitFor();
+			if (proc.exitValue() != 0) throw new IOException(
+					toString() + " " + url + " returns bad exit value of " + proc.exitValue());
+		}
+	}
 	public String toString() { return cmd; }
 }
 
+/** Tries a number of different methods to open, uses the first
+ * one that works.
+ */
 static class MultiOpen implements Opener {
 	Opener[] opens;
 	public MultiOpen(Opener... opens) { this.opens = opens; }
@@ -102,6 +126,21 @@ static class MultiOpen implements Opener {
 		}
 		throw new IOException("File " + f + " could not open on any of " + toString());
 	}
+	public void open(URL url) throws Exception {
+//		// Reverse the order of things we try for URLS
+//		for (int i=opens.length-1; i >= 0; --i) {
+		for (Opener open : opens) {
+//			Opener open = opens[i];
+			try {
+				System.out.println("Trying to open " + url + " with " + open);
+				open.open(url);
+				return;
+			} catch(Exception e) {
+				System.out.println("    --> Opener failed with " + e);
+			}
+		}
+		throw new IOException("URL " + url + " could not open on any of " + toString());
+	}
 	public String toString()
 	{
 		StringBuffer allOpeners = new StringBuffer("MultiOpen(");
@@ -112,7 +151,7 @@ static class MultiOpen implements Opener {
 	}
 }
 
-
+// =================================================================
 // Best-effort general-purpose openers
 static class MacOpen extends MultiOpen {
 	public MacOpen() {
@@ -134,7 +173,10 @@ public LinuxOpen() {
 
 // ==========================================================	
 
-
+/** represents a (filename-extension, Operating System) pair.  Used
+ * as key to decide which opener to use for a file on a particular
+ * operating system
+ */
 static class ExtOS implements Comparable<ExtOS> {
 	String ext;		// Filename extnesion (or maybe MIME type)
 	String OS;
@@ -150,8 +192,10 @@ static class ExtOS implements Comparable<ExtOS> {
 		this.OS = OS;
 	}
 }
-static Map<ExtOS,Opener> actions = new TreeMap();
-
+static Map<ExtOS,Opener> fileActions = new TreeMap();
+static Map<ExtOS,Opener> urlActions = new TreeMap();
+// ------------------------------------------------------------
+// Utility functions to set up our openers
 static Opener newOpener(Opener... opens)
 {
 	if (opens.length == 0) return null;
@@ -163,50 +207,81 @@ static Opener newOpener(Opener... opens)
 	
 }
 
-static void add(String OS, String ext, Opener... opens)
+static void add(Map<ExtOS,Opener> actions, String OS, String ext, Opener... opens)
 {
 	actions.put(new ExtOS(OS, ext), newOpener(opens));
 }
-static void add(String OS, String ext, String... cmds)
+static void add(Map<ExtOS,Opener> actions, String OS, String ext, String... cmds)
 {
 	Opener[] opens = new Opener[cmds.length];
 	for (int i=0; i<cmds.length; ++i) opens[i] = new CmdOpen(cmds[i]);
-	add(OS, ext, opens);
+	add(actions, OS, ext, opens);
 }
-
-//static final String MAC_OPEN = "open";
-//static final String WINDOWS_OPEN = "start";
-//static final String LIUX_OPEN = "gnome-open";
-
+// ------------------------------------------------------------
 static {
+	// ======================= Files
 	// General open stuff
-	add("Mac", "*", new MacOpen());
-	add("Windows", "*", new WindowsOpen());
-	add("Linux", "*", new LinuxOpen());
+	add(fileActions, "Mac", "*", new MacOpen());
+	add(fileActions, "Windows", "*", new WindowsOpen());
+	add(fileActions, "Linux", "*", new LinuxOpen());
 
 
 	// Java
-	add("*", "java", "java");
-	add("*", "jnlp", "javaws");
+	add(fileActions, "*", "java", "java");
+	add(fileActions, "*", "jnlp", "javaws");
 	
 	// PDF
-	add("Linux", "pdf", "acroread");
-	add("Windows", "pdf", "acroread");
+	add(fileActions, "Linux", "pdf", "acroread");
+	add(fileActions, "Windows", "pdf", "acroread");
 
+	
+	// ======================== URLs
+	// Java
+	add(urlActions, "*", "jnlp", "javaws");
+
+	// General open stuff
+	add(urlActions, "Mac", "*", new MacOpen());
+	add(urlActions, "Windows", "*", new WindowsOpen());
+	add(urlActions, "Linux", "*", new LinuxOpen());
 }
 
 public static void open(java.io.File f) throws Exception
 {
-	// get OS Name
-	String osName = System.getProperty("os.name");
-	int space = osName.indexOf(' ');
-	if (space >= 0) osName = osName.substring(0,space);
 	
 	// Get extension
 	String ext;
 	String name = f.getName();
 	int dot = name.lastIndexOf('.');
 	ext = (dot < 0 ? "" : name.substring(dot+1));
+
+	Opener mopen = newOpener(fileActions, ext, false);
+	if (mopen == null) throw new IOException("Cannot find opener for file " + f);
+	mopen.open(f);	
+}
+public static void open(URL url) throws Exception
+{
+	// Get extension
+	String ext;
+	String name = url.toExternalForm();
+	int dot = name.lastIndexOf('.');
+	
+	if (dot < 0) ext = null;
+	else {
+		ext = name.substring(dot+1);
+		if (ext.indexOf('/') >= 0 || ext.indexOf('?') >= 0) ext = null;
+	}
+
+	Opener mopen = newOpener(urlActions, ext, true);
+	if (mopen == null) throw new IOException("Cannot find opener for URL " + url);
+	mopen.open(url);
+}
+	
+static Opener newOpener(Map<ExtOS,Opener> actions, String ext, boolean reverse)
+{
+	// get OS Name
+	String osName = System.getProperty("os.name");
+	int space = osName.indexOf(' ');
+	if (space >= 0) osName = osName.substring(0,space);
 	
 	ExtOS extos = new ExtOS(osName, ext);
 	
@@ -218,42 +293,34 @@ public static void open(java.io.File f) throws Exception
 	Opener open = actions.get(extos);
 	if (open != null) opens.add(open);
 	
-	
-	extos.OS = "*";
-	extos.ext = ext;
-	open = actions.get(extos);
-	if (open != null) opens.add(open);
+	// Next, try a general way of opening for this file type
+	if (ext != null) {
+		extos.OS = "*";
+		extos.ext = ext;
+		open = actions.get(extos);
+		if (open != null) opens.add(open);
 
-	extos.OS = osName;
-	extos.ext = ext;
-	open = actions.get(extos);
-	if (open != null) opens.add(open);
+		// Next, try a specific ext-OS combination
+		extos.OS = osName;
+		extos.ext = ext;
+		open = actions.get(extos);
+		if (open != null) opens.add(open);
+	}
 	
 	// Create a final opener
 	Opener[] xopens = new Opener[opens.size()];
-	opens.toArray(xopens);
-	Opener mopen = newOpener(xopens);
-	
-	if (mopen == null) throw new IOException("Cannot find opener for file " + f);
-	mopen.open(f);
+	if (reverse) {
+		int i = xopens.length - 1;
+		for (Opener open2 : opens) xopens[i--] = open2;
+	} else opens.toArray(xopens);
+	return newOpener(xopens);
 }
 
-
-
-//public static void open(java.io.File f) throws IOException
-//{
-//	String osName = System.getProperty("os.name");
-//	if (osName.startsWith("Mac")) {
-//		Runtime.getRuntime().exec("open " + f.getPath());
-//	} else if (osName.startsWith("Windows")) {
-//		Runtime.getRuntime().exec("start " + f.getPath());
-//	} else { //assume Unix or Linux
-//		Runtime.getRuntime().exec("gnome-open " + f.getPath());
-//	}
-//}
 public static void main(String[] args) throws Exception
 {
 //    open(new File("c:\\x.pdf"));
-	open(new File("/usr/share/doc/cups/overview.pdf"));
+//	open(new File("/export/home/citibob/MeasureTime.pdf"));
+	open(new URL("http://download.java.net/general/openjfx/demos/javafxpad.jnlp"));
+///usr/share/doc/cups/overview.pdf"));
 }
 }

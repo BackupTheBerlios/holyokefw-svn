@@ -23,12 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.sql;
 
 import citibob.config.Config;
-import citibob.config.MultiConfig;
 import citibob.io.sslrelay.SSLRelayClient;
-import citibob.sql.ConnFactory;
-import citibob.sql.JDBCConnFactory;
-import citibob.sql.SSLConnFactory;
-import citibob.sql.WrapConnFactory;
 import citibob.task.ExpHandler;
 import java.io.IOException;
 import java.net.InetAddress;

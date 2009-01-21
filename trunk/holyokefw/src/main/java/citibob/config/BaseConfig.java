@@ -8,7 +8,6 @@ package citibob.config;
 import citibob.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -24,7 +23,22 @@ public BaseConfig(String name) {
 	this.name = name;
 }
 
-public String getName() { return name; }
+public String getName()
+	{ return name; }
+
+public void setNameFromAppProperties()
+throws IOException
+{
+	// Determine the Config's name by parsing from the first StreamSet
+	Config sset = this;
+	InputStream xin = sset.openStream("app.properties");
+	if (xin != null) {
+		Properties props = new Properties();
+		props.load(xin);
+		xin.close();
+		name = props.getProperty("config.name");
+	}
+}
 
 public byte[] getStreamBytes(String name) throws IOException
 {

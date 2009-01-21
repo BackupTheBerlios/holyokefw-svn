@@ -2,6 +2,7 @@
 import citibob.config.ZipConfig;
 import citibob.config.ZipConfigWriter;
 import citibob.gui.AppLauncher;
+import citibob.io.RobustOpen;
 import citibob.licensor.Licensor;
 import citibob.licensor.MakeNbm;
 
@@ -45,6 +46,7 @@ public static void main(String[] args) throws Exception {
 //System.exit(0);
 
 	AppLauncher.launch("holyokefw", new Class[] {
+		RobustOpen.class,
 		ZipConfig.class,
 		ZipConfigWriter.class,
 		NoYearDateFormat.class,

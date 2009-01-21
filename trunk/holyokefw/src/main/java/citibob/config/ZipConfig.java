@@ -43,6 +43,7 @@ throws IOException
         while ((len = zin.read(buf)) > 0) bout.write(buf, 0, len);
 //System.out.println("Read entry " + ze.getName() + " of size " + bout.size());
 		ret.streams.put(ze.getName(), bout.toByteArray());
+		bout.reset();
 	}
 	
 }
@@ -51,6 +52,7 @@ throws IOException
 {
 	MemConfig ret = new MemConfig();
 	loadFromStream(ret, in);
+	if (ret.size() == 0) return null;
 	return ret;
 //	zin.close();
 }

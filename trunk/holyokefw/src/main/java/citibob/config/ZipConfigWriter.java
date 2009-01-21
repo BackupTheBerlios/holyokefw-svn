@@ -46,19 +46,45 @@ public void finish() throws IOException
 public void close() throws IOException
 { zout.close(); }
 // =================================================================
-public static void main(String[] args) throws Exception
-{
-	File root = ClassPathUtils.getMavenProjectRoot();
-	OutputStream out = new FileOutputStream(new File(root, "config.zip"));
-	char[] password = "password".toCharArray();
-	ZipConfigWriter zzout = new ZipConfigWriter(out, password);
-
-	zzout.writeEntry("url.txt", "http://offstagearts.org", false);
-	zzout.writeDir(new File(root, "../oamisc/ballettheatre/config_lan"),
-		null, null, null);
-	// Add in JKS files...
-	// Parse properties files to figure out which JKS files to use.
-	// (Use a base properties files from server directory)
-	zzout.close();
-}
+//public static void main(String[] args) throws Exception
+//{
+//	File root = ClassPathUtils.getMavenProjectRoot();
+//	OutputStream out = new FileOutputStream(new File(root, "config.zip"));
+//	char[] password = "password".toCharArray();
+//	ZipConfigWriter zzout = new ZipConfigWriter(out, password);
+//
+//	zzout.writeEntry("url.txt", "http://offstagearts.org", false);
+//	zzout.writeDir(new File(root, "../oamisc/ballettheatre/config_lan"),
+//		null, null, null);
+//	// Add in JKS files...
+//	// Parse properties files to figure out which JKS files to use.
+//	// (Use a base properties files from server directory)
+//	zzout.close();
+//}
+//public static void main(String[] args) throws Exception
+//{
+//	File root = ClassPathUtils.getMavenProjectRoot();
+//	File clientDir = new File(root, "../oamisc/ballettheatre");
+////	File configDir = new File(clientDir, "config_lan");
+////	File configsFile = new File(clientDir, "config_lan.zips");
+//	
+//	
+//File configDir = new File("/export/home/citibob/offstagearts/configs/test_ballettheatre");
+//File configsFile = new File("/export/home/citibob/offstagearts/configs/test_ballettheatre.zips");
+//
+//	
+//	
+//	OutputStream out = new FileOutputStream(configsFile);
+////	ZipConfigWriter zzout = new ZipConfigWriter(out);
+//	char[] password = "password".toCharArray();
+//password = null;
+//	ZipConfigWriter zzout = new ZipConfigWriter(out, password);
+//
+//	zzout.writeDir(configDir, null, null, null);
+//	zzout.close();
+//	
+//	// Add in JKS files...
+//	// Parse properties files to figure out which JKS files to use.
+//	// (Use a base properties files from server directory)
+//}
 }
