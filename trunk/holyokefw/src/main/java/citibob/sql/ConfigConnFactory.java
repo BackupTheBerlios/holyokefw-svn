@@ -111,18 +111,29 @@ throws ClassNotFoundException
 }
 
 
-public ConfigConnFactory(Config config, ExpHandler expHandler)
+/**
+ * 
+ * @param config
+ * @param appProperties Should equal config.loadAppProperties()
+ * @param expHandler
+ * @throws java.lang.ClassNotFoundException
+ * @throws java.net.UnknownHostException
+ * @throws java.net.MalformedURLException
+ * @throws java.io.IOException
+ */
+public ConfigConnFactory(Config config, Properties appProperties, ExpHandler expHandler)
 throws ClassNotFoundException, UnknownHostException, MalformedURLException, IOException
 {
 //	if (propFileName == null) propFileName = "app.properties";
 //	Properties props = new Properties();
 //	config.loadProperties(propFileName);
-	Properties props = config.loadAppProperties();
+//	Properties props = config.loadAppProperties();
 	
-	String sssl = props.getProperty("db.ssl", "false");
+	String sssl = appProperties.getProperty("db.ssl", "false");
 	boolean ssl = (sssl.toLowerCase().equals("true"));
 	ConnFactory sub = (ssl ?
-		newSSLSub(config, props, expHandler) : newPlainSub(props));
+		newSSLSub(config, appProperties, expHandler) :
+		newPlainSub(appProperties));
 	init(sub);
 }
 	

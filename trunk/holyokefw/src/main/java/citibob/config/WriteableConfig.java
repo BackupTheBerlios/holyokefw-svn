@@ -5,14 +5,16 @@
 
 package citibob.config;
 
-import citibob.app.App;
+import java.io.IOException;
 
 /**
- * Factory for providing a configuration to an application
+ *
  * @author citibob
  */
-public interface ConfigMaker {
-	
-public Config newConfig(App app);
+public interface WriteableConfig extends Config
+{
+
+public void add(String name, byte[] bytes)
+throws IOException;
 
 }

@@ -91,7 +91,7 @@ throws IOException
 public static MultiConfig merge(MultiConfig... configs)
 {
 	MultiConfig ret = new MultiConfig();
-	ret.name = configs[0].getName();
+	ret.setName(configs[0].getName());
 	for (MultiConfig config : configs) {
 		for (Config c : config.configs) ret.add(c);
 //		ret.addAll(config);
@@ -125,7 +125,7 @@ throws IOException
 void setNameFromFirst()
 //throws IOException
 {
-	name = get(0).getName();
+	setName(get(0).getName());
 }
 
 /** Read configurations from launcher on local machine */
@@ -134,7 +134,7 @@ throws UnknownHostException, IOException
 {
 	InputStream in = new FileInputStream(file);
 	MultiConfig ret = loadFromStream(in);
-	ret.name = file.getName();
+	ret.setName(file.getName());
 	return ret;
 }
 /** Read configurations from launcher on local machine */
@@ -157,15 +157,15 @@ throws UnknownHostException, IOException
 	return loadFromStream(in);
 }
 
-public static MultiConfig loadFromRawConfig(RawConfigChain rconfig)
-throws IOException
-{
-	MultiConfig config = new MultiConfig();
-	for (byte[] bytes : rconfig) {
-		Config sset = ZipConfig.loadFromStream(new ByteArrayInputStream(bytes));
-		config.add(sset);
-	}
-	return config;
-}
+//public static MultiConfig loadFromRawConfig(RawConfigChain rconfig)
+//throws IOException
+//{
+//	MultiConfig config = new MultiConfig();
+//	for (byte[] bytes : rconfig) {
+//		Config sset = ZipConfig.loadFromStream(new ByteArrayInputStream(bytes));
+//		config.add(sset);
+//	}
+//	return config;
+//}
 
 }

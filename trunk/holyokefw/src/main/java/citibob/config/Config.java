@@ -21,6 +21,7 @@ public byte[] getStreamBytes(String name) throws IOException;
 
 /** Descriptive name of this configuration */
 public String getName();
+public void setName(String name);
 
 /** Retrieves a composite properties file from the Config.
  * @param name Name of file to read properties from
@@ -31,6 +32,8 @@ public String getName();
  */
 public boolean loadProperties(String name, Properties props)
 throws IOException;
+
+//public Properties getProperties(String name);
 
 /** Overall load the properties.  This loads two properties files:
  * "app.properties" is the base, overridden by <os.name>.properties.

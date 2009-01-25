@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Iterator;
 
 /**
  *
@@ -47,6 +48,14 @@ public static byte[] getBytes(InputStream in) throws IOException
 	ByteArrayOutputStream bout = new ByteArrayOutputStream();
 	copy(in, bout);
 	return bout.toByteArray();
+}
+
+
+public static void copy(InputStream in, File file) throws IOException
+{
+	OutputStream out = new FileOutputStream(file);
+	copy(in, out);
+	out.close();
 }
 
 public static void copy(InputStream in, OutputStream out) throws IOException
@@ -90,6 +99,31 @@ public static String getRelative(File baseDir, File f)
 	String rel = f.getPath().substring(baseDir.getPath().length()+1);
 	return rel.replace(File.separatorChar, '/');
 }
+
+public static class RelativeIterator implements Iterator<String>
+{
+File baseDir;
+Iterator<File> sub;
+
+public RelativeIterator(File baseDir, Iterator<File> sub)
+{
+	this.baseDir = baseDir;
+	this.sub = sub;
+}
+public boolean hasNext() {
+	return sub.hasNext();
+}
+
+public String next() {
+	return getRelative(baseDir, sub.next());
+}
+
+public void remove() {
+	throw new UnsupportedOperationException("Not supported yet.");
+}
+
+}
+
 
 // http://www.exampledepot.com/egs/java.io/DeleteDir.html
 // Deletes all files and subdirectories under dir.

@@ -6,9 +6,12 @@
 package citibob.config;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 
 /**
@@ -16,9 +19,13 @@ import java.util.TreeMap;
  * @author citibob
  */
 public class MemConfig extends BaseConfig
+implements ListableConfig, WriteableConfig
 {
 	
-Map<String,byte[]> streams = new TreeMap();
+private Map<String,byte[]> streams = new TreeMap();
+
+// Our properties files, already read-in and interpreted.
+//Map<String,Properties> properties = new TreeMap();
 
 public MemConfig() {
 	super(null);
@@ -38,5 +45,14 @@ public byte[] getStreamBytes(String name) throws IOException
 }
 
 public int size() { return streams.size(); }
+
+public Iterator<String> listStreams() {
+	return streams.keySet().iterator();
+}
+// ============================================================
+public void add(String name, byte[] bytes)
+{
+	streams.put(name,bytes);
+}
 
 }

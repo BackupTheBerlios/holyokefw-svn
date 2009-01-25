@@ -10,6 +10,7 @@ import citibob.crypt.PBEAuth;
 import citibob.io.IOUtils;
 import citibob.reflect.ClassPathUtils;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,8 +19,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Reads a Zip file into memory, setting up the streams found in
@@ -42,7 +45,7 @@ throws IOException
         int len;
         while ((len = zin.read(buf)) > 0) bout.write(buf, 0, len);
 //System.out.println("Read entry " + ze.getName() + " of size " + bout.size());
-		ret.streams.put(ze.getName(), bout.toByteArray());
+		ret.add(ze.getName(), bout.toByteArray());
 		bout.reset();
 	}
 	
@@ -67,6 +70,28 @@ public static Config loadFromFile(File file) throws IOException
 	}
 	
 }
+// -----------------------------------------------------------------------
+public static void writeToStream(ListableConfig config, OutputStream out)
+throws IOException
+{
+	ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(out));
+	
+	for (Iterator<String> ii = config.listStreams(); ii.hasNext();) {
+		String name = ii.next();
+		
+		// Read the config file
+		byte[] bytes = config.getStreamBytes(name);
+		
+		// Write it out to our zip file
+		ZipEntry ze = new ZipEntry(name);
+			ze.setSize(bytes.length);
+		zout.putNextEntry(ze);
+		zout.write(bytes);
+		zout.closeEntry();
+	}
+	zout.finish();
+}
+
 
 
 //public static Config loadFromURL(URL url,String user, String password) throws IOException

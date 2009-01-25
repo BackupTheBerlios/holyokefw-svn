@@ -5,14 +5,15 @@
 
 package citibob.config;
 
-import citibob.app.App;
+import java.util.Iterator;
 
 /**
- * Factory for providing a configuration to an application
+ *
  * @author citibob
  */
-public interface ConfigMaker {
-	
-public Config newConfig(App app);
+public interface ListableConfig extends Config
+{
 
+public Iterator<String> listStreams();
+	
 }

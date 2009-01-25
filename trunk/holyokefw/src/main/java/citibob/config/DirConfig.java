@@ -6,16 +6,21 @@
 package citibob.config;
 
 import citibob.io.IOUtils;
+import citibob.io.RecursiveDirIterator;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
 
 /**
  *
  * @author citibob
  */
 public class DirConfig extends BaseConfig
+implements ListableConfig, WriteableConfig
 {
 
 File root;
@@ -38,6 +43,21 @@ throws IOException
 	File f = new File(root, name);
 	if (!f.exists()) return null;
 	return new FileInputStream(f);
+}
+
+public Iterator<String> listStreams()
+{
+	return new IOUtils.RelativeIterator(root,
+		new RecursiveDirIterator(root, null));
+}
+
+public void add(String name, byte[] bytes)
+throws IOException
+{
+	File outFile = new File(root, name);
+	OutputStream out = new FileOutputStream(outFile);
+	out.write(bytes);
+	out.close();
 }
 
 

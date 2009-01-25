@@ -42,7 +42,7 @@ throws IOException
 	byte[] bytes = null;
 	
 	// Copy the actual file
-	if (encrypt) {
+	if (encrypt && password != null) {
 		// Copy encrypted
 		try {
 			name = name + ".crypt";

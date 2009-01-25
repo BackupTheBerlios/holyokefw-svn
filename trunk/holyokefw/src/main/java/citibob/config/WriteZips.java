@@ -29,10 +29,13 @@ public static void main(String[] args) throws Exception
 	}
 	
 	// Write it out!
+	ListableConfig config = new DirConfig(configDir);
 	OutputStream out = new FileOutputStream(configsFile);
-	ZipConfigWriter zzout = new ZipConfigWriter(out, password);
-	zzout.writeDir(configDir, null, null, null);
-	zzout.close();
+	ZipConfig.writeToStream(config, out);
+	out.close();
+//	ZipConfigWriter zzout = new ZipConfigWriter(out, password);
+//	zzout.writeDir(configDir, null, null, null);
+//	zzout.close();
 	
 	// Add in JKS files...
 	// Parse properties files to figure out which JKS files to use.

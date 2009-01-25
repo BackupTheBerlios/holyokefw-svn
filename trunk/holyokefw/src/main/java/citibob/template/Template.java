@@ -22,7 +22,7 @@ import java.util.*;
 import java.net.*;
 
 /** Simple text templating engine. */
-public class Template extends HashMap
+public class Template extends HashMap<String,Object>
 {
 
 URL url;
@@ -36,6 +36,11 @@ public Template(URL url)
 public void write(Writer out) throws IOException
 {
 	Reader in = new BufferedReader(new InputStreamReader(url.openStream()));
+	write(in, out, this);
+}
+public static void write(Reader in, Writer out, Map<String,Object> map)
+throws IOException
+{
 	try {
 		all: for (;;) {
 			// Go ahead and do your thing...
@@ -61,7 +66,7 @@ public void write(Writer out) throws IOException
 				out.write("%");
 			} else {
 				// Look up the key and write it out
-				Object value = get(key);
+				Object value = map.get(key);
 				if (value == null) out.write("&lt;null&gt;");
 				else out.write(value.toString());
 			}

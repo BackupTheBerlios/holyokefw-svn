@@ -17,7 +17,7 @@ import java.util.Properties;
 public abstract class BaseConfig implements Config
 {
 	
-protected String name;
+private String name;
 
 public BaseConfig(String name) {
 	this.name = name;
@@ -26,19 +26,24 @@ public BaseConfig(String name) {
 public String getName()
 	{ return name; }
 
-public void setNameFromAppProperties()
-throws IOException
+public void setName(String name)
 {
-	// Determine the Config's name by parsing from the first StreamSet
-	Config sset = this;
-	InputStream xin = sset.openStream("app.properties");
-	if (xin != null) {
-		Properties props = new Properties();
-		props.load(xin);
-		xin.close();
-		name = props.getProperty("config.name");
-	}
+	this.name = name;
 }
+
+//public void setNameFromAppProperties()
+//throws IOException
+//{
+//	// Determine the Config's name by parsing from the first StreamSet
+//	Config sset = this;
+//	InputStream xin = sset.openStream("app.properties");
+//	if (xin != null) {
+//		Properties props = new Properties();
+//		props.load(xin);
+//		xin.close();
+//		name = props.getProperty("config.name");
+//	}
+//}
 
 public byte[] getStreamBytes(String name) throws IOException
 {
