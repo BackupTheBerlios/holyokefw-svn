@@ -61,7 +61,8 @@ private void processDirs()
 		if (seen.getLast().isFile()) break;
 		File dir = seen.removeLast();
 		File[] files = dir.listFiles(fileFilter);
-		for (File f : files) seen.addFirst(f);
+if (files == null) System.out.println("Directory " + dir + " has no files!");
+		if (files != null) for (File f : files) seen.addFirst(f);
 	}
 }
 

@@ -36,6 +36,7 @@ public DirConfig(File root)
 	this(root, root.getAbsolutePath());
 
 }
+public File getRoot() { return root; }
 
 public InputStream openStream(String name)
 throws IOException
@@ -55,6 +56,7 @@ public void add(String name, byte[] bytes)
 throws IOException
 {
 	File outFile = new File(root, name);
+	outFile.getParentFile().mkdirs();
 	OutputStream out = new FileOutputStream(outFile);
 	out.write(bytes);
 	out.close();

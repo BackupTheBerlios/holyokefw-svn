@@ -34,23 +34,13 @@ public static void merge(WriteableConfig base, ListableConfig config) throws IOE
 {
 	for (Iterator<String> ii = config.listStreams(); ii.hasNext();) {
 		String name = ii.next();
-		InputStream in = base.openStream(name);
-//		if (!streams.containsKey(name)) {
-		if (in == null) {
-			// Higher priority version doesn't have this, use lower priority version
-			base.add(name, config.getStreamBytes(name));
-		} else if (name.endsWith(".properties")) {
+		
+		if (name.endsWith(".properties")) {
 			// Need to merge new low-priority properties with existing
 			// high-priority properties
 			Properties props = new Properties();
-			InputStream configIn = config.openStream(name);
-			props.load(configIn);
-			configIn.close();
-			
-			// Now add it high-priority properties on top
-			//in = openStream(name);
-			props.load(in);
-			in.close();
+			config.loadProperties(name, props);
+			base.loadProperties(name, props);
 			
 			// Now write out properties files
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -59,6 +49,15 @@ public static void merge(WriteableConfig base, ListableConfig config) throws IOE
 
 			// Store it back
 			base.add(name, out.toByteArray());
+			
+		} else {
+			InputStream in = base.openStream(name);
+			if (in == null) {
+				// Higher priority version doesn't have this, use lower priority version
+				base.add(name, config.getStreamBytes(name));
+			} else {
+				in.close();
+			}
 		}
 	}
 }
@@ -90,7 +89,8 @@ throws IOException
 			out.close();
 			
 			// Add in the new template-filled version
-			dest.add(name, bout.toByteArray());
+			String outName = name.substring(0, name.length() - ".template".length());
+			dest.add(outName, bout.toByteArray());
 		} else {
 			dest.add(name, src.getStreamBytes(name));
 		}

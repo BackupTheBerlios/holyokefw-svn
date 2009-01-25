@@ -5,7 +5,6 @@
 
 package citibob.config;
 
-import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +14,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -32,6 +32,7 @@ public MultiConfig()
 	super(null);
 	configs = new ArrayList();
 }
+public Iterator<Config> iterator() { return configs.iterator(); }
 
 public MultiConfig(Config... configs)
 {

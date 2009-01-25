@@ -90,6 +90,7 @@ throws IOException
 		zout.closeEntry();
 	}
 	zout.finish();
+	zout.flush();
 }
 
 
