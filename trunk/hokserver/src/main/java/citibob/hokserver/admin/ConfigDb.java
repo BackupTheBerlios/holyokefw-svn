@@ -5,18 +5,24 @@
 
 package citibob.hokserver.admin;
 
+import citibob.config.ConfigUtils;
+import citibob.config.DirConfig;
+import citibob.config.ListableConfig;
 import citibob.config.MemConfig;
+import citibob.config.WriteableConfig;
 import citibob.config.ZipConfig;
-import citibob.config.ZipConfigWriter;
+import citibob.hokserver.ConfigApp;
 import citibob.io.IOUtils;
 import citibob.sql.RsTasklet;
 import citibob.sql.RsTasklet2;
 import citibob.sql.SqlRun;
 import citibob.sql.ansi.SqlTimestamp;
 import citibob.sql.pgsql.SqlBytea;
+import citibob.sql.pgsql.SqlString;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,6 +33,7 @@ import java.util.Date;
  * @author citibob
  */
 public class ConfigDb {
+// =========================================================
 // ------------------------------------------------------------
 static SqlTimestamp gmtTimestamp = new SqlTimestamp("GMT");
 public static void uploadConfig(SqlRun str,
@@ -42,7 +49,7 @@ String tableName, String whereClause)
 }
 
 public static void uploadConfig(SqlRun str,
-final File configDir,
+final File oneConfigDir,
 final char[] password,
 final String tableName, final String whereClause)
 {
@@ -57,14 +64,15 @@ final String tableName, final String whereClause)
 		if (rs.next()) dbTS = (Date)gmtTimestamp.get(rs, "configgmt");
 		
 		long fileMS;
-		fileMS = IOUtils.maxLastModified(configDir);
+		fileMS = IOUtils.maxLastModified(oneConfigDir);
 System.out.println("fileMS = " + new Date(fileMS));
 		if (dbTS == null || fileMS > dbTS.getTime()) {
 			// Convert directory to zipped bytes
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
-			ZipConfigWriter zout = new ZipConfigWriter(bout, password);
-			zout.writeDir(configDir,null, null, null);
-			zout.close();
+			ZipConfig.writeToStream(new DirConfig(oneConfigDir), bout);
+//			ZipConfigWriter zout = new ZipConfigWriter(bout, password);
+//			zout.writeDir(oneConfigDir,null, null, null);
+//			zout.close();
 
 			// Update it!
 			uploadConfig(str, bout.toByteArray(), new Date(fileMS),
@@ -74,13 +82,43 @@ System.out.println("fileMS = " + new Date(fileMS));
 	}});
 }
 
-public static void uploadAllConfigs(SqlRun str,
-final File configDir,
+/**
+ * Uploads all the configs for one table name
+ * @param str
+ * @param configRoot
+ * @param password Should be null.
+ * @param dn
+ */
+public static void uploadConfigs(SqlRun str,
+final File configRoot,
 final char[] password,
-final String tableName)
+final DirNamer dn)
 {
-
+	File configDir = new File(configRoot, dn.getTableName());
+	File[] files = configDir.listFiles();
+	if (files == null) return;		// Nothing for this level
+	for (File file : files) {
+		if (!file.isDirectory()) continue;	// ignore non-directories
+		uploadConfig(str, file, password,
+			dn.getTableName(), dn.getWhereClause(file.getName()));
+	}
 }
+
+public static void uploadAllConfigs(SqlRun str,
+final File configRoot,
+final char[] password)
+{
+//	DirNamer[] dns = new DirNamer[] {
+//		new apps_DirNamer(),
+//		new custs_DirNamer(),
+//		new app_vers_DirNamer(),
+//		new app_custs_DirNamer()
+//	};
+//	for (DirNamer dn : dns)
+//		uploadConfigs(str, configRoot, password, dn);
+}
+
+
 public static MemConfig readConfig(SqlRun str,
 String tableName, String whereClause)
 {
