@@ -35,10 +35,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import joptsimple.OptionParser;
 
 /**
  *
@@ -308,6 +308,10 @@ throws IOException, InterruptedException
 	return password;
 }
 
+boolean createDatabase() {
+	return app.props().getProperty("create.database").equalsIgnoreCase("true");
+}
+
 void w_custs_add(SqlRun str, String custName)
 throws IOException, InterruptedException
 {
@@ -316,8 +320,11 @@ throws IOException, InterruptedException
 	map.put("db.user", custName);
 
 	// Create customer role in database server
-	System.out.println("===== Creating PostgreSQL user " + custName);
-	String password = createCustRole(custName, null);
+	String password = "";
+	if (createDatabase()) {
+		System.out.println("===== Creating PostgreSQL user " + custName);
+		password = createCustRole(custName, null);
+	}
 	map.put("db.password", password);
 	
 	// Create config directory
@@ -386,7 +393,9 @@ throws IOException, InterruptedException
 	}
 	
 	// Make the database for this customer
-	createClientDb(dbName, custName);
+	if (createDatabase()) {
+		createClientDb(dbName, custName);	
+	}
 
 	// Update in the config database
 	str.execSql("select w_apps_addcust(" +
@@ -405,7 +414,9 @@ throws IOException, InterruptedException
 	IOUtils.deleteDir(outDir);
 
 	// Drop the database
-	psql("template1", "drop database " + dbName + ";");
+	if (createDatabase()) {
+		psql("template1", "drop database " + dbName + ";");
+	}
 	
 	// Update in the config database
 	str.execSql("select w_apps_delcust(" +
@@ -605,7 +616,7 @@ throws Exception
 	writer.write(
 		"app.name=" + info.appName + "\n" +
 		"app.url=" + info.appURL + "\n" +
-		"config.name=" + multiConfig.getName() + "\n");
+		"config.name=" + multiConfig.getName() + "(" + app.props().getProperty("server.name") + ")\n");
 	writer.close();
 
 	// Jar it back up
@@ -622,7 +633,13 @@ throws Exception
 	System.out.println("Done writing launcher: " + outJar.getAbsolutePath());
 }
 // =======================================================================
+static class MyOptions extends OptionParser {
+public MyOptions() {
+	// see: http://jopt-simple.sourceforge.net/examples.html	
+//	accepts( "name" ).withRequiredArg().ofType( String.class )
+//		.describedAs( "count" );
 
+}}
 
 // ------------------------------------------------------
 static final int APP = 0;
@@ -742,8 +759,11 @@ throws Exception
 public static void main(String[] args) throws Exception
 {
 	// Set up connection to config database
-	String sHomeDir = System.getProperty("user.home");
-	File appDir = new File(sHomeDir, ".hokserver");
+//	String sHomeDir = System.getProperty("user.home");
+//	File appDir = new File(sHomeDir, ".hokserver");
+	
+//args = new String[] {"makelauncher", "offstagearts",
+//"ballettheatre", "xxx.jar", "tiger"};
 	
 	ConfigAdmin ca = new ConfigAdmin();
 	SqlRun str = ca.app.sqlRun();

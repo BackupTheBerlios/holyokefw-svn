@@ -1,6 +1,7 @@
 package citibob.hokserver.sslrelay;
 
 
+import citibob.hokserver.ConfigApp;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -118,16 +119,9 @@ public void startListen(int localport , int destport)
 
 public static void main(String[] args) throws Exception
 {
-	if (args.length == 0) {
-		System.out.println(
-			"Usage: SSLRelayServer <serverDir>\n" +
-			"    <serverDir> = $SERVERDIR from makeserverkeys.sh\n");
-		System.exit(-1);
-	}
-//	File root = ClassPathUtils.getMavenProjectRoot();
-//	File serverDir = new File(root, "keys/server");
-
-	File serverDir = new File(args[0]);
+	ConfigApp app = new ConfigApp();
+	
+	File serverDir = new File(app.keyRoot(), "server");
 	
 	// Keystore with the certificate in it
 	File storeFile = new File(serverDir, "server-store.jks");
@@ -143,6 +137,33 @@ public static void main(String[] args) throws Exception
 		5433,5432);
 	
 }
+//public static void main(String[] args) throws Exception
+//{
+//	if (args.length == 0) {
+//		System.out.println(
+//			"Usage: SSLRelayServer <serverDir>\n" +
+//			"    <serverDir> = $SERVERDIR from makeserverkeys.sh\n");
+//		System.exit(-1);
+//	}
+////	File root = ClassPathUtils.getMavenProjectRoot();
+////	File serverDir = new File(root, "keys/server");
+//
+//	File serverDir = new File(args[0]);
+//	
+//	// Keystore with the certificate in it
+//	File storeFile = new File(serverDir, "server-store.jks");
+//
+//	// Keystore with the private key in it.
+//	File trustFile = new File(serverDir, "server-trust.jks");
+//
+//	String serverStorepass = "keyst0re";
+//
+//	SSLRelayServer relays = new SSLRelayServer(
+//		storeFile, trustFile,
+//		serverStorepass.toCharArray(), serverStorepass.toCharArray(),
+//		5433,5432);
+//	
+//}
          
      
      
