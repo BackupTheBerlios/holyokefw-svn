@@ -32,34 +32,51 @@ public class ConfigUtils {
  */
 public static void merge(WriteableConfig base, ListableConfig config) throws IOException
 {
+	MultiConfig mconfig = new MultiConfig(base, config);
 	for (Iterator<String> ii = config.listStreams(); ii.hasNext();) {
 		String name = ii.next();
-		
-		if (name.endsWith(".properties")) {
-			// Need to merge new low-priority properties with existing
-			// high-priority properties
-			Properties props = new Properties();
-			config.loadProperties(name, props);
-			base.loadProperties(name, props);
-			
-			// Now write out properties files
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			props.store(out, "Merged properties file");
-			out.close();
-
-			// Store it back
-			base.add(name, out.toByteArray());
-			
-		} else {
-			InputStream in = base.openStream(name);
-			if (in == null) {
-				// Higher priority version doesn't have this, use lower priority version
-				base.add(name, config.getStreamBytes(name));
-			} else {
-				in.close();
-			}
-		}
+		base.add(name, mconfig.getStreamBytes(name));
 	}
+//		
+//		
+//		String name = ii.next();
+//		
+//		if (name.endsWith(".properties")) {
+//			InputStream in;
+//			
+//			in = 
+//			InputStream in = base.openStream(name);
+//			if (in == null) {
+//				// Higher priority version doesn't have this, use lower priority version
+//				base.add(name, config.getStreamBytes(name));
+//			} else {
+//				in.close();
+//			}
+//			
+////			// Need to merge new low-priority properties with existing
+////			// high-priority properties
+////			Properties props = new Properties();
+////			config.loadProperties(name, props);
+////			base.loadProperties(name, props);
+////			
+////			// Now write out properties files
+////			ByteArrayOutputStream out = new ByteArrayOutputStream();
+////			props.store(out, "Merged properties file");
+////			out.close();
+////
+////			// Store it back
+////			base.add(name, out.toByteArray());
+//			
+//		} else {
+//			InputStream in = base.openStream(name);
+//			if (in == null) {
+//				// Higher priority version doesn't have this, use lower priority version
+//				base.add(name, config.getStreamBytes(name));
+//			} else {
+//				in.close();
+//			}
+//		}
+//	}
 }
 
 

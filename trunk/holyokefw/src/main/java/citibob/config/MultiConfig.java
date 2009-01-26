@@ -5,11 +5,15 @@
 
 package citibob.config;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -49,44 +53,63 @@ public int size() { return configs.size(); }
 /** Opens the named stream from the first (highest priority) StreamSet that has it. */
 public InputStream openStream(String name) throws IOException
 {
-	for (int i=0; i<size(); ++i) {
-		InputStream in = get(i).openStream(name);
-		if (in != null) return in;
+	if (name.endsWith(".properties")) {
+		return new ByteArrayInputStream(getStreamBytes(name));
+	} else {
+		for (int i=0; i<size(); ++i) {
+			InputStream in = get(i).openStream(name);
+			if (in != null) return in;
+		}
+		return null;
 	}
-	return null;
 }
 
 /** Gets bytes from the named stream from the first (highest priority) StreamSet that has it. */
 public byte[] getStreamBytes(String name) throws IOException
 {
-	for (int i=0; i<size(); ++i) {
-		byte[] bytes = get(i).getStreamBytes(name);
-		if (bytes != null) return bytes;
+	if (name.endsWith(".properties")) {
+		// Concatenate all files together, starting with lowest
+		// priority first.
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		Writer wout = new OutputStreamWriter(bout);
+		for (int i=size()-1; i >= 0; --i) {
+			byte[] bytes = get(i).getStreamBytes(name);
+			if (bytes == null) continue;
+			bout.write(bytes);
+			wout.write("\n# -----------------------------------\n");
+			wout.flush();
+		}
+		return bout.toByteArray();
+	} else {
+		for (int i=0; i<size(); ++i) {
+			byte[] bytes = get(i).getStreamBytes(name);
+			if (bytes != null) return bytes;
+		}
+		return null;	
 	}
-	return null;	
 }
 
-/** Retrieves a composite properties file from the Config. */
-public boolean loadProperties(String name, Properties props)
-throws IOException
-{
-	int nloaded = 0;
-	for (int i=size()-1; i >= 0; --i) {
-		Config sset = get(i);
-		
-		// Load properties file
-		Properties nprops = new Properties();
-		if (sset.loadProperties(name, nprops)) ++nloaded;
-			
-		// Copy to our master properties
-		for (Entry en : nprops.entrySet()) {
-			String key = (String)en.getKey();
-			String val = (String)en.getValue();
-			props.setProperty(key, val);
-		}
-	}
-	return (nloaded > 0);
-}
+///** Retrieves a composite properties file from the Config. */
+//public boolean loadProperties(String name, Properties props)
+//throws IOException
+//{
+//	int nloaded = 0;
+//	for (int i=size()-1; i >= 0; --i) {
+//		Config sset = get(i);
+//		
+//		// Load properties file
+//		Properties nprops = new Properties();
+//		if (sset.loadProperties(name, nprops)) ++nloaded;
+//			
+//		// Copy to our master properties
+//		for (Entry en : nprops.entrySet()) {
+//			String key = (String)en.getKey();
+//			String val = (String)en.getValue();
+//			props.setProperty(key, val);
+//		}
+//	}
+//	return (nloaded > 0);
+//}
 
 
 public static MultiConfig merge(MultiConfig... configs)

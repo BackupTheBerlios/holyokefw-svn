@@ -48,6 +48,7 @@ public void setName(String name)
 public byte[] getStreamBytes(String name) throws IOException
 {
 	InputStream in = openStream(name);
+	if (in == null) return null;
 	byte[] ret = IOUtils.getBytes(in);
 	in.close();
 	return ret;

@@ -31,6 +31,7 @@ public void add(String name, byte[] bytes) throws IOException {
 			name = name + ".crypt";
 			String cipherText = PBECrypt.encrypt(bytes, auth.getPassword());
 			bytes = cipherText.getBytes();
+			((WriteableConfig)sub).add(name, bytes);
 		} catch(Exception e) {
 			IOException ioe = new IOException(e.getMessage());
 			ioe.initCause(e);
