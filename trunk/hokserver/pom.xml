@@ -75,6 +75,12 @@
             <artifactId>postgresql</artifactId>
             <version>8.1-408.jdbc3</version>
             <scope>compile</scope>
-        </dependency>
-  </dependencies>
+	</dependency>
+	<dependency>
+		<groupId>net.sf.jopt-simple</groupId>
+		<artifactId>jopt-simple</artifactId>
+		<version>3.0</version>
+            <scope>compile</scope>
+	</dependency>
+</dependencies>
 </project>
