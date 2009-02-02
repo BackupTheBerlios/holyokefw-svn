@@ -58,13 +58,17 @@ public static void copy(InputStream in, File file) throws IOException
 	out.close();
 }
 
-public static void copy(InputStream in, OutputStream out) throws IOException
+public static void copyNoClose(InputStream in, OutputStream out) throws IOException
 {
 	byte[] buf = new byte[2048];
 	int n;
 	while ((n = in.read(buf)) > 0) {
 		out.write(buf,0,n);
 	}
+}
+public static void copy(InputStream in, OutputStream out) throws IOException
+{
+	copyNoClose(in, out);
 	in.close();
 }
 public static void copy(File fin, File fout) throws IOException
