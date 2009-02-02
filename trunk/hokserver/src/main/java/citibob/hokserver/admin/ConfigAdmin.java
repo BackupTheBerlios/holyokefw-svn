@@ -16,16 +16,24 @@ import citibob.config.WriteablePBEConfig;
 import citibob.config.ZipConfig;
 import citibob.hokserver.ConfigApp;
 import citibob.io.IOUtils;
+import citibob.sql.ConnFactory;
+import citibob.sql.JDBCConnFactory;
 import citibob.sql.RemoveSqlCommentsReader;
+import citibob.sql.RsTasklet;
+import citibob.sql.RsTasklet2;
 import citibob.sql.SqlRun;
 import citibob.sql.UpdTasklet;
 import citibob.sql.pgsql.SqlBool;
 import citibob.sql.pgsql.SqlString;
+import citibob.util.BoolVal;
 import com.Ostermiller.util.RandPass;
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,9 +43,16 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import joptsimple.OptionParser;
 
 /**
@@ -123,15 +138,64 @@ throws IOException, InterruptedException
 	
 	return ret;
 }
-int psql(String database, String sql)
-throws IOException, InterruptedException
+void psql(String database, String sql)
+throws SQLException
 {
-	System.out.println(sql);
-	return exec(psqlCmd + " " + database, sql + "\n\\q\n", System.out);
+	try {
+//		System.out.println(sql);
+		psql(database, sql, null);
+	} catch(SQLException sqle) {
+		throw sqle;
+	} catch(Exception e) {
+		System.exit(-1);	// Can't happen
+	}
 }
+void psql(String database, String sql, RsTasklet tasklet)
+throws Exception
+{
+	// ======= Create custom connection based on database & superuser
+	Properties props = app.props();
+	final Properties p2 = new Properties();
+	final String url;
+
+	Class.forName(props.getProperty("db.driverclass", null));
+	p2.setProperty("user", props.getProperty("admin.db.user", null));
+
+	String pwd = props.getProperty("admin.db.password", null);
+	if (pwd != null) p2.setProperty("password", pwd);
+
+	url = "jdbc:" + props.getProperty("db.drivertype", null) + "://" +
+		props.getProperty("db.host", null) +
+		":" + props.getProperty("db.port", null) +
+		"/" + database;
+	ConnFactory cf = new JDBCConnFactory(url, p2);
+	
+	// Execute....
+	Connection dbb = null;
+	Statement st = null;
+	System.out.println("Opening database " + database);
+	dbb = cf.create();
+	st = dbb.createStatement();
+	try {
+		System.out.println(sql);
+		if (st.execute(sql) && tasklet != null) {
+			ResultSet rs = st.getResultSet();
+			tasklet.run(rs);
+		}
+	} finally {
+		System.out.println("Closing database " + database);
+		dbb.close();
+	}
+}
+//int psql(String database, String sql)
+//throws IOException, InterruptedException
+//{
+//	System.out.println(sql);
+//	return exec(psqlCmd + " " + database, sql + "\n\\q\n", System.out);
+//}
 // ------------------------------------------------------
 void deleteClientKeys(String custName)
-throws IOException, InterruptedException
+//throws IOException, InterruptedException
 {
 	String USERNAME = custName;
 	File SERVERDIR = new File(keyRoot, "server");
@@ -265,93 +329,140 @@ throws IOException, InterruptedException
  * 
  * @param custName
  * @param password
- * @return database name
+ * @return database name (if created), or null (if not created)
  */
-String createClientDb(String dbName, String custName)
-throws IOException, InterruptedException
+String createClientDb(final String dbName, final String custName)
+throws Exception
 {
-	String sql =
+	final BoolVal exists = new BoolVal();
+	
+	String sql = "select datname from pg_database" +
+		" where datname = " + SqlString.sql(dbName);
+	psql("template1", sql, new RsTasklet() {
+	public void run(ResultSet rs) throws SQLException {
+		exists.val = rs.next();
+	}});
+	if (exists.val) return null;
+	
+	// Now create it!
+	sql =
 		" CREATE DATABASE " + dbName + "\n" +
 		"   WITH ENCODING='UTF8'\n" +
 		"        OWNER=" + custName + ";\n";
 	psql("template1", sql);
-	
+
 	sql =
-		" CREATE PROCEDURAL LANGUAGE plpgsql;\n" +
+		" CREATE PROCEDURAL LANGUAGE plpgsql;\n";
+	try {
+		psql(dbName, sql);
+	} catch(SQLException e) {
+		System.out.println(e.getMessage());
+	}
+	sql =
 		" ALTER SCHEMA public OWNER TO " + custName + ";\n";
 	psql(dbName, sql);
-
 	return dbName;
 }
 
-String createCustRole(String custName, String password)
-throws IOException, InterruptedException
+/**
+ * 
+ * @param custName
+ * @param xpassword
+ * @param resetPassword Should we reset the password if the user already exists?
+ * @return The password (if user was created or password reset)
+ * @throws java.lang.Exception
+ */
+String createCustRole(final String custName, String xpassword,
+final boolean resetPassword)
+throws Exception
 {
-	if (password == null) {
-		RandPass rp = new RandPass();
-		password = rp.getPass();
+	// Select a password if none supplied
+	final String password = (xpassword == null ?
+		new RandPass().getPass() :
+		xpassword);
+
+	// See if user exists
+	final BoolVal exists = new BoolVal();
+	String sql = "select usename from pg_user" +
+		" where usename = " + SqlString.sql(custName);
+	psql("template1", sql, new RsTasklet() {
+	public void run(ResultSet rs) throws SQLException {
+		exists.val = rs.next();
+	}});
+	
+	if (exists.val) {
+		// User already exists!
+		if (resetPassword) {
+			// Reset password on pre-existing user
+			sql =
+				" ALTER ROLE " + custName + " password " + SqlString.sql(password);
+			psql("template1", sql);
+			return password;
+		} else return null;
+	} else {
+		sql =
+			" CREATE ROLE " + custName + " LOGIN PASSWORD " +
+			SqlString.sql(password) + "\n" +
+			"    VALID UNTIL 'infinity'\n" +
+			"    CONNECTION LIMIT 100;\n";
+		psql("template1", sql);
+		return password;
 	}
-	
-	String sql =
-		" CREATE ROLE " + custName + " LOGIN PASSWORD " +
-		SqlString.sql(password) + "\n" +
-		"    VALID UNTIL 'infinity'\n" +
-		"    CONNECTION LIMIT 100;\n";
-	psql("template1", sql);
-	
-	
-	// Make sure we changed the password; in case the user was already created.
-	sql =
-		" ALTER ROLE " + custName + " password " + SqlString.sql(password);
-	psql("template1", sql);
-	
-	return password;
 }
 
 boolean createDatabase() {
 	return app.props().getProperty("create.database").equalsIgnoreCase("true");
 }
 
-void w_custs_add(SqlRun str, String custName)
-throws IOException, InterruptedException
+void w_custs_add(SqlRun str, final String custName)
+//throws Exception //SQLException, IOException, InterruptedException
 {
-	// Set up map to do templates in config directory
-	Map<String,Object> map = new TreeMap();
-	map.put("db.user", custName);
+	String sql = "select * from custs where name = " + SqlString.sql(custName);
+	str.execSql(sql, new RsTasklet2() {
+	public void run(SqlRun str, ResultSet rs) throws Exception {
+		if (rs.next()) {
+			System.out.println("Customer " + custName + " already exists, not adding again!");
+			return;		// Customer already exists!
+		}
+		
+		// Set up map to do templates in config directory
+		Map<String,Object> map = new TreeMap();
+		map.put("db.user", custName);
 
-	// Create customer role in database server
-	String password = "";
-	if (createDatabase()) {
-		System.out.println("===== Creating PostgreSQL user " + custName);
-		password = createCustRole(custName, null);
-	}
-	map.put("db.password", password);
-	
-	// Create config directory
-	// ... for custs
-	String tableName = "custs";
-	File custsDir = new File(configRoot, tableName);
-	System.out.println("===== Creating configuration " + custsDir);
-	File inDir = new File(app.protoDir(), tableName);
-//	File inDir = new File(custsDir, "_proto");
-	File outDir = new File(custsDir, custName);
-//	if (!outDir.exists()) {
-		DirConfig inConfig = new DirConfig(inDir);
-		DirConfig outConfig = new DirConfig(outDir);
-		ConfigUtils.copy(inConfig, outConfig, map);
-//	}
-	
-	// Create keys (and symlink them into config too)
-	System.out.println("===== Creating keys for " + custName);
-	makeClientKeys(custName, outDir);
-	
-	// Set up record in configuration database
-	System.out.println("===== Setting up config database for " + custName);
-	str.execSql("select w_custs_add(" + SqlString.sql(custName) + ");");
-	
+		// Create customer role in database server
+		String password = "";
+		boolean makeConfig = true;
+		if (createDatabase()) {
+			System.out.println("===== Creating PostgreSQL user " + custName);
+			password = createCustRole(custName, null, true);
+		}
+		map.put("db.password", password);
+
+		// Create config directory
+		// ... for custs
+		String tableName = "custs";
+		File custsDir = new File(configRoot, tableName);
+		System.out.println("===== Creating configuration " + custsDir);
+		File inDir = new File(app.protoDir(), tableName);
+	//	File inDir = new File(custsDir, "_proto");
+		File outDir = new File(custsDir, custName);
+	//	if (!outDir.exists()) {
+			DirConfig inConfig = new DirConfig(inDir);
+			DirConfig outConfig = new DirConfig(outDir);
+			ConfigUtils.copy(inConfig, outConfig, map);
+	//	}
+
+		// Create keys (and symlink them into config too)
+		System.out.println("===== Creating keys for " + custName);
+		makeClientKeys(custName, outDir);
+
+		// Set up record in configuration database
+		System.out.println("===== Setting up config database for " + custName);
+		str.execSql("select w_custs_add(" + SqlString.sql(custName) + ");");
+	}});
 }
 void w_custs_del(SqlRun str, String custName)
-throws IOException, InterruptedException
+throws SQLException //, IOException, InterruptedException
 {
 	// Create customer role in database server
 	psql("template1", "drop user " + custName + ";");
@@ -372,8 +483,12 @@ throws IOException, InterruptedException
 }
 
 void w_apps_addcust(SqlRun str, String appName, String custName, String version)
-throws IOException, InterruptedException
+throws Exception //SQLException, IOException //, InterruptedException
 {
+	// Make sure we have the customer already!
+	w_custs_add(str, custName);
+	str.flush();
+	
 	// Set up map to do templates in config directory
 	Map<String,Object> map = new TreeMap();
 	String dbName = app_custs_dbname(appName, custName);
@@ -405,7 +520,7 @@ throws IOException, InterruptedException
 	
 }
 void w_apps_delcust(SqlRun str, String appName, String custName)
-throws IOException, InterruptedException
+throws SQLException //IOException, InterruptedException
 {
 	// Delete the config directory
 	String dbName = custName + "_" + appName;
@@ -454,14 +569,14 @@ throws IOException
  * Create the database, no schema yet
  */
 public void initDatabase()
-throws IOException, InterruptedException
+throws Exception //SQLException //IOException, InterruptedException
 {
 	String dbDatabase = app.props().getProperty("db.database");
 	String dbUser = app.props().getProperty("db.user");
-	String password = app.props().getProperty("password");
+	String password = app.props().getProperty("db.password");
 	
 	// Create the user and database if not already created.
-	createCustRole(dbUser, password);
+	createCustRole(dbUser, password, false);
 	createClientDb(dbDatabase, dbUser);
 }
 /** Creates the server's public/private keypair */
@@ -573,6 +688,45 @@ throws Exception
 	}});
 }
 
+
+static void dumpLauncher(ConfigApp app, File launcherJar)
+throws FileNotFoundException, IOException
+{
+	ZipInputStream zin = null;
+	ZipInputStream zin2 = null;
+	try {
+		zin = new ZipInputStream(
+			new BufferedInputStream(
+			new FileInputStream(launcherJar)));
+		
+		// Scan to "config.zips"
+		ZipEntry ze;
+		for (;;) {
+			ze = zin.getNextEntry();
+			if (ze == null) return;
+			if (ze.getName().equals("config.zips")) break;
+		}
+		
+		// We found config.zips.  Now open it up...
+		zin2 = new ZipInputStream(zin);
+		ZipEntry ze2;
+		for (;;) {
+			ze2 = zin2.getNextEntry();
+			if (ze2 == null) break;
+			System.out.println("=============== " + ze2.getName());
+			if (ze2.getName().endsWith(".jks")) {
+				System.out.println("<binary key file>");
+			} else {
+				IOUtils.copyNoClose(zin2, System.out);
+				System.out.println("\n");
+			}
+		}
+	} finally {
+		if (zin != null) zin.close();
+		if (zin2 != null) zin2.close();
+	}
+}
+
 /**
  * 
  * @param version
@@ -586,7 +740,10 @@ ConfigAndLaunchInfo info, String spassword,
 File outJar)
 throws Exception
 {
-	File inJar = new File(app.props().getProperty("launcher.jar"));
+	// Fall back on command-line launcher.jar if it's not specified
+	// in our application properties
+	File inJar = new File(app.props().getProperty("launcher.jar",
+		System.getProperty("launcher.jar")));
 	File tmpDir = new File(app.appDir(), "tmp");
 	IOUtils.deleteDir(tmpDir);
 	tmpDir.mkdirs();
@@ -657,8 +814,8 @@ throws Exception
 	
 	// add/del
 	String sadd = args[0].toLowerCase();
-	if (sadd.equalsIgnoreCase("makelauncher")) {
-		System.out.println("Usage: ConfigAdmin makelauncher <app-name> <cust-name> <launcher-jar-file> [password]");
+	if (sadd.equalsIgnoreCase("mklauncher")) {
+		System.out.println("Usage: ConfigAdmin mklauncher <app-name> <cust-name> <launcher-jar-file> [password]");
 		String appName = args[1];
 		String custName = args[2];
 		File outJar = new File(args[3]);
@@ -667,7 +824,23 @@ throws Exception
 		this.makeLauncher(str, appName, custName, password, outJar);
 		
 		return;
+	} else if (sadd.equalsIgnoreCase("init")) {
+		initServer(str);
+		return;
+	} else if (sadd.equalsIgnoreCase("dump")) {
+		String jarFile = args[1];
+		System.out.println("Usage: ConfigAdmin dump <launcher-jar-file>");
+		
+		dumpLauncher(app, new File(jarFile));
+		return;
+	} else if (sadd.equalsIgnoreCase("sync")) {
+		ConfigDb.uploadAllConfigs(str, app.configRoot(), null);
+		return;
 	}
+	
+	
+	
+	
 	if (sadd.equalsIgnoreCase("add")) add = true;
 	else if (sadd.equalsIgnoreCase("del")) add = false;
 	else throw new IllegalArgumentException("args[0] must be \"add\" or \"del\"");

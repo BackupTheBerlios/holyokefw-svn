@@ -36,15 +36,15 @@ DECLARE
 	rc REFCURSOR;
 BEGIN
 -- Sample of creating a small database and then querying it:
--- select w_apps_del(''oa'');
--- select w_apps_add(''oa'');
--- select w_apps_addvers(''oa'', ''1.8'', ''http://oa.org/1.8'', false);
--- select w_apps_addvers(''oa'', ''1.9'', ''http://oa.org/1.9'', true);
--- select w_custs_add(''droxbury'');
--- select w_apps_addcust(''oa'', ''droxbury'', ''1.8'');
--- select w_users_add(''oa'', ''droxbury'', ''citibob'', ''password'');
+-- select w_apps_del("oa");
+-- select w_apps_add("oa");
+-- select w_apps_addvers("oa", "1.8", "http://oa.org/1.8", false);
+-- select w_apps_addvers("oa", "1.9", "http://oa.org/1.9", true);
+-- select w_custs_add("droxbury");
+-- select w_apps_addcust("oa", "droxbury", "1.8");
+-- select w_users_add("oa", "droxbury", "citibob", "password");
 --
--- select r_configs_get(''rs1'', ''oa'',''droxbury'',''citibob'',md5(''password''));
+-- select r_configs_get("rs1", "oa","droxbury","citibob",md5("password"));
 -- fetch all in rs1;
 
 rc=_rsname;
@@ -118,7 +118,7 @@ BEGIN
 	_version);
 	return true;
     EXCEPTION WHEN unique_violation THEN
-	update app_custs set "version"=_version
+	update app_custs set "version"=_version,config=null,configgmt=null
 	where appid = (select appid from apps where name = _appname)
 	and custid = (select custid from custs where name = _custname);
 	return false;
@@ -144,7 +144,7 @@ BEGIN
 	_version, _url);
 	ret = true;
     EXCEPTION WHEN unique_violation THEN
-	update app_vers set url=_url
+	update app_vers set url=_url,config=null,configgmt=null
 	where appid = (select appid from apps where name = _appname)
 	and "version" = _version;
 	ret = false;
@@ -280,7 +280,7 @@ BEGIN
 	_name, md5(_password));
 	return true;
     EXCEPTION WHEN unique_violation THEN
-	update users set password_md5 = md5(_password)
+	update users set password_md5 = md5(_password),config=null,configgmt=null
 	where appid = (select appid from apps where name = _appname)
 	and custid = (select custid from custs where name = _custname);
             return false;
@@ -506,7 +506,7 @@ ALTER TABLE ONLY users
 
 -- Function: r_configs_get(character varying, character varying, character varying, character varying, character varying)
 
-DROP FUNCTION r_configs_get(character varying, character varying, character varying);
+--DROP FUNCTION r_configs_get(character varying, character varying, character varying);
 
 CREATE OR REPLACE FUNCTION r_configs_get(_rsname character varying, _appname character varying, _custname character varying)
   RETURNS refcursor AS
@@ -515,15 +515,15 @@ DECLARE
 	rc REFCURSOR;
 BEGIN
 -- Sample of creating a small database and then querying it:
--- select w_apps_del('oa');
--- select w_apps_add('oa');
--- select w_apps_addvers('oa', '1.8', 'http://oa.org/1.8', false);
--- select w_apps_addvers('oa', '1.9', 'http://oa.org/1.9', true);
--- select w_custs_add('droxbury');
--- select w_apps_addcust('oa', 'droxbury', '1.8');
--- select w_users_add('oa', 'droxbury', 'citibob', 'password');
+-- select w_apps_del("oa");
+-- select w_apps_add("oa");
+-- select w_apps_addvers("oa", "1.8", "http://oa.org/1.8", false);
+-- select w_apps_addvers("oa", "1.9", "http://oa.org/1.9", true);
+-- select w_custs_add("droxbury");
+-- select w_apps_addcust("oa", "droxbury", "1.8");
+-- select w_users_add("oa", "droxbury", "citibob", "password");
 --
--- select r_configs_get('rs1', 'oa','droxbury');
+-- select r_configs_get("rs1", "oa","droxbury");
 -- fetch all in rs1;
 
 rc=_rsname;

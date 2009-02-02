@@ -28,7 +28,9 @@ public abstract class DirNamer
 	public File getDir(ConfigApp app, String... keys)
 	{
 		File parentDir = new File(app.configRoot(), getTableName());
-		return new File(parentDir, getDirName(keys));
+		File ret = new File(parentDir, getDirName(keys));
+		System.out.println("DirNamer.getDir() returning " + ret);
+		return ret;
 	}
 	
 //	public DirNamer(ConfigApp app) { this.app = app; }

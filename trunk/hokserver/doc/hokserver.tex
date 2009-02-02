@@ -1,0 +1,249 @@
+\documentclass[11pt]{article}
+
+\setlength{\topmargin}{-.5in}
+\setlength{\textheight}{9in}    % 9 inch page
+\setlength{\textwidth}{5.5in}     % 5 3/4 inch line 
+\setlength{\oddsidemargin}{36pt}  % 1/4 inch (yields 1 1/4 inch left margin)
+\setlength{\evensidemargin}{36pt} % 1/4 inch
+
+\title{Installation and Use of Holyoke Server (hokserver)}
+
+\author{Robert Fischer}
+\usepackage{float,graphics,url,times,listings}
+
+%\define{\emph{OffstageArts}}{\emph{OffstageArts}}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+The Holyoke Framework (holyokefw) is a library used to build two-tier
+client-server application that operate over the Internet.  The server
+segment of the application is a simple PostgreSQL database, sitting
+behind an stunnel SSL tunnel.  The Holyoke Server package (hokserver)
+is used to administer applications and users to be served by a particular Holyoke Server instance.
+
+\section{Configurations}
+
+One of the goals of the server is to build configurations for
+supported application programs.  A configuration is simply a directory
+tree of files that is made accessible to a program at runtime ---
+either by embedding the files in a launcher program, or by
+transporting them across the network by a configuration server.
+
+Applications rely on not just one configuration, but rather a series
+of configurations in decreasing priority order.  Files found in a
+higher-priority configuration mask files in lower-priority
+configurations.  In addition to a number of configurations that might
+be loaded at runtime, each application has built-in a \emph{default
+configuration}, which provides paramters not provided by any other
+configurations.
+
+In most cases, higher-priority configuration files mask lower-priority files.  However, Java properties files (ending in {\tt .properties}) are somewhat special.  In that case, the Java properties files are concatenated together, with the lowest-priority file first.  The effect is that property settings found in higher-priority properties files override proprety settings in lower-priority properties files.
+
+Holyoke Server allows configurations to be set at many different
+``levels,'' which allows the system administrator flexibility and
+efficiency in determining the final configuration for an application.
+
+For example, Holyoke Server allows configurations on a per-application and per-user basis.  It might set many basic defaults in the per-application configuration file --- including the database server to use (which will presumeably be the computer on which Holyoke Server is running).  Each per-customer configuration does not need to repeat all these parameters; it just needs to set up a database username and password.
+
+More formally, Holyoke Server provides for the following configurations (lowest priority first):
+\begin{description}
+ \item{\bf apps} Base configuration for each supported application (eg, offstagearts); sets things that are the same for all users.
+ \item{\bf app\_vers} Special configuration for a particular version of each application (eg, offstagearts v1.9).  In many cases, this will be blank.
+ \item{\bf custs} Per-customer configuration.  A customer corresponds to one database user; thus, per-customer configuration will normally include a database username and password, as well as any SSL keys.
+ \item{\bf app\_custs} Configuration for a particular customer using a particular application.  At minimum, it contains the database corresponding to this usage.
+ \item{\bf users} Configuration for each \emph{user} within a customer.  A user is a username and password that validates the dynamic configuration server.  This will usually be blank.
+\end{description}
+
+\subsection{Prerequisites}
+
+In order to run Holyoke Server, you need the following installed:
+ \begin{enumerate}
+ \item PostgreSQL version 8
+ \item Java JDK version 1.5 or higher.  NOTE: Use the Sun JDK; the free software JDKs are incompatible and will not work.
+ \item Maven (if you wish to compile).  Try on Fedora: {\tt yum install maven2}
+ \end{enumerate}
+
+\section{Downloading and Compiling}
+
+If you already have a {\tt hokserver.tar.gz} file, you may skip this section.  Otherwise:
+
+\begin{enumerate}
+
+\item {\tt mkdir \$HOME/.m2}
+
+\item Create {\tt $HOME/.m2/settings.xml} as follows:
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <localRepository/>
+    <profiles>
+        <profile>
+            <id>defaultProfile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <repositories>
+	      <repository>
+	          <id>offstagearts-releases</id>
+		  <name>OffstageArts Releases</name>
+		  <url>http://citibob.net/mvnrepositories/releases</url>
+		  <layout>default</layout>
+	      </repository>
+	      <repository>
+	          <id>offstagearts.org 3d Party</id>
+		  <name>OffstageArts-related Third-Party artifacts</name>
+		  <url>http://citibob.net/mvnrepositories/thirdparty</url>
+		  <layout>default</layout>
+	      </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+</settings>
+\end{verbatim}
+
+\item Check out the source code for Holyoke Server:
+\begin{verbatim}
+svn co http://svn.berlios.de/svnroot/repos/holyokefw/trunk/hokserver
+\end{verbatim}
+
+\item Compile: {\tt mvn install -P netbeans-public}
+
+\item Create {\tt target/hokserver.tar.gz} for the next step:
+\begin{verbatim}
+sh ./mkdist.sh
+\end{verbatim}
+
+
+
+\section{Setting up Holyoke Server}
+
+\subsection{Unpack}
+
+Untar the distribution file {\tt hokserver.tar.gz} into your favorit place (eg: into {\tt /opt}).  You might wish to make soft links of {\tt /opt/hokserver/bin/*} into {\tt /usr/local/bin}.
+
+\subsection{Configure}
+
+Holyoke Server needs a directory to write application and user information into.  By default, these files will go in {\tt \$HOME/.hokserver}.  If you wish them to go some other place, you need to set the environment variable {\tt HOKSERVER\_HOME}.  Whatever you choose, the rest of this document will assume that {\tt $HOKSERVER\_HOME} expands to that directory.  Now issue (modifying as needed):
+ \begin{verbatim}
+cd /opt/hokserver
+mkdir -p $HOKSERVER_HOME
+cp -r baseconfig $HOKSERVER_HOME/config
+ \end{verbatim}
+
+Now edit the file {\tt HOKSERVER\_HOME/config/app.properties}.  Holyoke Server creates a database in which it keeps track of its users and applications.  That database should be specified by the properties \emph{db.database}, \emph{db.user} and \emph{db.password}.  Note that neither the database nor the user needs to be manually created; however, if you do create them manually, then Holyoke Server will use those.
+
+Holyoke Server also needs to create new databases, for which it needs superuser priviledges.  The properties \emph{admin.db.user} and \emph{admin.db.password} should indicate the super user account on the database server.
+
+\subsection{Intialize}
+
+Run the command {\tt bin/hsadmin init}.  This will create the Holyoke Server database and various files and directories inside {\tt HOKSERVER\_HOME}.
+
+\subsection{Add an Application}
+
+You can now add an application that will be administered by Holyoke Server. For example (all on one line):
+ \begin{verbatim}
+bin/hsadmin add appvers offstagearts 1.9 \
+    http://offstagearts.org/releases/offstagearts/\
+        offstagearts_launch-1.9.jnlp \
+    true
+ \end{verbatim}
+
+Once an application is added, you need to add an application configuration.  In this example, {\tt OFFSTAGEARTS\_SRC} refers to the root directory of the \emph{OffstageArts} project, available via svn.
+\begin{verbatim}
+mkdir -p $HOKSERVER_HOME/data/configs/apps
+cp -r $OFFSTAGEARTS_SRC/baseconfig \
+    $HOKSERVER_HOKE/data/configs/apps/offstagearts
+\end{verbatim}
+
+Alternatively, you can use the following commands if you do not have \emph{OffstageArts} source tree already:
+
+\begin{verbatim}
+mkdir -p $HOKSERVER_HOME/data/configs/apps
+svn export \
+    http://svn.berlios.de/svnroot/repos/offstagearts/\
+        trunk/offstagearts/baseconfig \
+    $HOKSERVER_HOME/data/configs/apps/offstagearts
+\end{verbatim}
+
+You may now edit the files just copied, as appropriate.
+
+\subsection{Add a Customer}
+
+You are now ready to add a customer to the application:
+\begin{verbatim}
+bin/hsadmin add appcust offstagearts ballettheatre 1.9
+\end{verbatim}
+
+\subsection{Add Users (optional)}
+
+You may also add users to the app/customer combination, if you are using the dynamic configuration server:
+\begin{verbatim}
+bin/hsadmin add user offstagearts ballettheatre bob password
+\end{verbatim}
+
+\section{Editing Configurations}
+
+Once configurations have been added to the Holyoke Server using the above methods, one might wish to customize the configurations that have been generated.  Configurations are all found in the various subfolders of {\tt \$HOKSERVER\_HOME/data/configs}, where the subfolder name corresponds to the database table name (\emph{apps, app\_vers, custs, app\_custs, users}).
+
+The administrator may create new directories --- and new files within
+those directories --- in order to add configurations.  For example:
+ \begin{itemize}
+ \item Configuration for \emph{OffstageArts} version 1.9 only: {\tt \$HOKSERVER\_HOME/data/app\_vers/offstagearts\_1.9}
+ \item Configuration for \emph{OffstageArts} in general: {\tt \$HOKSERVER\_HOME/data/apps/offstagearts}
+ \end{itemize}
+
+\section{Making a Launcher}
+
+It is now easy to make a custom launcher for your customers:
+\begin{verbatim}
+bin/hsadmin mklauncher offstagearts ballettheatre my-launcher.jar password
+\end{verbatim}
+
+The password is optional.  If you wish to see the configuration that is created inside the launcher, you can do:
+\begin{verbatim}
+bin/hsadmin dump my-launcher.jar
+\end{verbatim}
+
+It is preferable that launchers be debugged without password.
+
+\section{Running the SSL Server}
+
+Now that applications and users have been created on the server, one
+would like to connect applications to it.  In the case that some
+applications look to connect with {\tt db.ssl = true}, then the SSL
+tunnel needs to be running.  There are three ways to do this: the Java SSL tunnel, the prototype stunnel, and the final stunnel
+
+\subsection{Java SSL Tunnel}
+
+On can launch the Java SSL tunnel using {\tt bin/hsssl}.  This is for test purposes only; however, once launched, all access to the local database server should work, using the cryptographic keys that were determined while setting up new customers.
+
+\subsection{Prototype SSL Tunnel}
+
+The command {\tt ./runstunnel.sh} sets up a prototype {\tt stunnel.conf} file and runs stunnel on it.  This should work as well; however, it is not set up with the operating system's services.
+
+\subsection{Final Stunnel}
+
+With the prototype {\tt stunnel.conf} file built, a system administrator should be able to use that to set up a permanent system-wide stunnel.  Details depend on the operating system.
+
+
+\section{Building a Dynamic Configuration Server}
+
+A dynamic configuration server can be easily built, using the stored procedure: \emph{r\_configs\_get(rsname, appname, custname, username, password\_md5)}.  For example:
+\begin{verbatim}
+select r_configs_get('rs1', 'offstagearts','ballettheatre',
+    'bob',md5('password'));
+fetch all in rs1;
+\end{verbatim}
+
+If the application/customer/user/password combination is correct, then this SQL will return one or two rows of data; the first row should be used.  If the combination is not correct, then nothing will be returned.
+
+The following columns (if non-null) should be concatenated to produce a configuration output stream to be sent to the client: \emph{users\_config, app\_custs\_config, custs\_config, app\_vers\_config, apps\_config}.  This ordering is from highest priority configuration to lowest priority.  Files and properties in the higher priority configurations override items in the lower priority configurations.
+
+\end{document}
+

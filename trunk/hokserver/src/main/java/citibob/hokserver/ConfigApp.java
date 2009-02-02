@@ -25,15 +25,24 @@ public class ConfigApp extends App
 
 /** Prototype configurations in <protoDir>/<tableName> */
 protected File appDir;
-public File protoDir() { return new File(appDir, "data/protos"); }
+public File protoDir() { return new File(appDir, "protos"); }
 public File configRoot() { return new File(appDir, "data/configs"); }
 public File keyRoot() { return new File(appDir, "data/keys"); }
 public File appDir() { return appDir; }
 
 public ConfigApp()
 throws Exception
-{	
-	this(new File(System.getProperty("user.home"), ".hokserver"));
+{
+	// Check environment variable
+	File hsHome;
+	String env = System.getenv("HOKSERVER_HOME");
+	if (env == null) {
+		hsHome = new File(System.getProperty("user.home"), ".hokserver");
+	} else {
+		hsHome = new File(env);
+	}
+	
+	init(hsHome);
 }
 
 /**
@@ -41,6 +50,10 @@ throws Exception
  * @throws java.io.IOException
  */
 public ConfigApp(File appDir) throws Exception
+{
+	init(appDir);
+}
+protected void init(File appDir) throws Exception
 {
 	this.name = "hokserver";
 	this.appDir = appDir;

@@ -99,6 +99,7 @@ final DirNamer dn)
 	if (files == null) return;		// Nothing for this level
 	for (File file : files) {
 		if (!file.isDirectory()) continue;	// ignore non-directories
+		System.out.println("Uploading config " + file);
 		uploadConfig(str, file, password,
 			dn.getTableName(), dn.getWhereClause(file.getName()));
 	}
@@ -108,14 +109,14 @@ public static void uploadAllConfigs(SqlRun str,
 final File configRoot,
 final char[] password)
 {
-//	DirNamer[] dns = new DirNamer[] {
-//		new apps_DirNamer(),
-//		new custs_DirNamer(),
-//		new app_vers_DirNamer(),
-//		new app_custs_DirNamer()
-//	};
-//	for (DirNamer dn : dns)
-//		uploadConfigs(str, configRoot, password, dn);
+	DirNamer[] dns = new DirNamer[] {
+		new DirNamer.apps(),
+		new DirNamer.custs(),
+		new DirNamer.app_vers(),
+		new DirNamer.app_custs()
+	};
+	for (DirNamer dn : dns)
+		uploadConfigs(str, configRoot, password, dn);
 }
 
 

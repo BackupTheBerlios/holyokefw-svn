@@ -1,0 +1,7 @@
+#!/bin/csh -f
+#
+cmd=`readlink -f $0`
+dir=$cmd:h/..
+
+java -cp $dir/target/executable-netbeans.dir/hokserver-*.jar citibob.hokserver.sslrelay.SSLRelayServer
+
