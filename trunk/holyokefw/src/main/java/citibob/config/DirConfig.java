@@ -42,8 +42,11 @@ public InputStream openStream(String name)
 throws IOException
 {
 	File f = new File(root, name);
-	if (!f.exists()) return null;
-	return new FileInputStream(f);
+	InputStream ret;
+	if (!f.exists()) ret = null;
+	else ret = new FileInputStream(f);
+System.out.println("DirConfig.openStream(" + name + ") = " + ret);
+	return ret;
 }
 
 public Iterator<String> listStreams()
