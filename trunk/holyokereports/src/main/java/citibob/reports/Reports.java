@@ -26,21 +26,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.reports;
 
-import citibob.app.*;
-import citibob.gui.RobustOpen;
-import citibob.reports.*;
-import citibob.swing.table.*;
-import javax.swing.*;
-import java.io.*;
-import java.util.*;
-import citibob.text.*;
-import com.Ostermiller.util.*;
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.data.*;
-import net.sf.jasperreports.engine.util.*;
-import citibob.sql.*;
-import java.sql.*;
+import citibob.io.RobustOpen;
+import citibob.sql.RSTableModel;
+import citibob.swing.table.JTypeTableModel;
+import citibob.swing.table.StringTableModel;
+import citibob.text.SFormat;
+import com.Ostermiller.util.CSVPrinter;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRResultSetDataSource;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
+
 
 public abstract class Reports {
 
@@ -248,7 +267,7 @@ public File viewPdf(File file) throws Exception
 			"The report has no pages.");
 		return null;
 	} else {
-		citibob.gui.RobustOpen.open(file);
+		RobustOpen.open(file);
 //		citibob.gui.BareBonesPdf.view(file);
 		return file;
 	}
