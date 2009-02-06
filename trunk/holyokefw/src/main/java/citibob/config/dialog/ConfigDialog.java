@@ -95,6 +95,7 @@ public class ConfigDialog extends javax.swing.JDialog
 		
 		File configDir = (File)configs.getValue();
 		String name = (String)configs.getValue("Name");
+System.out.println("ConfigDialog: configDir = " + configDir);
 		Config config = new DirConfig(configDir, name);
 		return config;
 	}
