@@ -45,7 +45,7 @@ throws IOException
 	InputStream ret;
 	if (!f.exists()) ret = null;
 	else ret = new FileInputStream(f);
-System.out.println("DirConfig.openStream(" + name + ") = " + ret);
+System.out.println("DirConfig.openStream(" + f + ") = " + ret + "(root = " + root + ")");
 	return ret;
 }
 
