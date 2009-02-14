@@ -3,5 +3,6 @@ mkdir target/hokserver
 cp ../hoklaunch/target/hoklaunch-*.jar target/hokserver/hoklaunch.jar
 
 rm `find target/hoklaunch -name '*~'`
+\rm -rf `find target/hoklaunch -name .svn`
 
 cd target;tar cvfz hokserver.tar.gz hokserver
