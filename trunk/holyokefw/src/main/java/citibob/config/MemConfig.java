@@ -34,9 +34,14 @@ public MemConfig() {
 /** Stores a StreamSet in memory... */
 public InputStream openStream(String name) throws IOException
 {
+	InputStream ret;
 	byte[] bytes = streams.get(name);
-	if (bytes == null) return null;
-	return new ByteArrayInputStream(bytes);
+	if (bytes == null) ret = null;
+	else {
+		ret = new ByteArrayInputStream(bytes);
+	}
+System.out.println("MemConfig.openStream(" + name + ") = " + ret);
+	return ret;
 }
 
 public byte[] getStreamBytes(String name) throws IOException

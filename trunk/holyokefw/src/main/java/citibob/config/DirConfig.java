@@ -8,6 +8,7 @@ package citibob.config;
 import citibob.io.IOUtils;
 import citibob.io.RecursiveDirIterator;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,7 +53,7 @@ System.out.println("DirConfig.openStream(" + f + ") = " + ret + "(root = " + roo
 public Iterator<String> listStreams()
 {
 	return new IOUtils.RelativeIterator(root,
-		new RecursiveDirIterator(root, null));
+		new RecursiveDirIterator(root, new NoTildeFilter()));
 }
 
 public void add(String name, byte[] bytes)
@@ -64,6 +65,12 @@ throws IOException
 	out.write(bytes);
 	out.close();
 }
+
+static class NoTildeFilter implements FileFilter {
+public boolean accept(File pathname) {
+	if (pathname.getName().endsWith("~")) return false;
+	return true;
+}}
 
 
 }

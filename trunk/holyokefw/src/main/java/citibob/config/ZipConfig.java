@@ -44,7 +44,7 @@ throws IOException
 		if (ze == null) break;
         int len;
         while ((len = zin.read(buf)) > 0) bout.write(buf, 0, len);
-//System.out.println("Read entry " + ze.getName() + " of size " + bout.size());
+System.out.println("ZipConfg read entry " + ze.getName() + " of size " + bout.size());
 		ret.add(ze.getName(), bout.toByteArray());
 		bout.reset();
 	}

@@ -62,9 +62,14 @@ throws ClassNotFoundException, UnknownHostException, MalformedURLException, IOEx
 	SSLRelayClient.Params prm = new SSLRelayClient.Params();
 		String dbUserName = props.getProperty("db.user", null);
 		
-		prm.storeBytes = config.getStreamBytes(dbUserName + "-store.jks");
-		prm.trustBytes = config.getStreamBytes(dbUserName + "-trust.jks");
+//		prm.storeBytes = config.getStreamBytes(dbUserName + "-store.jks");
+//		prm.trustBytes = config.getStreamBytes(dbUserName + "-trust.jks");
+		prm.storeBytes = config.getStreamBytes("client-store.jks");
+		prm.trustBytes = config.getStreamBytes("client-trust.jks");
 
+System.out.println("storeBytes = " + prm.storeBytes);
+System.out.println("trustBytes = " + prm.trustBytes);
+		
 		prm.dest = InetAddress.getByName(props.getProperty("db.host", null));
 		prm.destPort = Integer.parseInt(props.getProperty("db.port", null));
 		

@@ -43,24 +43,36 @@ public PBEConfig(Config sub, PBEAuth auth)
 
 public InputStream openStream(String name) throws IOException
 {
+	InputStream ret;
 	byte[] bytes = getStreamBytes(name);
-	if (bytes == null) return null;
-	return new ByteArrayInputStream(bytes);
+	if (bytes == null) ret = null;
+	else {
+		ret = new ByteArrayInputStream(bytes);
+	}
+System.out.println("PBEConfig.openStream(" + name + ") = " + ret);
+	return ret;
 }
 
 public byte[] getStreamBytes(String name) throws IOException
 {
 	// First search for unencrypted version of resource
+System.out.println("PBEConfig trying " + name);
 	InputStream iin = sub.openStream(name);
-	if (iin != null) return IOUtils.getBytes(iin);
+	if (iin != null) {
+		byte[] bytes = IOUtils.getBytes(iin);
+//System.out.println("read out\n"" + new String(bytes) + "\"");
+		return bytes;
+	}
 	
 	// Unencrypted version not found; try encrypted version
+System.out.println("PBEConfig trying " + name + ".crypt");
 	iin = sub.openStream(name + ".crypt");
 	if (iin == null) return null;
 	
 	// ========== Encrypted version found, decrypt it now
 	
 	// Read the encrypted version
+System.out.println("PBEConfig succeeded with " + name + ".crypt");
 	String cipherText = new String(IOUtils.getBytes(iin));
 	byte[] clearBytes = PBECrypt.decrypt(cipherText, auth);
 	if (clearBytes == null) return null;

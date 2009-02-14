@@ -54,7 +54,9 @@ public int size() { return configs.size(); }
 public InputStream openStream(String name) throws IOException
 {
 	if (name.endsWith(".properties")) {
-		return new ByteArrayInputStream(getStreamBytes(name));
+		byte[] bytes = getStreamBytes(name);
+		if (bytes == null) return null;
+		return new ByteArrayInputStream(bytes);
 	} else {
 		for (int i=0; i<size(); ++i) {
 			InputStream in = get(i).openStream(name);
@@ -70,16 +72,19 @@ public byte[] getStreamBytes(String name) throws IOException
 	if (name.endsWith(".properties")) {
 		// Concatenate all files together, starting with lowest
 		// priority first.
+		int nfound = 0;
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		Writer wout = new OutputStreamWriter(bout);
 		for (int i=size()-1; i >= 0; --i) {
-			byte[] bytes = get(i).getStreamBytes(name);
+			Config config = get(i);
+			wout.write("\n# ------ " + config.getName() + "\n");
+			byte[] bytes = config.getStreamBytes(name);
 			if (bytes == null) continue;
 			bout.write(bytes);
-			wout.write("\n# -----------------------------------\n");
 			wout.flush();
+			++ nfound;
 		}
-		return bout.toByteArray();
+		return (nfound == 0 ? null : bout.toByteArray());
 	} else {
 		for (int i=0; i<size(); ++i) {
 			byte[] bytes = get(i).getStreamBytes(name);
