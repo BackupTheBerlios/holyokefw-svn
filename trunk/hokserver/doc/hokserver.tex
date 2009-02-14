@@ -75,7 +75,7 @@ If you already have a {\tt hokserver.tar.gz} file, you may skip this section.  O
 
 \item {\tt mkdir \$HOME/.m2}
 
-\item Create {\tt $HOME/.m2/settings.xml} as follows:
+\item Create {\tt \$HOME/.m2/settings.xml} as follows:
 \begin{verbatim}
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
@@ -119,6 +119,7 @@ svn co http://svn.berlios.de/svnroot/repos/holyokefw/trunk/hokserver
 sh ./mkdist.sh
 \end{verbatim}
 
+\end{enumerate}
 
 
 \section{Setting up Holyoke Server}
@@ -129,7 +130,7 @@ Untar the distribution file {\tt hokserver.tar.gz} into your favorit place (eg: 
 
 \subsection{Configure}
 
-Holyoke Server needs a directory to write application and user information into.  By default, these files will go in {\tt \$HOME/.hokserver}.  If you wish them to go some other place, you need to set the environment variable {\tt HOKSERVER\_HOME}.  Whatever you choose, the rest of this document will assume that {\tt $HOKSERVER\_HOME} expands to that directory.  Now issue (modifying as needed):
+Holyoke Server needs a directory to write application and user information into.  By default, these files will go in {\tt \$HOME/.hokserver}.  If you wish them to go some other place, you need to set the environment variable {\tt HOKSERVER\_HOME}.  Whatever you choose, the rest of this document will assume that {\tt \$HOKSERVER\_HOME} expands to that directory.  Now issue (modifying as needed):
  \begin{verbatim}
 cd /opt/hokserver
 mkdir -p $HOKSERVER_HOME

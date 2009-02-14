@@ -313,14 +313,14 @@ throws IOException, InterruptedException
 	// ========================================================
 	// Symlink into config dir
 	if (configDir != null) {
-		File store = new File(configDir, CLIENTSTORE.getName());
+		File store = new File(configDir, "client-store.jks");
 		store.delete();
-		cmd = "ln -s " + CLIENTSTORE + " " + configDir;
+		cmd = "ln -s " + CLIENTSTORE + " " + store.getPath();
 		exec(cmd, null, null);
 		
-		File trust = new File(configDir, CLIENTTRUST.getName());
+		File trust = new File(configDir, "client-trust.jks");
 		trust.delete();
-		cmd = "ln -s " + CLIENTTRUST + " " + configDir;
+		cmd = "ln -s " + CLIENTTRUST + " " + trust.getPath(); //configDir + "/client-trust.jks";
 		exec(cmd, null, null);
 	}
 }
