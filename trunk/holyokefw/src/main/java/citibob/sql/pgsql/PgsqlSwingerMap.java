@@ -29,7 +29,6 @@ package citibob.sql.pgsql;
 
 import citibob.swingers.JavaSwingerMap;
 import citibob.swing.typed.Swinger;
-import citibob.swing.typed.SwingerMap;
 import citibob.swing.typed.*;
 import citibob.sql.*;
 import citibob.swing.sql.SqlBoolSwinger;
@@ -38,6 +37,7 @@ import citibob.swing.sql.SqlIntegerSwinger;
 import citibob.swing.sql.SqlStringSwinger;
 //import citibob.swing.pgsql.SqlTimestampSwinger;
 import citibob.sql.pgsql.*;
+import citibob.swing.sql.SqlLongSwinger;
 import citibob.types.JType;
 import java.util.*;
 
@@ -67,7 +67,7 @@ public PgsqlSwingerMap(final TimeZone tz) {
 	public Swinger newSwinger(JType jType) {
 		SqlDateType jt = (SqlDateType)jType;
 		return new JDateSwinger(jt,
-			new String[] {"MM/dd/yyyy", "yyyy-MM-dd", "MM/dd/yy", "MMddyy", "MMddyyyy"},
+			new String[] {"MM/dd/yyyy", "yy-MM-dd", "yyyy-MM-dd", "MM/dd/yy", "MMddyy", "MMddyyyy"},
 			"", jt.getTimeZone(),
 			citibob.swing.calendar.JCalendarDateOnly.class);
 	}});
@@ -76,6 +76,12 @@ public PgsqlSwingerMap(final TimeZone tz) {
 	this.addMaker(SqlInteger.class, new BaseSwingerMap.Maker() {
 	public Swinger newSwinger(JType sqlType) {
 		return new SqlIntegerSwinger((SqlInteger)sqlType);
+	}});
+	
+	// SqlLong
+	this.addMaker(SqlLong.class, new BaseSwingerMap.Maker() {
+	public Swinger newSwinger(JType sqlType) {
+		return new SqlLongSwinger((SqlLong)sqlType);
 	}});
 
 	// SqlString

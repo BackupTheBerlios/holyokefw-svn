@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.jschema;
 
+import citibob.sql.SqlType;
 import citibob.sql.SqlTypeSet;
 import java.sql.*;
 
@@ -45,7 +46,10 @@ throws SQLException
 	cols = new Column[md.getColumnCount()];
 	for (int i=0; i<md.getColumnCount(); ++i) {
 		int i1 = i+1;
-		cols[i] = new SqlCol(tset.getSqlType(md, i1),
+		SqlType sqlType = tset.getSqlType(md, i1);
+		if (sqlType == null) System.out.println(
+			"ERROR RSSchema(): no SqlType for column " + md.getColumnName(i1) + "(JDBC Type #" + md.getColumnType(i1) + " " + md.getColumnTypeName(i1) + ")");
+		cols[i] = new SqlCol(sqlType,
 			md.getColumnLabel(i1), false);
 	}
 	

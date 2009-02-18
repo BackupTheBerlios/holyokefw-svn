@@ -58,7 +58,7 @@ public SqlType getSqlType(int type, int precision, int scale, boolean nullable)
 {
 	switch (type) {
 		case ARRAY : return null;
-		case BIGINT : return null;
+		case BIGINT : return new SqlLong(nullable);
 		case BINARY : return null;
 		case BIT : return new SqlBool(nullable);
 		case BLOB : return null;
