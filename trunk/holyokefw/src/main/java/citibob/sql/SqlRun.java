@@ -44,6 +44,15 @@ public void execSql(String sql, SqlTasklet rr);
 /** Adds Sql to next batch to run, without any processing code. */
 public void execSql(String sql);
 
+/** Adds SQL to the next batch to run.
+ Multiple ResultSets returned, and it can create
+ additional SQL as needed.
+ @param rr one of RssRunnable, RsRunnable, UpdRunnable */
+public void execSql(SqlSet ssql, SqlTasklet rr);
+
+/** Adds Sql to next batch to run, without any processing code. */
+public void execSql(SqlSet ssql);
+
 /** Adds processing code to run without any SQL. */
 public void execUpdate(UpdTasklet r);
 

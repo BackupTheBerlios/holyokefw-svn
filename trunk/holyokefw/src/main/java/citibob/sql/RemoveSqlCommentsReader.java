@@ -40,9 +40,11 @@ static final int S_INQUOTE = 1;
 static final int S_DASH1 = 2;
 static final int S_DASH1X = 3;
 static final int S_INCOMMENT = 4;
-	
+static final int S_EOF = 5;
+
 int state = S_MAIN;
 int save;
+StringBuffer comment = new StringBuffer();		// The comment we're currently reading
 
 public RemoveSqlCommentsReader(Reader in) { super(in); }
 
@@ -67,9 +69,18 @@ public int read() throws IOException
 			case S_DASH1X : state = S_MAIN; return save;
 			case S_INCOMMENT : c = super.read(); switch(c) {
 				case '\r' :
-				case '\n' : state = S_MAIN; return c;
-				default : continue;
+				case '\n' :
+					if ("==EOF==".equals(comment.toString().trim())) {
+						state = S_EOF; return -1;
+					} else {
+						comment.setLength(0);
+						state = S_MAIN; return c;
+					}
+				default :
+					comment.append((char)c);
+					continue;
 			}
+			case S_EOF : return -1;
 		}
 	}
 }

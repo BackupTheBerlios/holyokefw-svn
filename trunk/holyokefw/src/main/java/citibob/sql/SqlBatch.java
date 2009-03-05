@@ -36,7 +36,9 @@ import java.util.*;
 class SqlBatch { //implements SqlRun {
 
 // Used while building query
+StringBuffer preSqlBuf = new StringBuffer();
 StringBuffer sqlBuf = new StringBuffer();
+StringBuffer postSqlBuf = new StringBuffer();
 List<SqlTasklet> handlers = new ArrayList();
 
 // Used while interpreting results
@@ -68,6 +70,21 @@ public void execSql(String sql, SqlTasklet rr)
 	handlers.add(rr);
 }
 
+public void execSql(SqlSet ssql)
+	{ execSql(ssql, null); }
+
+/** Adds SQL to the batch --- multiple ResultSets returned, and it can create
+ additional SQL as needed. */
+public void execSql(SqlSet ssql, SqlTasklet rr)
+{
+	preSqlBuf.append(ssql.getPreSql() + ";\n");
+	sqlBuf.append(ssql.getSql());
+	sqlBuf.append(";\n select 'hello' as __divider__\n;");
+	postSqlBuf.append(ssql.getPostSql() + ";\n");
+	handlers.add(rr);
+}
+
+
 public void execUpdate(UpdTasklet2 r)
 {
 	execSql("", r);
@@ -92,11 +109,12 @@ public void execUpdate(UpdTasklet r)
 /** Execute the SQL batch; puts any new queries in "nextBatch" */
 void execOneBatch(Statement st, SqlRun str) throws Exception
 {
-	String sql = sqlBuf.toString();
+	String sql = preSqlBuf.toString() + sqlBuf.toString() + postSqlBuf.toString();
 System.out.println(
 "=================================================\n" +
 	"Executing batch with " + size() + " segments: \n" + sql +
 "=================================================");
+System.out.flush();
 	st.execute(sql);
 
 	ResultSet rs;

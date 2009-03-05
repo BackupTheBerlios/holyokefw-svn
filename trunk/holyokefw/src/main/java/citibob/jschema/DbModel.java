@@ -32,7 +32,7 @@ public interface DbModel
 //void doInit(SqlRunner str);
 
 /** Changes the intrinsic key fields representing the row(s) this DbModel
- will select. */
+ will select.  Not for external use. */
 public void setSelectKeyFields(String... keyFields);
 
 public void setKeys(Object... keys);

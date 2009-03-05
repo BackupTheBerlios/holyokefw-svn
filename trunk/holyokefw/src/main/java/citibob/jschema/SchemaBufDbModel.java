@@ -36,7 +36,7 @@ boolean updateBufOnUpdate = true;	// Should we update sequence columns on insert
 boolean insertBlankRow = false;
 DbChangeModel dbChange;
 
-SchemaBuf sbuf;		// The buffer -- has its own schema, to be used for SQL selects in subclass
+protected SchemaBuf sbuf;		// The buffer -- has its own schema, to be used for SQL selects in subclass
 String selectTable = null;		// Table to use for select queries
 
 SqlSchemaInfo[] updateSchemas;
@@ -342,7 +342,11 @@ protected ConsSqlQuery doSimpleInsert(final int row, SqlRun str, SqlSchemaInfo q
 	return q;
 }
 // -----------------------------------------------------------
-protected ConsSqlQuery doSimpleUpdate(int row, SqlRun str, SqlSchemaInfo qs)
+/**
+ * 
+ * @return True if an update was undertaken, false if nothing was done.
+ */
+protected boolean doSimpleUpdate(int row, SqlRun str, SqlSchemaInfo qs)
 {
 	SchemaBuf sb = (SchemaBuf)sbuf;
 	SqlSchema schema = qs.schema;
@@ -362,14 +366,14 @@ protected ConsSqlQuery doSimpleUpdate(int row, SqlRun str, SqlSchemaInfo qs)
 				+ q.getSql());
 		}
 	String sql = q.getSql();
-System.out.println("doSimpleUpdate: " + sql);
+//System.out.println("doSimpleUpdate: " + sql);
 		str.execSql(sql);
 			sbuf.setStatus(row, 0);
 		if (logger != null) logger.log(new QueryLogRec(q, qs, sb, row));
-		return q;
+		return true;
 	} else {
 		sbuf.setStatus(row, 0);
-		return null;
+		return false;
 	}
 }
 /** Get Sql query to delete current record. */
@@ -463,15 +467,15 @@ public int doUpdate(SqlRun str, int row, SqlSchemaInfo qs)
 			return INSERTED;
 		case 0 :
 		case CHANGED :	// No status bits, just a normal record
-			SqlQuery q = doSimpleUpdate(row, str, qs);
-			return (q != null ? CHANGED : 0);
+			boolean q = doSimpleUpdate(row, str, qs);
+			return (q ? CHANGED : 0);
 	}
 	return 0;
 }
 // -----------------------------------------------------------
 void fireTablesWillChange(SqlRun str)
 {
-	for (SqlSchemaInfo qs : updateSchemas) if (dbChange != null) {
+	if (updateSchemas != null) for (SqlSchemaInfo qs : updateSchemas) if (dbChange != null) {
 		dbChange.fireTableWillChange(str, qs.table);
 	}
 }
@@ -492,8 +496,12 @@ public void doUpdate(SqlRun str)
 int doUpdateNoFireTableWillChange(SqlRun str, int row)
 {
 	int status = 0;
-	for (SqlSchemaInfo qs : updateSchemas) {
-		status = status | doUpdate(str, row, qs);
+	if (updateSchemas == null) {
+		status = status | doUpdate(str, row, null);
+	} else {
+		for (SqlSchemaInfo qs : updateSchemas) {
+			status = status | doUpdate(str, row, qs);
+		}
 	}
 	if ((status & DELETED) != 0) sbuf.removeRow(row);
 	return status;

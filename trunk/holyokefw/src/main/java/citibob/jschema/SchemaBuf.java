@@ -27,6 +27,7 @@ import static citibob.jschema.RowStatusConst.*;
 import citibob.sql.ConsSqlQuery;
 import citibob.sql.RsTasklet2;
 import citibob.sql.SqlRun;
+import citibob.sql.SqlSet;
 import citibob.sql.SqlTypeSet;
 import citibob.types.JavaJType;
 
@@ -192,9 +193,14 @@ public void addAllRows(ResultSet rs) throws SQLException
 	int lastRow = rows.size()-1;
 	if (lastRow >= firstRow) fireTableRowsInserted(firstRow, lastRow);
 }
+
 public void setRows(SqlRun str, String sql)
 {
-	str.execSql(sql,new RsTasklet2() {
+	setRows(str, new SqlSet(sql));
+}
+public void setRows(SqlRun str, SqlSet ssql)
+{
+	str.execSql(ssql,new RsTasklet2() {
 	public void run(SqlRun str, ResultSet rs) throws SQLException {
 		clearNoFire();
 		addAllRowsNoFire(rs);
@@ -211,10 +217,10 @@ final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 		fireTableStructureChanged();
 	}});
 }
-public void setRowsAndCols(SqlRun str, String sql,
+public void setRowsAndCols(SqlRun str, SqlSet ssql,
 final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 {
-	str.execSql(sql,new RsTasklet2() {
+	str.execSql(ssql,new RsTasklet2() {
 	public void run(SqlRun str, ResultSet rs) throws SQLException {
 		setRowsAndCols(rs, typeSchemas, keyFields, tset);
 	}});

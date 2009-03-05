@@ -95,11 +95,15 @@ public void popBatch()
 
 public void execSql(String sql)
 	{ execSql(sql, null); }
+public void execSql(SqlSet ssql)
+	{ execSql(ssql, null); }
 
 /** Adds SQL to the batch --- multiple ResultSets returned, and it can create
  additional SQL as needed. */
 public void execSql(String sql, SqlTasklet rr)
 	{ top().batch.execSql(sql, rr); }
+public void execSql(SqlSet ssql, SqlTasklet rr)
+	{ top().batch.execSql(ssql, rr); }
 
 public void execUpdate(UpdTasklet r)
 	{ top().batch.execSql("", r); }

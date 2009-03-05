@@ -38,13 +38,18 @@ protected ExpHandler expHandler;
 
 public void execSql(String sql, SqlTasklet handler)
 {	
+	execSql(new SqlSet(sql), handler);
+}
+public void execSql(SqlSet ssql, SqlTasklet handler)
+{	
 	Throwable ret = null;
 	Statement st = null;
 	Connection dbb = null;
 	ResultSet rs = null;
 	try {
+		if (ssql != null) {
+			String sql = ssql.getPreSql() + ";\n" + ssql.getSql() + ";\n" + ssql.getPostSql();
 System.out.println("SingleSqlRun: " + sql);
-		if (sql != null) {
 			dbb = pool.checkout();
 			st = dbb.createStatement();
 			if (handler == null) st.execute(sql);
@@ -96,17 +101,22 @@ public void execSql(String sql)
 {
 	execSql(sql, null);
 }
+/** Adds Sql to next batch to run, without any processing code. */
+public void execSql(SqlSet ssql)
+{
+	execSql(ssql, null);
+}
 
 /** Adds processing code to run without any SQL. */
 public void execUpdate(UpdTasklet r)
 {
-	execSql(null, r);
+	execSql((SqlSet)null, r);
 }
 
 /** Adds processing code to run without any SQL. */
 public void execUpdate(UpdTasklet2 r)
 {
-	execSql(null, r);
+	execSql((SqlSet)null, r);
 }
 
 public void flush()

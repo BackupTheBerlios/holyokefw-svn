@@ -42,13 +42,18 @@ public class RSTableModel extends SchemaBuf
 	}
 	
 	/** All-in-one: execute a query, set up row headers, and add all rows to the table model. */
-	public void executeQuery(SqlRun str, String sql)
+	public void executeQuery(SqlRun str, SqlSet ssql)
 	{
 		if (autoSchema) {
-			super.setRowsAndCols(str, sql, null, null, tset);
+			super.setRowsAndCols(str, ssql, null, null, tset);
 		} else {
-			super.setRows(str, sql);
+			super.setRows(str, ssql);
 		}
+	}
+	/** All-in-one: execute a query, set up row headers, and add all rows to the table model. */
+	public void executeQuery(SqlRun str, String sql)
+	{
+		executeQuery(str, new SqlSet(sql));
 	}
 	public void executeQuery(ResultSet rs) throws SQLException
 	{
