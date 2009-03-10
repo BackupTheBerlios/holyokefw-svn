@@ -68,8 +68,10 @@ protected SchemaBuf() {}
 public SchemaBuf(ResultSet rs, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
 throws SQLException
 	{ this(new RSSchema(rs, typeSchemas, keyFields, tset)); }
-public SchemaBuf(SqlRun str, String protoSql, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
+public SchemaBuf(SqlRun str, SqlSet protoSql, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
 	{ setCols(str, protoSql, typeSchemas, keyFields, tset); }
+public SchemaBuf(SqlRun str, String protoSql, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
+	{ setCols(str, new SqlSet(protoSql), typeSchemas, keyFields, tset); }
 // =====================================================
 // Unique to SchemaBuf
 /** The schema describing the columns */
@@ -207,10 +209,10 @@ public void setRows(SqlRun str, SqlSet ssql)
 		fireTableDataChanged();
 	}});
 }
-public void setCols(SqlRun str, String sql,
+public void setCols(SqlRun str, SqlSet ssql,
 final SqlSchema[] typeSchemas, final String[] keyFields, final SqlTypeSet tset)
 {
-	str.execSql(sql,new RsTasklet2() {
+	str.execSql(ssql,new RsTasklet2() {
 	public void run(SqlRun str, ResultSet rs) throws SQLException {
 		clearNoFire();
 		schema = new RSSchema(rs, typeSchemas, keyFields, tset);

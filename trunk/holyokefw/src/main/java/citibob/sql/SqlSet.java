@@ -42,6 +42,11 @@ String postSql;
 		this.sql = sql;
 		this.postSql = postSql;
 	}
+	public SqlSet(StringBuffer preSql, StringBuffer sql, StringBuffer postSql) {
+		this.preSql = preSql.toString();
+		this.sql = sql.toString();
+		this.postSql = postSql.toString();
+	}
 
 	public String getPostSql() {
 		return postSql;
@@ -58,9 +63,13 @@ String postSql;
 	
 	public SqlSet add(SqlSet b) {
 		return new SqlSet(
-			preSql + ";\n" + b.preSql,
+			preSql + b.preSql,
 			sql + ";\n" + b.sql,
-			postSql + ";\n" + b.postSql);
+			postSql + b.postSql);
+	}
+	
+	public String toString() {
+		return preSql + sql + ";\n" + postSql;
 	}
 	
 }

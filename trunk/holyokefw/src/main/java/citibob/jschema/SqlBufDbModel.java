@@ -28,6 +28,7 @@ package citibob.jschema;
 
 import citibob.sql.SqlRun;
 import citibob.app.App;
+import citibob.sql.SqlSet;
 import citibob.sql.UpdTasklet;
 
 /**
@@ -38,7 +39,7 @@ public abstract class SqlBufDbModel extends SchemaBufDbModel
 {
 
 /** @param proto True if we just want the columns. */
-public abstract String getSelectSql(boolean proto);
+public abstract SqlSet getSelectSql(boolean proto);
 
 
 /** Creates a new instance of SqlBufDbModel
