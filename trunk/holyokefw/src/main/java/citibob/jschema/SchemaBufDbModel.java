@@ -65,6 +65,9 @@ public void setSelectAllOnNull(boolean selectAllOnNull) { this.selectAllOnNull =
 // -------------------------------------------------------------
 protected void init(SchemaBuf sbuf, String selectTable, SqlSchemaInfo[] updateSchemas, DbChangeModel dbChange)
 {
+//if (sbuf == null) {
+//	System.out.println("hoi");
+//}
 	this.sbuf = sbuf;
 	this.selectTable = selectTable;
 	this.dbChange = dbChange;

@@ -45,7 +45,8 @@ import javax.swing.JOptionPane;
 public class ConfigSetup extends javax.swing.JDialog
 {
 	ConfigModel model;
-	
+	String configResourcePrefix = "offstage/defaultconfig/";
+
 	/** Creates new form ConfigChooserPanel */
 	public ConfigSetup(ConfigModel model, SwingerMap smap, SwingPrefs swingPrefs, Preferences userRoot, String version)
 	{
@@ -86,7 +87,7 @@ public class ConfigSetup extends javax.swing.JDialog
 	void copyResource(File dir, String name) throws IOException
 	{
 		ClassLoader cl = getClass().getClassLoader();
-		URL url = cl.getResource("offstage/config/" + name);
+		URL url = cl.getResource(configResourcePrefix + name);
 		copyTextFile(url, new File(dir, name));
 	}
 	

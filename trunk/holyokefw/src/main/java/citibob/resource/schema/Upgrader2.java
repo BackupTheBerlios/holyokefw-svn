@@ -33,14 +33,14 @@ import citibob.sql.SqlRun;
  */
 public interface Upgrader2 {
 
-public String schemaName();
+//public String schemaName();
 	
 public int version0();
 
 public int version1();
 
 /** Does the actual upgrade! */
-public void upgrade(SqlRun str, final ConnPool pool, String jarPrefix)
+public void upgrade(SqlRun str, final ConnPool pool, String jarPrefix, String schemaName)
 	throws Exception;
 
 }

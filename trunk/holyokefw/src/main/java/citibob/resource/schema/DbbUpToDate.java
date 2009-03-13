@@ -6,7 +6,6 @@
 package citibob.resource.schema;
 
 import citibob.app.App;
-import citibob.resource.Upgrader;
 import citibob.sql.RsTasklet;
 import citibob.sql.RsTasklet2;
 import citibob.sql.SqlRun;
@@ -24,11 +23,12 @@ import java.sql.ResultSet;
 public class DbbUpToDate {
 
 App app;
+String jarPrefix;
 String schemaName;	// Multiple schemas can be merged into one database
 int sysVersion;		// Version of this system (front-end)
 int dbbVersion;	// Version of current schema in database
 
-Upgrader[] upgraders;
+protected Upgrader2[] upgraders;
 
 public IntVal getDbbVersion(SqlRun str)
 {
@@ -51,7 +51,7 @@ public IntVal getDbbVersion(SqlRun str)
 				" where schemaname = " + SqlString.sql(schemaName) + ";\n";
 			str.execSql(sql, new RsTasklet() {
 			public void run(ResultSet rs) throws Exception {
-				if (rs.next()) {
+				if (!rs.next()) {
 					ret.val = -1;
 				} else {
 					ret.val = rs.getInt("version");
@@ -69,19 +69,18 @@ public void upgradeToCurrent() throws Exception
 	IntVal DbbVersion = getDbbVersion(app.sqlRun());
 	app.sqlRun().flush();
 	this.dbbVersion = DbbVersion.val;
+System.out.println("dbbVersion = " + dbbVersion);
 
 	// Find the first upgrader we need to apply
 	int start;
 	for (start=upgraders.length - 1; start >= 0; --start) {
-		if (upgraders[start].version1() < sysVersion) {
-			++start;
-			break;
-		}
+		if (upgraders[start].version1() < sysVersion) break;
 	}
+	++start;
 
 	// Apply the upgraders
 	for (int i=start; i<upgraders.length; ++i) {
-		upgraders[i].upgrade(app.sqlRun(), app.pool(), -1, -1);				
+		upgraders[i].upgrade(app.sqlRun(), app.pool(), jarPrefix, schemaName);
 	}
 }
 	
@@ -91,13 +90,16 @@ public DbbUpToDate(App app, String schemaName) throws IOException
 {
 	this.app = app;
 	this.schemaName = schemaName;
-	
+
+	jarPrefix = getClass().getPackage().getName().replaceAll(".", "/");
+
 	// Dig out sysVersion
-	String resourceName = "app/version.txt";
+	String resourceName = "svn-version.txt";
 	ClassLoader cl = getClass().getClassLoader();
 	SvnVersion svers = new SvnVersion(cl.getResourceAsStream(resourceName));
 	sysVersion = svers.maxVersion;
 }
+
 
 
 

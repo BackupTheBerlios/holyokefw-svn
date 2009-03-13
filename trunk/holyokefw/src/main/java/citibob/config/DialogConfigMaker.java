@@ -15,7 +15,7 @@ import citibob.config.dialog.ConfigDialog;
 public class DialogConfigMaker implements ConfigMaker
 {
 
-String demoResourceRoot;
+String demoResourceRoot; 
 
 	public DialogConfigMaker(String demoResourceRoot) {
 		this.demoResourceRoot = demoResourceRoot;

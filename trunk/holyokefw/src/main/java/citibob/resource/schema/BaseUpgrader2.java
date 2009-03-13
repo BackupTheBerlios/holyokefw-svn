@@ -31,17 +31,17 @@ import citibob.resource.*;
 public abstract class BaseUpgrader2 implements Upgrader2
 {
 	
-protected String schemaName;
+//protected String schemaName;
 protected int version0, version1;		// Version we upgrade from and to
 
-public BaseUpgrader2(String schemaName, int version0, int version1)
+public BaseUpgrader2(int version0, int version1)
 {
-	this.schemaName = schemaName;
+//	this.schemaName = schemaName;
 	this.version0 = version0;
 	this.version1 = version1;
 }
 
-public String schemaName() { return schemaName; }
+//public String schemaName() { return schemaName; }
 public int version0() { return version0; }
 
 public int version1() { return version1; }

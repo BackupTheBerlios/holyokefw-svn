@@ -67,9 +67,13 @@ String postSql;
 			sql + ";\n" + b.sql,
 			postSql + b.postSql);
 	}
-	
 	public String toString() {
-		return preSql + sql + ";\n" + postSql;
+		return "SqlSet(" +
+			preSql + ",\n" + sql + ",\n" + postSql + ")";
 	}
+	
+//	public String toString() {
+//		return preSql + sql + ";\n" + postSql;
+//	}
 	
 }

@@ -41,25 +41,24 @@ import java.sql.Statement;
  *
  * @author citibob
  */
-public class BaseDbbUpgrader2 extends BaseUpgrader2
+public class DbbUpgrader2 extends BaseUpgrader2
 {
 
-public BaseDbbUpgrader2(String schemaName, int version0, int version1)
+public DbbUpgrader2(int version0, int version1)
 {
-	super(schemaName, version0, version1);
+	super(version0, version1);
 }
 
 public String getDescription() {
-	return "Upgrade2 " + schemaName + " from version " +version0 + " to " + version1;
+	return "Upgrade2 from version " +version0 + " to " + version1;
 	
 }
 
-public void upgrade(SqlRun str, final ConnPool pool, String jarPrefix)
+public void upgrade(SqlRun str, final ConnPool pool, String jarPrefix, String schemaName)
 throws Exception
 {
 	StringBuffer sql = new StringBuffer("BEGIN;\n");
-	String rname = schemaName + "-" + version0 + "-" + version1 + ".sql";
-	String resourceName = jarPrefix + rname;
+	String resourceName = jarPrefix + "/" + schemaName + "-" + version0 + "-" + version1 + ".sql";
 System.out.println("Loading resource of name: " + resourceName);
 
 	ClassLoader cl = getClass().getClassLoader();
