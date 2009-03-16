@@ -76,6 +76,10 @@ public void popFlush();
 public void pushBatch();
 public void popBatch(); // throws Exception;
 
+/** Gets a temporary table name that will be unique in this batch */
+public String getTableName(String base);
+
+
 ///** @deprecated
 // Gets the SqlRunner for the next batch --- used inside SqlRunnable
 // to run things in sequence. */

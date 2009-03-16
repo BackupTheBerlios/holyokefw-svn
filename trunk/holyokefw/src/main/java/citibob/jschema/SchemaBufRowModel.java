@@ -48,5 +48,7 @@ ListSelectionModel. */
 		{ return schemaBuf.getOrigValueAt(getCurRow(), col); }
 	public void resetValue(int col)
 		{ set(col, getOrigValue(col)); }
+	public boolean valueChanged(int col)
+		{ return schemaBuf.valueChanged(getCurRow(), col); }
 
 }

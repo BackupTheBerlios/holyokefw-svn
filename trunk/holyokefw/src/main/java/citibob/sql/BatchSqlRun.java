@@ -42,6 +42,13 @@ Rec top() { return stack.peek(); }
 // ========================================================================
 // Setting up the batch
 
+int nextID = 0;
+public String getTableName(String base)
+{
+	return base + (nextID++);
+}
+
+
 /** Not really public */
 public void pushFlush() {
 	++top().recursionDepth;
@@ -145,6 +152,7 @@ void runBatches() throws Exception
 			throw e;
 		}
 	} finally {
+		nextID = 0;
 		try {
 			if (st != null) st.close();
 		} catch(SQLException se) {}

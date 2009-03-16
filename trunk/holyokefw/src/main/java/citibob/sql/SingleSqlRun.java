@@ -35,6 +35,11 @@ public class SingleSqlRun implements SqlRun
 protected ConnPool pool;
 protected ExpHandler expHandler;
 
+		
+public String getTableName(String base)
+{
+	return base;
+}
 
 public void execSql(String sql, SqlTasklet handler)
 {	
