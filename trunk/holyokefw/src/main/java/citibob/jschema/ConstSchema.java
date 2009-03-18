@@ -51,6 +51,7 @@ public int findCol(String name)
 	for (int i = 0; i < cols.length; ++i) {
 		if (cols[i].getName().equals(name)) return i;
 	}
+	System.out.println("ConstSchema.findCol(" + name + ") == -1 (not found)!");
 	return -1;
 }
 //public int findColByLabel(String label)
