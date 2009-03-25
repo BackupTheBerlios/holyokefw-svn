@@ -70,6 +70,33 @@ public static Config loadFromFile(File file) throws IOException
 	}
 	
 }
+
+
+public static Config loadFromLauncher(File launcherJar)
+throws IOException
+{
+	ZipInputStream zin = null;
+	try {
+		zin = new ZipInputStream(
+			new BufferedInputStream(
+			new FileInputStream(launcherJar)));
+		
+		// Scan to "config.zips"
+		ZipEntry ze;
+		for (;;) {
+			ze = zin.getNextEntry();
+			if (ze == null) return null;
+			if (ze.getName().equals("config.zips")) break;
+		}
+		
+		// We found config.zips.  Now open it up...
+		return loadFromStream(zin);
+	} finally {
+		if (zin != null) zin.close();
+	}
+}
+
+
 // -----------------------------------------------------------------------
 public static void writeToStream(ListableConfig config, OutputStream out)
 throws IOException

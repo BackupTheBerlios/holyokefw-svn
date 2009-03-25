@@ -25,16 +25,10 @@ package citibob.config.dialog;
 
 import citibob.app.App;
 import citibob.config.Config;
-import citibob.config.ConfigMaker;
 import citibob.config.DirConfig;
 import citibob.config.ResourceConfig;
-import citibob.swing.prefs.SwingPrefs;
-import citibob.swing.typed.SwingerMap;
-import citibob.swingers.JavaSwingerMap;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.TimeZone;
-import java.util.prefs.Preferences;
 import javax.swing.JFrame;
 
 /**

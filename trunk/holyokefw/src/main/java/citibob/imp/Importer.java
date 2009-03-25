@@ -25,12 +25,16 @@ package citibob.imp;
 import citibob.app.App;
 import citibob.sql.SqlDateType;
 import citibob.sql.SqlDouble;
-import citibob.sql.SqlRun;
 import citibob.sql.ansi.SqlBool;
 import citibob.sql.pgsql.SqlTimestamp;
 import citibob.sql.pgsql.SqlDate;
 import citibob.sql.pgsql.SqlInteger;
 import citibob.sql.pgsql.SqlString;
+import com.Ostermiller.util.CSVParser;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -187,6 +191,31 @@ public String sDateNoYear(String sdt) throws ParseException
 	if (slash2 < 0) sdt = sdt + "/" + defaultYear;
 
 	return sqlDate.toSql(dfmt.parse(sdt));
+}
+// ========================================================================
+/** Reads a CSV file and writes out a Java source file full of column names */
+public static void writeCsvCols(File csvFile, File javaFile,
+String packageName, String interfaceName) throws Exception
+{
+	Writer out = new FileWriter(javaFile);
+		
+	out.write(
+		"package " + packageName + ";\n" +
+		"public interface " + interfaceName + " {\n");
+		
+	// Open input
+	CSVParser csv = new CSVParser(new FileReader(csvFile));
+	String[] colNames = csv.getLine();
+	csv.close();
+
+	// Write out constants
+	for (int i=0; i < colNames.length; ++i) {
+		out.write(
+			"\tpublic static final int " + colNames[i] + " = " + i + ";\n");
+	}
+
+	out.write("}\n");
+	out.close();
 }
 
 
