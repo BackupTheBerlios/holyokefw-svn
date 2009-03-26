@@ -29,6 +29,7 @@ package citibob.jschema;
 import citibob.sql.SqlRun;
 import citibob.app.App;
 import citibob.sql.SqlSet;
+import citibob.sql.SqlTypeSet;
 import citibob.sql.UpdTasklet;
 
 /**
@@ -41,7 +42,11 @@ public abstract class SqlBufDbModel extends SchemaBufDbModel
 /** @param proto True if we just want the columns. */
 public abstract SqlSet getSelectSql(boolean proto);
 
-
+/** We can override this to customize the class used for our SchemaBuf */
+protected SchemaBuf newSchemaBuf(SqlRun str, SqlSet protoSql, SqlSchema[] typeSchemas, String[] keyFields, SqlTypeSet tset)
+{
+	return new SchemaBuf(str, protoSql, typeSchemas, keyFields, tset);
+}
 /** Creates a new instance of SqlBufDbModel
 @param typeSchemas Schemas used to determine type of each column (beyond that from the SQL query)
 @param updateKeyFields Which columns are update-key fields (beyond that as determined by typeSchemas).
