@@ -32,6 +32,7 @@ implements MultiRowModel, TableModelListener { //, ListSelectionModel {
 
 private JTypeTableModel tmodel;
 int curRow;
+boolean[] inSet;		// Are we in the middle of the set() command?
 /** Should we listen to the underlying JTypeTableModel for insert/delete events?
 It's appropriate to be false only when this has been used as a JTable's
 ListSelectionModel. */
@@ -48,7 +49,9 @@ public TableRowModel(JTypeTableModel tmodel, boolean listen)
 {
 	listenTableModel = listen;
 	this.tmodel = tmodel;
-	super.setColumnCount(tmodel.getColumnCount());
+	int ncol = tmodel.getColumnCount();
+	super.setColumnCount(ncol);
+	inSet = new boolean[ncol];
 	// Set to the first row, if there is one right now...
 	if (tmodel.getRowCount() == 0) curRow = NOROW;
 	else curRow = 0;
@@ -72,12 +75,20 @@ public int findColumn(String s)
 // individual values in the current row.
 public void set(int col, Object val)
 {
+	if (inSet[col]) return;
+	
+	inSet[col] = true;
 	// If we try to set the null row, just ignore it, then notify
 	// our listener of the "new" (null) value.
-	if (curRow != NOROW) {
-		tmodel.setValueAt(val, curRow, col);
+	if(curRow == NOROW) {
+		fireValueChanged(col);
+	} else {
+//		Object oldVal = tmodel.getValueAt(curRow, col);
+//		if (!citibob.util.ObjectUtil.eq(oldVal, val))
+			tmodel.setValueAt(val, curRow, col);
 	}
-	fireValueChanged(col);
+	
+	inSet[col] = false;
 }
 public void set(String colName, Object val)
 	{ set(findColumn(colName), val); }
