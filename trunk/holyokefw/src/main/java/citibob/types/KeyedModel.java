@@ -86,12 +86,19 @@ public Object getNullValue()
 	{ return get(null); }
 
 
+/** @nullValue The value to include in the list when we encounter a null.  If equal
+ to null, then don't include null values. */
 public Vector newKeyList(Object segment, Object nullValue)
 {
 	Vector ret = new Vector();
 	for (Item item : itemList) {
 		if (segment == null || item.segment == null || segment.equals(item.segment)) {
-			ret.add(item.key == null ? nullValue : item.key);
+			if (item.key == null) {
+				if (nullValue != null) ret.add(nullValue);
+			} else {
+				ret.add(item.key);
+			}
+//			ret.add(item.key == null ? nullValue : item.key);
 		}
 	}
 	return ret;

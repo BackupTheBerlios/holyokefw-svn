@@ -180,7 +180,9 @@ public void setSegment(Object segment)
 public void refreshKeyedModel()
 {
 	Object val = getValue();
-	vals = kmodel.newKeyList(segment, JKeyedComboBox.NULL);
+//Using JKeyedComboBox.NULL here just causes exceptions if it's actually used.'
+	// null here means don't add nulls to our list of options.
+	vals = kmodel.newKeyList(segment, null);
 	selected = new boolean[vals.size()];
 	setValue(val);
 	((MyModel)table.getModelU()).fireTableDataChanged();
