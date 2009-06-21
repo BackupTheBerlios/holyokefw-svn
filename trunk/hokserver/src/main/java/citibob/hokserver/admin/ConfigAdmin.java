@@ -325,6 +325,17 @@ throws IOException, InterruptedException
 	}
 }
 
+String clearClientDb(final String dbName, final String custName)
+throws Exception
+{
+	
+	String sql =
+		" DROP SCHEMA public CASCADE;\n" +
+		" create schema public;\n" +
+		" alter schema public owner to " + custName + ";\n";
+	psql(dbName, sql);
+}
+
 /**
  * 
  * @param custName
