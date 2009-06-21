@@ -40,6 +40,10 @@ public ConfigAndLaunchInfo(SqlRun str, ConfigApp app, String _appName, String _c
 		rs.next();	// Look at first line of result set
 		appURL = rs.getString("url");
 		version = rs.getString("version");
+		
+		System.out.println("appURL = " + appURL);
+		System.out.println("version = " + version);
+		
 	}});
 }
 

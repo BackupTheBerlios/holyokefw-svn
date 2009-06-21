@@ -9,6 +9,7 @@ import citibob.app.App;
 import citibob.config.DirConfig;
 import citibob.config.MultiConfig;
 import citibob.config.ResourceConfig;
+import citibob.resource.schema.DbbUpToDate;
 import citibob.sql.ConfigConnFactory;
 import citibob.sql.ConnFactory;
 import citibob.sql.pgsql.PgsqlSwingerMap;
@@ -84,5 +85,12 @@ protected void init(File appDir) throws Exception
 //	
 //}
 
-	
+
+public static void main(String[] args) throws Exception
+{
+	App app = new ConfigApp();
+	DbbUpToDate dbup = new HokserverUpToDate(app);
+	dbup.upgradeToCurrent();
+}
+
 }

@@ -51,6 +51,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import joptsimple.OptionParser;
@@ -138,6 +139,62 @@ throws IOException, InterruptedException
 	
 	return ret;
 }
+
+
+
+static int runProcess(final Process proc, final InputStream in, OutputStream xout, boolean reportError)
+throws IOException, InterruptedException
+{
+	final OutputStream out = (xout == null ? System.out : xout);
+//	System.out.println(">>> " + cmd);
+//	final Process proc = Runtime.getRuntime().exec(cmd);
+
+	Thread tout = new Thread() {
+	public void run() {
+		try {
+			InputStream processOutput = proc.getInputStream();
+			IOUtils.copy(processOutput, out);
+			out.flush();
+		} catch(IOException e) {
+			System.err.println(e.getStackTrace());
+			System.exit(-1);
+		}
+	}};
+
+	Thread tin = new Thread() {
+	public void run() {
+		try {
+			OutputStream processInput = proc.getOutputStream();
+			IOUtils.copy(in, processInput);
+			processInput.flush();
+		} catch(IOException e) {
+			System.err.println(e.getStackTrace());
+			System.exit(-1);
+		}
+	}};
+
+	tout.start();
+	tin.start();
+	
+	tin.join();
+	proc.getOutputStream().close();
+
+	tout.join();
+
+	int ret = proc.waitFor();
+	if (reportError & ret != 0) {
+		throw new IOException("Command returned error code " + ret);
+	}
+	System.out.println(">>> [return value = " + ret + "]");
+
+//	proc.destroy();
+
+	return ret;
+}
+
+
+
+
 void psql(String database, String sql)
 throws SQLException
 {
@@ -185,6 +242,32 @@ throws Exception
 	} finally {
 		System.out.println("Closing database " + database);
 		dbb.close();
+	}
+}
+
+void psql_cmd(String database, InputStream sqlInput, OutputStream out)
+throws Exception
+{
+	try {
+		Properties props = app.props();
+		String user = props.getProperty("admin.db.user", null);
+		String pwd = props.getProperty("admin.db.password", null);
+//	if (pwd != null) p2.setProperty("password", pwd);
+
+		String host = props.getProperty("db.host", null);
+		String port = props.getProperty("db.port", "5432");
+
+		String[] cmdLine = new String[]
+			{"psql", "-h", host, "-p", port, database};
+		String[] envp = new String[] {"PGUSER=" + user, "PGPASSWORD=" + pwd};
+
+		if (out == null) out = System.out;
+		System.out.println(">>> psql_cmd ");
+
+		Process proc = Runtime.getRuntime().exec(cmdLine, envp, null);
+		runProcess(proc, sqlInput, out, true);
+	} finally {
+		sqlInput.close();
 	}
 }
 //int psql(String database, String sql)
@@ -325,7 +408,8 @@ throws IOException, InterruptedException
 	}
 }
 
-String clearClientDb(final String dbName, final String custName)
+/** Clears out a client database, ready for loading again */
+void clearClientDb(final String dbName, final String custName)
 throws Exception
 {
 	
@@ -337,9 +421,8 @@ throws Exception
 }
 
 /**
- * 
- * @param custName
- * @param password
+ * @param dbName Full name of database to create (eg. ballettheatre_offstagearts)
+ * @param custName Name of customer for which we are creating a db (eg. ballettheatre)
  * @return database name (if created), or null (if not created)
  */
 String createClientDb(final String dbName, final String custName)
@@ -679,6 +762,7 @@ throws IOException
 // ========== Generate a launcher
 static void exec(File dir, String... cmds) throws IOException, InterruptedException
 {
+	for (int i=0; i<cmds.length; ++i) System.out.println(cmds[i] + " ");
 	Process proc = Runtime.getRuntime().exec(cmds, null, dir);
 	InputStream in = proc.getInputStream();
 	int c;
@@ -821,12 +905,32 @@ throws Exception
 {
 	boolean add;	// True for add, false for delete
 
+	if (args.length == 0) {
+		System.out.println(
+			"Usage:\n" +
+			"hsadmin [add|del] [app|cust|user|appcust|appvers] <args...>\n" +
+			"    app <app-name>\n" +
+			"    cust <cust-name>\n" +
+			"    user <app-name> <customer-name> <user-name> (password)\n"+
+			"    appcust <app-name> <customer-name> [version]\n" +
+			"    appvers <app-name> <version> (url) (default?)\n" +
+			"key: () arguments on add only\n\n" +
+			"hsadmin [mklauncher|init|dump|sync] <args...>\n" +
+			"    mklauncher <app-name> <cust-name> <launcher-jar-file> [password]\n" +
+			"    clear <app-name> <cust-name> : Clear's a database\n" +
+			"    load <app-name> <cust-name> <file.sql.gz> : Loads DB dump into a client's db\n" +
+			"    init : Initialize entire system, run once upon install.\n" +
+			"    dump <launcher-file> : Show contents of an (unencrypted) launcher\n" +
+			"    sync : Upload configurations from files to database\n");
+		return;
+	}
+
 	initProtoDirs();
 	
 	// add/del
-	String sadd = args[0].toLowerCase();
-	if (sadd.equalsIgnoreCase("mklauncher")) {
-		System.out.println("Usage: ConfigAdmin mklauncher <app-name> <cust-name> <launcher-jar-file> [password]");
+	String scmd = args[0].toLowerCase();
+	if (scmd.equalsIgnoreCase("mklauncher")) {
+		System.out.println("Usage: hsadmin mklauncher <app-name> <cust-name> <launcher-jar-file> [password]");
 		String appName = args[1];
 		String custName = args[2];
 		File outJar = new File(args[3]);
@@ -835,25 +939,44 @@ throws Exception
 		this.makeLauncher(str, appName, custName, password, outJar);
 		
 		return;
-	} else if (sadd.equalsIgnoreCase("init")) {
+	} else if (scmd.equalsIgnoreCase("init")) {
 		initServer(str);
 		return;
-	} else if (sadd.equalsIgnoreCase("dump")) {
+	} else if (scmd.equalsIgnoreCase("dump")) {
 		String jarFile = args[1];
-		System.out.println("Usage: ConfigAdmin dump <launcher-jar-file>");
+		System.out.println("Usage: hsadmin dump <launcher-jar-file>");
 		
 		dumpLauncher(app, new File(jarFile));
 		return;
-	} else if (sadd.equalsIgnoreCase("sync")) {
+	} else if (scmd.equalsIgnoreCase("sync")) {
 		ConfigDb.uploadAllConfigs(str, app.configRoot(), null);
+		return;
+	} else if (scmd.equalsIgnoreCase("clear")) {
+		String appName = args[1];
+		String custName = args[2];
+		String dbName = app_custs_dbname(appName, custName);
+		this.clearClientDb(dbName, custName);
+		return;
+	} else if (scmd.equalsIgnoreCase("load")) {
+		String appName = args[1];
+		String custName = args[2];
+		String fileName = args[3];
+		String dbName = app_custs_dbname(appName, custName);
+
+		InputStream in =
+			new GZIPInputStream(
+			new BufferedInputStream(
+			new FileInputStream(
+			new File(fileName))));
+		psql_cmd(dbName, in, null);
 		return;
 	}
 	
 	
 	
 	
-	if (sadd.equalsIgnoreCase("add")) add = true;
-	else if (sadd.equalsIgnoreCase("del")) add = false;
+	if (scmd.equalsIgnoreCase("add")) add = true;
+	else if (scmd.equalsIgnoreCase("del")) add = false;
 	else throw new IllegalArgumentException("args[0] must be \"add\" or \"del\"");
 	
 	// Set up legal table names
@@ -874,7 +997,7 @@ throws Exception
 		case APP : {	// app
 			System.out.println(usage + "app <app-name>");
 			String appName = args[2];
-			str.execSql("select w_apps_" + sadd + "(" +
+			str.execSql("select w_apps_" + scmd + "(" +
 				SqlString.sql(appName) + ");");	
 		} break;
 		case CUST : {	// cust
