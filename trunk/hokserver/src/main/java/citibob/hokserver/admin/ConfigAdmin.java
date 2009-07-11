@@ -11,6 +11,7 @@ import citibob.config.DirConfig;
 import citibob.config.ListableConfig;
 import citibob.config.MemConfig;
 import citibob.config.MultiConfig;
+import citibob.config.MultiConfigMaker;
 import citibob.config.WriteableConfig;
 import citibob.config.WriteablePBEConfig;
 import citibob.config.ZipConfig;
@@ -783,6 +784,26 @@ throws Exception
 	}});
 }
 
+
+static void printProp(Properties props, String name)
+{
+	System.out.println(name + " " + props.getProperty(name));
+}
+
+static void extractLauncher(ConfigApp app, File launcherJar)
+throws FileNotFoundException, IOException
+{
+	Config config = MultiConfigMaker.loadConfig(
+		new Object[] {launcherJar}, "HOK_PASSWORD");
+
+	Properties props = config.loadAppProperties();
+	printProp(props, "db.host");
+	printProp(props, "db.port");
+	printProp(props, "db.ssl");
+	printProp(props, "db.user");
+	printProp(props, "db.password");
+
+}
 
 static void dumpLauncher(ConfigApp app, File launcherJar)
 throws FileNotFoundException, IOException

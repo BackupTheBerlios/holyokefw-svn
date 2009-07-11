@@ -77,7 +77,7 @@
     <dependency>
       <groupId>org.citibob</groupId>
       <artifactId>holyokefw</artifactId>
-      <version>1.2.2</version>
+      <version>1.2.8</version>
       <scope>compile</scope>
     </dependency>
 	<!-- Our JDBC Driver -->
