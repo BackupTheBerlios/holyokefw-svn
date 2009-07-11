@@ -15,7 +15,6 @@ Chianglin Jan 2003
 
 
 import citibob.task.ExpHandler;
-import citibob.task.SimpleExpHandler;
 import java.net.*;
 import javax.net.ssl.*;
 import java.io.*;
@@ -28,13 +27,13 @@ extends SSLConnection
 	
 private SSLSocket ss;
 private ServerSocket locals;
-private DataInputStream in , secureIn ;
-private DataOutputStream out, secureOut ;
+private InputStream in , secureIn ;
+private OutputStream out, secureOut ;
 private InetAddress dest;
 private int destPort;
 
-MyRelay ApptoProxy;
-MyRelay ProxytoApp;
+InOutRelay ApptoProxy;
+InOutRelay ProxytoApp;
 
 Thread thread;
 ExpHandler expHandler;
@@ -90,12 +89,10 @@ throws Exception
 	System.out.println("Protocol is " + current.getProtocol());
 
 	//get the input and output streams from the SSL connection
-	secureIn = new DataInputStream( 
-		new BufferedInputStream(		// Not sure we should be buffering...
-		ss.getInputStream()));
-	secureOut = new DataOutputStream(
-		new BufferedOutputStream(
-		ss.getOutputStream()));
+	secureIn = new BufferedInputStream(		// Not sure we should be buffering...
+		ss.getInputStream());
+	secureOut = new BufferedOutputStream(
+		ss.getOutputStream());
 
 	System.out.println("Got remote secured connection");
 }
@@ -126,8 +123,12 @@ throws Exception
 			else expHandler.consume(e);
 		}
 
-		ApptoProxy = new MyRelay(in ,secureOut, "ApptoSecureout");
-		ProxytoApp = new MyRelay(secureIn , out, "SecureintoApp"  ); 
+		InOutRelay.Listener listener = new InOutRelay.Listener() {
+		public void onConnectionClosed(Exception e) {
+			callConnectionClosed();
+		}};
+		ApptoProxy = new InOutRelay(in ,secureOut, "ApptoSecureout", listener);
+		ProxytoApp = new InOutRelay(secureIn , out, "SecureintoApp", listener);
 //RelayIntoOut needs to be an inner class.
 //And it needs to call connectionClosed() as appropriate.
 //And since there are TWO threads here, it needs to
@@ -149,8 +150,8 @@ synchronized void callConnectionClosed() {
 
 public void stopRelays()
 {
-	ApptoProxy.closeall();
-	ProxytoApp.closeall();
+	ApptoProxy.closeAll(null);
+	ProxytoApp.closeAll(null);
 	thread.interrupt();		// This will be ineffective...
 	callConnectionClosed();	// This is redundant
 }
@@ -169,78 +170,6 @@ public void stopRelays()
 ////		"127.0.0.1", 5433, 4001);
 //}
 
-
-// ===============================================================
-class MyRelay extends Thread {
-
-
-	private DataInputStream in ;
-	private DataOutputStream out ;
-	private String name;
-
-	public MyRelay ( DataInputStream in,
-	DataOutputStream out , String name) 
-	{
-		super(name);
-		this.name = name;
-		this.in = in;
-		this.out = out ;
-		setDaemon(true);
-		this.start();
-	}
-
-	public MyRelay ( DataInputStream in, DataOutputStream out) 
-	{
-		this.name = getName();
-		this.in = in;
-		this.out = out ;
-		setDaemon(true);
-		this.start();
-	}
-
-
-
-	public void run(){
-
-		int size ;
-		byte[] buffer = new byte[8192];
-
-		try {
-			while(true) {
-				size = in.read(buffer);
-				if(size > 0 ) {
-					System.out.println(name + " receive from in connection" + size);
-					out.write(buffer,0, size);
-					out.flush();
-					System.out.println(name  + " finish forwarding to out connection");    	       
-				} else if (size == -1) { //end of stream 
-					System.out.println(name + " EOF detected!");
-					out.close();
-					return ;
-				}	    
-			}
-		}
-		catch(Exception e){
-			e.printStackTrace();
-			//	       System.err.println(name + e);
-			closeall();
-		} 
-
-
-	}
-
-	/** Causes the thread to stop! */
-	public void closeall(){
-		try{
-			if(in != null ) in.close();
-			if(out != null) out.close();
-			callConnectionClosed();
-		} catch(IOException e){
-			e.printStackTrace();
-	//		    System.err.println(e);
-		}
-	}
-}
 
 }//end of class
 

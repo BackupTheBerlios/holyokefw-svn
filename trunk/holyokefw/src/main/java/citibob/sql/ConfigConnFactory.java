@@ -38,6 +38,36 @@ import java.util.Properties;
 public class ConfigConnFactory extends WrapConnFactory
 {
 
+/** @param props Must equal config.loadAppProperties(). */
+public static SSLRelayClient.Params newtSSLRelayClientParams(Config config,
+Properties props)
+throws IOException
+	{ return newtSSLRelayClientParams(config, props, "keyst0re"); }
+
+/** @param props Must equal config.loadAppProperties(). */
+public static SSLRelayClient.Params newtSSLRelayClientParams(Config config,
+Properties props, String defaultPass)
+throws IOException
+{
+	SSLRelayClient.Params prm = new SSLRelayClient.Params();
+	String dbUserName = props.getProperty("db.user", null);
+
+	prm.storeBytes = config.getStreamBytes("client-store.jks");
+	prm.trustBytes = config.getStreamBytes("client-trust.jks");
+
+	prm.dest = InetAddress.getByName(props.getProperty("db.host", null));
+	prm.destPort = Integer.parseInt(props.getProperty("db.port", null));
+
+	String storePass = (String)props.getProperty("db.storePass", defaultPass);
+	prm.storePass = storePass.toCharArray();
+	String storeKeyPass = (String)props.getProperty("db.storeKeyPass", storePass);
+	prm.storeKeyPass = storeKeyPass.toCharArray();
+	String trustPass = (String)props.getProperty("db.trustPass", storePass);
+	prm.trustPass = trustPass.toCharArray();
+
+	return prm;
+}
+/** @param props Must equal config.loadAppProperties(). */
 private static ConnFactory newSSLSub(Config config, Properties props, ExpHandler expHandler)
 throws ClassNotFoundException, UnknownHostException, MalformedURLException, IOException
 {
@@ -58,27 +88,8 @@ throws ClassNotFoundException, UnknownHostException, MalformedURLException, IOEx
 		":%port%/" + props.getProperty("db.database", null);
 	
 	// Set the SSL tunnel parameters
-	String defaultPass = "keyst0re";
-	SSLRelayClient.Params prm = new SSLRelayClient.Params();
-		String dbUserName = props.getProperty("db.user", null);
-		
-//		prm.storeBytes = config.getStreamBytes(dbUserName + "-store.jks");
-//		prm.trustBytes = config.getStreamBytes(dbUserName + "-trust.jks");
-		prm.storeBytes = config.getStreamBytes("client-store.jks");
-		prm.trustBytes = config.getStreamBytes("client-trust.jks");
+	SSLRelayClient.Params prm = newtSSLRelayClientParams(config, props, "keyst0re");
 
-System.out.println("storeBytes = " + prm.storeBytes);
-System.out.println("trustBytes = " + prm.trustBytes);
-		
-		prm.dest = InetAddress.getByName(props.getProperty("db.host", null));
-		prm.destPort = Integer.parseInt(props.getProperty("db.port", null));
-		
-		String storePass = (String)props.getProperty("db.storePass", defaultPass);
-		prm.storePass = storePass.toCharArray();
-		String storeKeyPass = (String)props.getProperty("db.storeKeyPass", storePass);
-		prm.storeKeyPass = storeKeyPass.toCharArray();
-		String trustPass = (String)props.getProperty("db.trustPass", storePass);
-		prm.trustPass = trustPass.toCharArray();
 	return new SSLConnFactory(url, prm, p2, expHandler);
 }
 	

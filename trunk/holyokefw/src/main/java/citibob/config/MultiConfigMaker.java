@@ -6,6 +6,7 @@
 package citibob.config;
 
 import citibob.app.App;
+import citibob.crypt.StdinPBEAuth;
 import java.io.File;
 import java.io.IOException;
 
@@ -58,5 +59,13 @@ System.out.println("MultiConfigMaker setting config name to " + config.getName()
 	return ret;
 }
 
+static public Config loadConfig(Object[] configSpecs, String pwdEnvVar)
+throws IOException
+{
+	MultiConfigMaker maker = new MultiConfigMaker(configSpecs);
+	Config config = maker.newConfig(null);
+	if (config == null) return null;
+	return new PBEConfig(config, new StdinPBEAuth(pwdEnvVar));
+}
 
 }

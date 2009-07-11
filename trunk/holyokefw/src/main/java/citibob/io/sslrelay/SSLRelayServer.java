@@ -99,8 +99,8 @@ public void startListen(int localport , int destport)
                                          new BufferedOutputStream(incoming.getOutputStream()));
 	  
 	   //create the two handler threads
-	   new RelayIntoOut( securein , destout , "SecureintoApp");
-	   new RelayIntoOut( destin , secureout ,"ApptoSecureout");                                         				 
+	   new InOutRelay( securein , destout , "SecureintoApp", null);
+	   new InOutRelay( destin , secureout ,"ApptoSecureout", null);
      
          }
      
