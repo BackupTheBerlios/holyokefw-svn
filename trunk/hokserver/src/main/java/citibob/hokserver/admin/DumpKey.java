@@ -1,22 +1,45 @@
 package citibob.hokserver.admin;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 
 /* DumpKey.java
  * Copyright (c) 2007 by Dr. Herong Yang, http://www.herongyang.com/
  */
 public class DumpKey {
 
+
+
 public static void dumpKey(File jksFile, char[] jksPass,
 String keyName, char[] keyPass, File outFile)
 throws Exception
 {
-         KeyStore jks = KeyStore.getInstance("jks");
-         jks.load(new FileInputStream(jksFile), jksPass);
+	KeyStore jks = KeyStore.getInstance("jks");
+	jks.load(new FileInputStream(jksFile), jksPass);
+	dumpKey(jks, keyName, keyPass, outFile);
+}
+
+public static String getFirstAlias(KeyStore jks)
+throws KeyStoreException
+{
+	java.util.Enumeration<String> ii = jks.aliases();
+	if (!ii.hasMoreElements()) return null;
+	return ii.nextElement();
+}
+
+
+public static void dumpKey(KeyStore jks,
+String keyName, char[] keyPass, File outFile)
+throws Exception
+{
          Key key = jks.getKey(keyName, keyPass);
          System.out.println("Key algorithm: "+key.getAlgorithm());
          System.out.println("Key format: "+key.getFormat());
@@ -27,6 +50,15 @@ throws Exception
          out.write(key.getEncoded());
          out.close();
 }
+
+
+
+
+
+
+
+
+
    static public void main(String[] a) {
       if (a.length<5) {
          System.out.println("Usage:");
