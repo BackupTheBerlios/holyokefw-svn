@@ -44,7 +44,7 @@ throws IOException
 		if (ze == null) break;
         int len;
         while ((len = zin.read(buf)) > 0) bout.write(buf, 0, len);
-System.out.println("ZipConfg read entry " + ze.getName() + " of size " + bout.size());
+//System.out.println("ZipConfg read entry " + ze.getName() + " of size " + bout.size());
 		ret.add(ze.getName(), bout.toByteArray());
 		bout.reset();
 	}
@@ -153,7 +153,7 @@ public static void main(String[] args) throws Exception
 //	InputStream in = new FileInputStream();
 	File file = new File(root, "config.zip");
 //	PBEAuth auth = new ConstPBEAuth("password".toCharArray());
-	PBEAuth auth = new DialogPBEAuth(null, "Please enter launcher password:");
+	PBEAuth auth = new DialogPBEAuth(null, "Please enter launcher password:", null);
 	Config sset = new PBEConfig(ZipConfig.loadFromFile(file), auth);
 	
 	InputStream inn = sset.openStream("app.properties");

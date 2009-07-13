@@ -40,7 +40,7 @@ public InputStream openStream(String name) throws IOException
 	else {
 		ret = new ByteArrayInputStream(bytes);
 	}
-System.out.println("MemConfig.openStream(" + name + ") = " + ret);
+//System.out.println("MemConfig.openStream(" + name + ") = " + ret);
 	return ret;
 }
 

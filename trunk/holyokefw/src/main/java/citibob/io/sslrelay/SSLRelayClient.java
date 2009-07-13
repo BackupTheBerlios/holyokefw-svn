@@ -85,16 +85,14 @@ throws Exception
 
 	SSLSession current = ss.getSession();
 
-	System.out.println("Cipher suite in use is " + current.getCipherSuite());
-	System.out.println("Protocol is " + current.getProtocol());
+	//System.out.println("Cipher suite in use is " + current.getCipherSuite());
+	//System.out.println("Protocol is " + current.getProtocol());
 
 	//get the input and output streams from the SSL connection
-	secureIn = new BufferedInputStream(		// Not sure we should be buffering...
-		ss.getInputStream());
-	secureOut = new BufferedOutputStream(
-		ss.getOutputStream());
+	secureIn = ss.getInputStream();
+	secureOut = ss.getOutputStream();
 
-	System.out.println("Got remote secured connection");
+	//System.out.println("Got remote secured connection");
 }
 
 public void startRelays()

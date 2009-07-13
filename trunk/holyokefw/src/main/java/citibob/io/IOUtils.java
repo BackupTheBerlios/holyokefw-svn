@@ -5,6 +5,7 @@
 
 package citibob.io;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -56,6 +57,12 @@ public static void copy(InputStream in, File file) throws IOException
 	OutputStream out = new FileOutputStream(file);
 	copy(in, out);
 	out.close();
+}
+
+public static void copy(byte[] bytesIn, File file) throws IOException
+{
+	InputStream in = new ByteArrayInputStream(bytesIn);
+	copy(in, file);
 }
 
 public static void copyNoClose(InputStream in, OutputStream out) throws IOException

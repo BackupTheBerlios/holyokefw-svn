@@ -18,8 +18,9 @@ char[] password;
 PasswordDialog dialog;
 boolean exitOnCancel = true;
 
-public DialogPBEAuth(Frame parent, String message)
+public DialogPBEAuth(Frame parent, String message, String envVar)
 {
+	super(envVar);
 	dialog = new PasswordDialog(parent);
 	dialog.setMessage(message);
 }
@@ -42,21 +43,17 @@ public void dispose() {
 }
 
 
-public char[] getPassword()
+public char[] queryPassword()
 {
-	if (super.state != PWD_GOOD) {
-		if (state == PWD_NONE) dialog.setAlert("");
-		else dialog.setAlert("Bad password; try again!");
-		
-		dialog.setVisible(true);
-		if (!dialog.getOK()) {
-			userCancelled();
-			return null;
-		}
-			
-		password = dialog.getPassword();
+	if (state == PWD_NONE) dialog.setAlert("");
+	else dialog.setAlert("Bad password; try again!");
+
+	dialog.setVisible(true);
+	if (!dialog.getOK()) {
+		userCancelled();
+		return null;
 	}
-	state = PWD_BAD;
-	return password;
+
+	return dialog.getPassword();
 }
 }

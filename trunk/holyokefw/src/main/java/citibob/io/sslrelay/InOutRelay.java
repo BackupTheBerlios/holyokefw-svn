@@ -12,9 +12,9 @@ import java.io.OutputStream;
 /** Specialized version of RelayIntoOut, hacked to serve
  *  the needs of SSLRelayClient.
  */
-class InOutRelay extends Thread {
+public class InOutRelay extends Thread {
 
-interface Listener {
+public interface Listener {
 	/** Called when the connection was closed, for a reason
 	 * other than normal EOF termination.
 	 * @param e Exception that caused the connection to close; or null if none.
@@ -30,26 +30,26 @@ interface Listener {
 
 	// ---------------------------------------------------------------
 	private void init (InputStream in,
-	OutputStream out , Listener listener)
+	OutputStream out , String name, Listener listener)
 	{
 		this.listener = listener;
 		this.name = name;
 		this.in = in;
 		this.out = out ;
-		setDaemon(true);
+//		setDaemon(true);
 		this.start();
 	}
 	public InOutRelay ( InputStream in,
 	OutputStream out , String name, Listener listener)
 	{
 		super(name);
-		init(in, out, listener);
+		init(in, out, name, listener);
 	}
 
 	public InOutRelay ( InputStream in, OutputStream out, Listener listener)
 	{
 		super();
-		init(in, out, listener);
+		init(in, out, null, listener);
 	}
 	// ---------------------------------------------------------------
 
@@ -63,19 +63,21 @@ interface Listener {
 			while(true) {
 				size = in.read(buffer);
 				if(size > 0 ) {
-//					System.out.println(name + " receive from in connection" + size);
+//System.out.println(name + " receive from in connection " + size + " bytes");
 					out.write(buffer,0, size);
 					out.flush();
-//					System.out.println(name  + " finish forwarding to out connection");
+//System.out.println(name  + " finish forwarding to out connection " + size + " bytes");
 				} else if (size == -1) { //end of stream
-//					System.out.println(name + " EOF detected!");
-					out.close();
+//System.out.println(name + " EOF detected!");
+//					out.close();
+					closeAll(null);
 					return ;
 				}
 			}
 		}
 		catch(Exception e){
-			e.printStackTrace(System.err);
+//			System.err.println("Error in " + name);
+//			e.printStackTrace(System.err);
 			//	       System.err.println(name + e);
 			closeAll(e);
 		}
@@ -88,13 +90,15 @@ interface Listener {
 
 	/** Causes the thread to stop! */
 	public void closeAll(Exception e){
-		try{
-			if(in != null ) in.close();
-			if(out != null) out.close();
+//System.err.println("Running closeAll");
+//		try{
+			if(in != null ) try { in.close(); } catch(Exception e3) {}
+			if(out != null) try { out.close(); } catch(Exception e3) {}
+//System.err.println("closeAll: listener = " + listener);
 			if (listener != null) listener.onConnectionClosed(e);
-		} catch(IOException e2){
-			e2.printStackTrace(System.err);
-	//		    System.err.println(e);
-		}
+//		} catch(IOException e2){
+//			e2.printStackTrace(System.err);
+//	//		    System.err.println(e);
+//		}
 	}
 }
