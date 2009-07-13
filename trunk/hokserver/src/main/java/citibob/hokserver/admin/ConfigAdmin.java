@@ -523,6 +523,7 @@ void w_custs_add(SqlRun str, final String custName)
 		// Set up map to do templates in config directory
 		Map<String,Object> map = new TreeMap();
 		map.put("db.user", custName);
+		map.put("ssl.user", custName);
 
 		// Create customer role in database server
 		String password = "";
@@ -740,6 +741,10 @@ throws Exception
 	exec("chmod 600 " + PEM.getPath(), "", null);
 	out.close();
 }
+
+
+
+
 public void initServer(SqlRun str)
 throws Exception
 {

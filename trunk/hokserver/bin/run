@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+
+LAUNCH_DIR=$(readlink -f $(dirname $0))
+DIR=$LAUNCH_DIR/..
+
+java -cp $DIR/target/executable-netbeans.dir/hokserver-*.jar "$@"
+
