@@ -40,7 +40,7 @@ public char[] getPassword()
 
 	// See about the password in the environment variable
 	if (ntries == 0) {
-		String envPassword = System.getenv(envVar);
+		String envPassword = (envVar == null ? null : System.getenv(envVar));
 		++ntries;
 		if (envPassword != null) {
 			password = envPassword.toCharArray();
