@@ -6,7 +6,6 @@
 package citibob.config;
 
 import citibob.app.App;
-import citibob.crypt.StdinPBEAuth;
 import java.io.File;
 import java.io.IOException;
 
@@ -43,7 +42,7 @@ throws IOException
 				if ("jar".equals(ext)) config = ZipConfig.loadFromLauncher(f);
 				else config = ZipConfig.loadFromFile(f);
 				config.setName(f.getName());
-System.out.println("MultiConfigMaker setting config name to " + config.getName());
+//System.out.println("MultiConfigMaker setting config name to " + config.getName());
 				ret.add(config);
 			}
 		} else if (obj instanceof String) {
@@ -59,13 +58,13 @@ System.out.println("MultiConfigMaker setting config name to " + config.getName()
 	return ret;
 }
 
-static public Config loadConfig(Object[] configSpecs, String pwdEnvVar)
-throws IOException
-{
-	MultiConfigMaker maker = new MultiConfigMaker(configSpecs);
-	Config config = maker.newConfig(null);
-	if (config == null) return null;
-	return new PBEConfig(config, new StdinPBEAuth(pwdEnvVar));
-}
+//static public Config loadConfig(Object[] configSpecs, String pwdEnvVar)
+//throws IOException
+//{
+//	MultiConfigMaker maker = new MultiConfigMaker(configSpecs);
+//	Config config = maker.newConfig(null);
+//	if (config == null) return null;
+//	return new PBEConfig(config, new StdinPBEAuth(pwdEnvVar));
+//}
 
 }
