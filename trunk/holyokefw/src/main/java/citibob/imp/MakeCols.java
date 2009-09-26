@@ -99,19 +99,39 @@ String packageName, String className) throws IOException
 	// Write out constants
 	for (int i=0; i < colNames.length; ++i) {
 		String name = colNames[i];
-		name = name.replace(" ", "_");
-		name = name.replace("-", "_");
-		name = name.replace("(", "_");
-		name = name.replace(")", "");
-		name = name.replace("/", "");
-		name = name.replace(",", "");
-		name = name.replace("'", "");
-		name = name.replace(".", "_");
-		name = name.replace("#", "num_");
-System.out.println("name = " + name);
-		if (Character.isDigit(name.charAt(0))) name = "_" + name;
+		StringBuffer oname = new StringBuffer();
+
+		if (Character.isDigit(name.charAt(0))) oname.append('_');
+		boolean lastUnderscore;
+		for (int j=0; j<name.length(); ++j) {
+			lastUnderscore = false;
+			switch(name.charAt(j)) {
+				case ' ' :
+				case '-' :
+				case '_' :
+				case '(' :
+				case '.' :
+					if (!lastUnderscore) {
+						oname.append('_');
+						lastUnderscore = true;
+					}
+					break;
+				case '#' :
+					oname.append("num_"); break;
+				case ')' :
+				case '/' :
+				case ',' :
+				case '\n' :
+				case ':' :
+				case '?' :
+				case '\'' :
+					break;
+				default :
+					oname.append(name.charAt(j)); break;
+			}
+		}
 		out.write(
-			"\tpublic static final int " + name + " = " + i + ";\n");
+			"\tpublic static final int " + oname.toString() + " = " + i + ";\n");
 	}
 
 	out.write("}\n");
