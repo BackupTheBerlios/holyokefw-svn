@@ -26,6 +26,8 @@ DataGrid<Color> bgColorModel;
 DataGrid<Color> fgColorModel;
 DataGrid<Font> fontModel;
 DataGrid<Boolean> editableModel;
+DataGrid<ButtonListener> buttonListenerModel;
+
 //DataCols<Comparator> comparatorModel;
 
 protected DelegateStyledTM() {}
@@ -70,6 +72,11 @@ public boolean isEditable(int row, int col) {
 	if (editableModel == null) return super.isEditable(row, col);
 	return editableModel.getValueAt(row, col).booleanValue();
 }
+@Override
+public ButtonListener getButtonListener(int row, int col) {
+	if (buttonListenerModel == null) return super.getButtonListener(row, col);
+	return buttonListenerModel.getValueAt(row, col);
+}
 // ==========================================================
 
 
@@ -79,6 +86,10 @@ public boolean isEditable(int row, int col) {
 
 	public void setEditableModel(DataGrid<Boolean> editableModel) {
 		this.editableModel = editableModel;
+	}
+
+	public void setButtonListenerModel(DataGrid<ButtonListener> buttonListenerModel) {
+		this.buttonListenerModel = buttonListenerModel;
 	}
 
 	public void setFgColorModel(DataGrid<Color> fgColorModel) {

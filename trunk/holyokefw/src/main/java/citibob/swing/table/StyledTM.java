@@ -16,6 +16,18 @@ import java.util.Comparator;
  */
 public class StyledTM {
 
+	
+public static interface ButtonListener {
+	/**
+	 * Called when the table detects a button-cell was clicked.
+	 * @param row Row in table of clicked button
+	 * @param col Column in table of clicked button
+	 * @param modifiers Ctrl/Shift keys held down when button was pressed
+	 */
+	public void onClicked(int row, int col, int modifiers);
+}
+
+	
 protected JTypeTableModel modelU;		// Some underlying table model
 protected DataCols<Comparator> compModelU;		// Way to sort each column
 
@@ -76,6 +88,12 @@ public Color getExtBgColor(int row, int col) { return null; }
 public Font getFont(int row, int col) { return null; }
 public boolean isEditable(int row, int col)
 	{ return model.isCellEditable(row, col); }
+
+
+
+/** If non-null, then text in this cell should be rendered as a button. */
+public ButtonListener getButtonListener(int row, int col)
+	{ return null; }
 
 //public int getRowOfValue(Object val, int col)
 //	{ return getRowOfValue(val, col, getModel()); }

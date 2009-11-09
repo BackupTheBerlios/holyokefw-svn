@@ -24,11 +24,13 @@ import java.awt.event.*;
 import java.text.*;
 import citibob.text.*;
 import citibob.swing.table.*;
+import citibob.swing.table.StyledTM.ButtonListener;
 import citibob.swing.typed.*;
 import citibob.swing.typed.Swinger.RenderEdit;
 import citibob.swingers.*;
 import citibob.types.*;
 //import de.chka.swing.components.*;
+import javax.swing.event.TableModelEvent;
 
 public class StyledTable extends JTable
 implements MouseListener, MouseMotionListener
@@ -38,6 +40,9 @@ protected StyledTM styledModel = dummyStyledModel;
 SortableTableModel sortModel;
 
 private boolean highlightMouseover = false;		// SHould we highlight rows when mousing over?
+//private MouseListener highlightMouseoverListener = null;
+//private MouseMotionListener highlightMouseoverMotionListener = null;
+
 
 /** Should we fill the ScrollPane with our table, even if there aren't
 enough data rows to warrant it?
@@ -49,6 +54,10 @@ private boolean fillViewport = true;			//
 FontMetrics tableFontMetrics;
 
 int mouseRow = -1;		// Row the mouse is currently hovering over.
+
+// Cell the mouse button is currently depressed on
+int pressedRow = -1;
+int pressedCol = -1;
 
 /** Dummy for GUI builder */
 static final JTypeTableModel nullTableModel = new DefaultJTypeTableModel();
@@ -82,6 +91,12 @@ public void setStyledTM(StyledTM stm)
 //		// Set comparators in sortModel
 //		if (ext.getCompModelU() != null)
 //			sortModel.setComparators(ext.getCompModelU());
+
+		// Handle:
+		//   a) Highlight on mouseover
+		//   b) Buttons in the table
+		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
 		
 		// Sort when user clicks headers
 		JTableHeader head = getTableHeader();
@@ -229,6 +244,15 @@ public Component prepareRenderer(TableCellRenderer renderer, int row, int col)
 	Font font = styledModel.getFont(row, col);
 	if (font != null) c.setFont(font);
 	
+	// Set up button depressed state for buttons we're rendering
+	if (c instanceof AbstractButton) {
+		AbstractButton ab = (AbstractButton)c;
+		boolean sel = pressedRow == row && pressedCol == col;
+		ab.setSelected(sel);
+System.out.println("StyledTable pressed = (" + pressedRow + ", " + pressedCol + ")"
+	+ " cur = (" + row + ", " + col + ")");
+	}
+	
 	return c;
 }
 // ==========================================================
@@ -254,20 +278,53 @@ public void setHighlightMouseover(boolean b)
 	if (highlightMouseover == b) return;
 
 	highlightMouseover = b;
-	if (b) {
-		this.addMouseListener(this); //new MyMouseAdapter());
-		this.addMouseMotionListener(this); //new MyMouseMotionAdapter());
-	} else {
-		this.removeMouseListener(this); //new MyMouseAdapter());
-		this.removeMouseMotionListener(this); //new MyMouseMotionAdapter());		
-	}
+//	if (b) {
+//		this.addMouseListener(this); //new MyMouseAdapter());
+//		this.addMouseMotionListener(this); //new MyMouseMotionAdapter());
+//	} else {
+//		this.removeMouseListener(this); //new MyMouseAdapter());
+//		this.removeMouseMotionListener(this); //new MyMouseMotionAdapter());		
+//	}
 }
 public boolean isHighlightMouseover() { return highlightMouseover; }
 // --------------------------------------
+
+private static void updateCell(JTable aTable, int row, int col)
+{
+	JTypeTableModel model = (JTypeTableModel)aTable.getModel();
+	TableModelEvent tce = new TableModelEvent(
+		model, row, row,
+		col, TableModelEvent.UPDATE);
+	model.fireTableChanged(tce);
+}
 // MouseListener
-public void mouseClicked(MouseEvent e) {}
-public void mousePressed(MouseEvent e) {}
-public void mouseReleased(MouseEvent e) {}
+public void mouseClicked(MouseEvent e) {
+	JTable aTable =  (JTable)e.getSource();
+	Point point = e.getPoint();
+	int row = aTable.rowAtPoint(point);
+	int col  = aTable.columnAtPoint(point);
+	
+	ButtonListener listener = styledModel.getButtonListener(row, col);
+	if (listener != null) listener.onClicked(row, col, e.getModifiers());
+}
+public void mousePressed(MouseEvent e) {
+	// Figure out the row and column we clicked on
+	JTable aTable =  (JTable)e.getSource();
+	Point point = e.getPoint();
+	pressedRow = aTable.rowAtPoint(point);
+	pressedCol = aTable.columnAtPoint(point);
+
+	updateCell(aTable, pressedRow, pressedCol);
+}
+public void mouseReleased(MouseEvent e) {
+	int row = pressedRow;
+	int col = pressedCol;
+	pressedRow = -1;
+	pressedCol = -1;
+	
+	JTable aTable =  (JTable)e.getSource();
+	updateCell(aTable, row, col);
+}
 public void mouseEntered(MouseEvent e) {}
 public void mouseExited(MouseEvent e) {
 	if (!highlightMouseover) return;
@@ -282,7 +339,7 @@ public void mouseDragged(MouseEvent e) {}
 public void mouseMoved(MouseEvent e) {
 	if (!highlightMouseover) return;
 	
-	JTable aTable =  (JTable)e.getSource();
+	JTable aTable = (JTable)e.getSource();
 	int oldRow = mouseRow;
 	mouseRow = aTable.rowAtPoint(e.getPoint());
 //	itsColumn = aTable.columnAtPoint(e.getPoint());
