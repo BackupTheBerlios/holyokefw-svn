@@ -75,6 +75,14 @@ public StyledTable()
 	this.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 //	setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 //	setStyledModel(dummyStyledModel);
+
+
+	// Handle:
+	//   a) Highlight on mouseover
+	//   b) Buttons in the table
+	this.addMouseListener(this);
+	this.addMouseMotionListener(this);
+
 }
 
 // ===============================================================
@@ -92,11 +100,6 @@ public void setStyledTM(StyledTM stm)
 //		if (ext.getCompModelU() != null)
 //			sortModel.setComparators(ext.getCompModelU());
 
-		// Handle:
-		//   a) Highlight on mouseover
-		//   b) Buttons in the table
-		this.addMouseListener(this);
-		this.addMouseMotionListener(this);
 		
 		// Sort when user clicks headers
 		JTableHeader head = getTableHeader();
@@ -249,8 +252,8 @@ public Component prepareRenderer(TableCellRenderer renderer, int row, int col)
 		AbstractButton ab = (AbstractButton)c;
 		boolean sel = pressedRow == row && pressedCol == col;
 		ab.setSelected(sel);
-System.out.println("StyledTable pressed = (" + pressedRow + ", " + pressedCol + ")"
-	+ " cur = (" + row + ", " + col + ")");
+//System.out.println("StyledTable pressed = (" + pressedRow + ", " + pressedCol + ")"
+//	+ " cur = (" + row + ", " + col + ")");
 	}
 	
 	return c;
