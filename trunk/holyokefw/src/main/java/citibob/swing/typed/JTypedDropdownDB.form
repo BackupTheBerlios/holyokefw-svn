@@ -96,7 +96,7 @@
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
   <SubComponents>
-    <Component class="offstage.swing.typed.JTypedLabelDB" name="label">
+    <Component class="citibob.swing.typed.JTypedLabelDB" name="label">
       <Properties>
         <Property name="text" type="java.lang.String" value="jTypedLabelDB1"/>
       </Properties>

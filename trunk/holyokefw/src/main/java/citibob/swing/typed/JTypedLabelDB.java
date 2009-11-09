@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Created on May 14, 2003, 8:52 PM
  */
 
-package offstage.swing.typed;
+package citibob.swing.typed;
 
 import citibob.sql.*;
 import citibob.swing.typed.*;

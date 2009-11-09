@@ -50,12 +50,16 @@ public static JFrame getJFrame(Component c)
 //    getRoot().setCursor(Cursor.getPredefinedCursor(type));
 //}
 
-/** Recursively sets or clears the enabled property on a JComponent and all its children. */
 public static void setEnabled(Component c, boolean enabled)
 {
 	// Take care of yourself
 	c.setEnabled(enabled);
+	setChildrenEnabled(c, enabled);
+}
 
+/** Recursively sets or clears the enabled property on a JComponent and all its children. */
+public static void setChildrenEnabled(Component c, boolean enabled)
+{
 	// Take care of your children
 	if (c instanceof Container) {
 	    Component[] child = ((Container)c).getComponents();

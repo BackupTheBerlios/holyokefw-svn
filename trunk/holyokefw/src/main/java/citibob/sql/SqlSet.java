@@ -6,7 +6,7 @@
 package citibob.sql;
 
 /**
- *
+ * A pre-sql, sql and post-sql, ready to be folded into a larger transaction.
  * @author citibob
  */
 public class SqlSet

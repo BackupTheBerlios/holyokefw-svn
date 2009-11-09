@@ -150,8 +150,6 @@ private void init(JTypeTableModel modelU, String[] xColNames, int[] xColMap, boo
 	colNames = xColNames;
 	
 	this.modelU = modelU;
-	this.colNames = colNames;
-	this.colMap = colMap;
 //	this.editable = editable;
 
 	// Set up inverse column map

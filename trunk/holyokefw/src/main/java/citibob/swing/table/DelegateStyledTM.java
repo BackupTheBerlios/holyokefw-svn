@@ -168,13 +168,18 @@ public void setDefaultModel(SwingerMap smap)
 	setDefaultSwingers(smap);
 }
 
-public void setColumns(SwingerMap smap,
+public ColPermuteTableModel setColumns(SwingerMap smap,
 String[] colNames, String[] sColMap)
 {
-	setModel(new ColPermuteTableModel(modelU, colNames, sColMap));
+	ColPermuteTableModel ret =
+		new ColPermuteTableModel(modelU, colNames, sColMap);
+
+	setModel(ret);
 
 	// Set of swingers / types / etc.
 	setDefaultSwingers(smap);
+
+	return ret;
 }
 
 public void setEditable(boolean... xeditable)

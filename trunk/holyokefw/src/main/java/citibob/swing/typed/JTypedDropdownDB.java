@@ -24,12 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package citibob.swing.typed;
 
 import citibob.types.JType;
-import javax.swing.*;
-import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
-import citibob.exception.*;
 import citibob.sql.*;
+import citibob.swing.WidgetTree;
 import java.beans.*;
 
 /**
@@ -44,6 +42,8 @@ implements TextTypedWidget, PropertyChangeListener, ActionListener
 protected TypedWidget popupWidget;		// The widget we display in the popup to change the value.
 String colName;
 
+boolean nullEnabled = true;	// True if the null checkbox should be enabled
+boolean enabled = true;		// True if the entire thing should be enabled
 
 public void setHorizontalAlignment(int align) { label.setHorizontalAlignment(align); }
 
@@ -70,7 +70,7 @@ public JTypedDropdownDB() {
         ckNull = new javax.swing.JCheckBox();
         bClose = new javax.swing.JButton();
         btnChange = new javax.swing.JButton();
-        label = new offstage.swing.typed.JTypedLabelDB();
+        label = new citibob.swing.typed.JTypedLabelDB();
 
         popupPanel.setLayout(new java.awt.BorderLayout());
 
@@ -169,14 +169,30 @@ protected Object selectValue()
 public void setJType(JType jt, citibob.text.SFormat sformat)
 {
 	label.setJType(jt, sformat);
-	ckNull.setEnabled(jt.isInstance(null));	
+	nullEnabled = jt.isInstance(null);
+//	ckNull.setEnabled(jt.isInstance(null));
+	realizeEnabled();
 }
 // Must override stuff in TextTypedWidget
 public void setJType(JType jt, SqlRun str, citibob.text.DBFormat dbformat)
 {
 	label.setJType(str, dbformat);
-	ckNull.setEnabled(jt.isInstance(null));	
+	nullEnabled = jt.isInstance(null);
+//	ckNull.setEnabled(jt.isInstance(null));
+	realizeEnabled();
 }
+
+public void setEnabled(boolean enabled)
+{
+	this.enabled = enabled;
+	realizeEnabled();
+}
+void realizeEnabled()
+{
+	WidgetTree.setChildrenEnabled(this, enabled);
+	if (enabled) ckNull.setEnabled(nullEnabled);
+}
+// --------------------------------------------------------------
 
 
 public void setPopupWidget(TypedWidget w)
@@ -226,7 +242,7 @@ public void setColName(String col) { colName = col; }
     protected javax.swing.JButton btnChange;
     protected javax.swing.JCheckBox ckNull;
     private javax.swing.JPanel jPanel1;
-    protected offstage.swing.typed.JTypedLabelDB label;
+    protected citibob.swing.typed.JTypedLabelDB label;
     private javax.swing.JPopupMenu popup;
     private javax.swing.JPanel popupPanel;
     // End of variables declaration//GEN-END:variables
