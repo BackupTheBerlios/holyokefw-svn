@@ -37,13 +37,14 @@ import javax.swing.JPanel;
  *
  * @author citibob
  */
-public class JKeyedMulti extends JTypedDropdown
+public class JKeyedMulti extends JTypedPopup
 {
 
 public JKeyedMulti()
 {
 	JKeyedMultiPanel tw = new JKeyedMultiPanel();
 	super.setPopupWidget(tw);
+//	super.setAllowNull(false);
 }
 
 
@@ -71,6 +72,7 @@ public void setKeyedModel(KeyedModel kmodel, Object segment)
 	JKeyedMultiPanel tw = (JKeyedMultiPanel)popupWidget;
 	tw.setKeyedModel(kmodel, segment);
 	super.setJType(new JEnum(kmodel), new KeyedMultiSFormat(kmodel));
+	super.setAllowNull(false);
 }
 public void setSegment(Object segment)
 {

@@ -35,7 +35,7 @@ import citibob.sql.*;
 import java.beans.*;
 
 /**
- *
+ * @deprecated Use JTypedPopup instead, it works more reliably.
  * @author  citibob
  */
 public class JTypedDropdown

@@ -26,19 +26,24 @@ package citibob.swing.typed;
 import citibob.jschema.Column;
 import citibob.jschema.Schema;
 import citibob.jschema.SchemaSet;
+import citibob.swing.table.ConstDataGrid;
+import citibob.swing.table.DataCols;
+import citibob.swing.table.DelegateStyledTM;
 import citibob.swing.table.FixedColTableModel;
 import citibob.swing.table.JTypeTableModel;
-import citibob.swing.typed.JKeyedComboBox;
+import citibob.swing.table.StyledTM;
+import citibob.swing.table.StyledTM.ButtonListener;
+import citibob.swing.typed.Swinger.RenderEdit;
 import citibob.swing.typed.TypedWidget;
-import citibob.swingers.BoolSwinger;
+import citibob.swingers.DefaultRenderEdit;
 import citibob.swingers.KeyedRenderEdit;
+import citibob.swingers.TypedWidgetRenderer;
 import citibob.text.KeyedSFormat;
 import citibob.text.SFormat;
 import citibob.types.JEnum;
 import citibob.types.JType;
 import citibob.types.JavaJType;
 import citibob.types.KeyedModel;
-import java.awt.Component;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +52,8 @@ import java.util.TreeSet;
 import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumn;
 
 /**
  NOTE: Unliked most TypedWidgets, this does NOT fire propertyChange("value") events.
@@ -71,8 +78,48 @@ List val;					// Value we return overall as a typed widget
 	public JKeyedMultiPanel()
 	{
 		initComponents();
-		
-		JTypeTableModel tmodel = new MyModel();
+		final JTypeTableModel tmodel = new MyModel();
+
+		DelegateStyledTM stm = new DelegateStyledTM();
+		stm.setModels(tmodel, tmodel);
+
+		// Nothing is editable
+		stm.setEditableModel(new ConstDataGrid(Boolean.FALSE));
+
+		// Use default rendering
+		DataCols<RenderEdit> reCols = new DataCols(
+			RenderEdit.class, 2);
+		JBoolCheckbox checkbox = new JBoolCheckbox();
+		reCols.setColumn(0, new DefaultRenderEdit(
+			new TypedWidgetRenderer(checkbox), null));
+		stm.setRenderEditModel(reCols);
+
+		// Set up to receive "button" events
+		// Respond when the user clicks in either column
+		ButtonListener buttonListener = new ButtonListener() {
+			public void onClicked(int row, int col, int modifiers) {
+				Boolean newVal = selected[row] ? Boolean.FALSE : Boolean.TRUE;
+				tmodel.setValueAt(newVal, row, 0);
+//				System.out.println("******* EDIT " + row);
+//				selected[row] = !selected[row];
+//				System.out.println("selected[" + row + "] = " + selected[row]);
+//				tmodel.fireTableChanged(new TableModelEvent(
+//					tmodel, row, row, 0, TableModelEvent.UPDATE));
+			}};
+		DataCols<ButtonListener> listenerCols = new DataCols(
+			ButtonListener.class, tmodel.getColumnCount());
+		listenerCols.setColumn(0, buttonListener);
+		listenerCols.setColumn(1, buttonListener);
+
+		stm.setButtonListenerModel(listenerCols);
+
+		table.setStyledTM(stm);
+
+		// Set table column widths
+		TableColumn ckCol = table.getColumnModel().getColumn(0);
+		int ckWidth = checkbox.getPreferredSize().width;
+		ckCol.setMaxWidth(ckWidth);
+/*
 		table.setModelU(tmodel, new String[] {"",""}, null, editable, null);
 			BoolSwinger bswing = new BoolSwinger();
 			Component checkbox = (Component)bswing.newWidget();
@@ -82,7 +129,8 @@ System.out.println("checkbox width = " + width);
 			table.getColumnModel().getColumn(C_CHECK).setMaxWidth(width);
 		table.setRowSelectionAllowed(false);
 		table.setCellSelectionEnabled(false);
-		
+*/
+
 		lSelectedCount.setJType(Integer.class, "#");
 		lSelectedCount.setValue(0);
 //		table.setSelectionBackground(table.getBackground());
@@ -97,7 +145,7 @@ System.out.println("checkbox width = " + width);
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        table = new citibob.swing.JTypeColTable();
+        table = new citibob.swing.StyledTable();
         jPanel1 = new javax.swing.JPanel();
         lSelectStatus = new javax.swing.JLabel();
         lSelectedCount = new citibob.swing.typed.JTypedLabel();
@@ -136,7 +184,7 @@ System.out.println("checkbox width = " + width);
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lSelectStatus;
     private citibob.swing.typed.JTypedLabel lSelectedCount;
-    private citibob.swing.JTypeColTable table;
+    private citibob.swing.StyledTable table;
     // End of variables declaration//GEN-END:variables
 
 	
@@ -202,10 +250,19 @@ public List getValue()
 	return val;
 }
 
+/** @param xval Multiple options:<ul>
+ * <li>null: Just clear everything</li>
+ * <li>Collection: A collection matching (some of) the items in the KeyedModel.</li>
+ * <li>Object: Set just one checkbox to true, for which this object matches
+ * one item in the KeyedModel</li>
+ * </ul>
+ */
 public void setValue(Object xval)
 {
 	if (xval == null) {
-		for (int i=0; i < selected.length; ++i) selected[i] = false;
+// TODO: If this is enabled, then the widget gets into a bad state
+// when the user sets the "nothing" checkbox.
+//		for (int i=0; i < selected.length; ++i) selected[i] = false;
 	} else if (xval instanceof Collection) {
 		Set set = new TreeSet((Collection)xval);
 		int count = 0;
@@ -246,14 +303,14 @@ public boolean stopEditing() {
 	if (table.getCellEditor() != null) table.getCellEditor().stopCellEditing();
 	val = new LinkedList();
 //System.out.println("cell editor = " + table.getCellEditor());
-System.out.print("Stop editing: ");
+//System.out.print("Stop editing: ");
 	for (int i=0; i < selected.length; ++i) {
 		if (selected[i]) {
 			val.add(vals.get(i));
-System.out.print(vals.get(i));
+//System.out.print(vals.get(i));
 		}
 	}
-System.out.println("");
+//System.out.println("");
 	return true;
 }
 
@@ -264,8 +321,8 @@ public Object clone() throws CloneNotSupportedException { return super.clone(); 
 public void keyedModelChanged()
 	{ refreshKeyedModel(); }
 // ===========================================================
-static final String[] colNames = {"Chosen", "Item"};
-static final boolean[] editable = {true, false};
+static final String[] colNames = {"", "Item"};
+static final boolean[] editable = {false, false};
 
 static final int C_CHECK = 0;
 static final int C_VALUE = 1;
@@ -284,7 +341,11 @@ public class MyModel extends FixedColTableModel
 	public Object getValueAt(int row, int col)
 	{
 		switch(col) {
-			case C_CHECK : return (selected[row] ? Boolean.TRUE : Boolean.FALSE);
+			case C_CHECK : {
+				Boolean ret = (selected[row] ? Boolean.TRUE : Boolean.FALSE);
+//				System.out.println("value[" + row + "] = " + ret);
+				return ret;
+			}
 			case C_VALUE : return vals.get(row);
 		}
 		return null;
@@ -320,13 +381,19 @@ public static void main(String[] args) throws Exception
 	
 	JKeyedMultiPanel multi = new JKeyedMultiPanel();
 	multi.setKeyedModel(kmodel);
-	
+	multi.setValue(1);
+
 	JFrame frame = new JFrame();
 	JPanel panel = new JPanel();
 	panel.add(multi);
 	frame.getContentPane().add(panel);
 	frame.pack();
 	frame.setVisible(true);
+
+	StyledTM stm = multi.table.getStyledTM();
+	System.out.println("Editable 0 = " + stm.isEditable(0,0));
+	System.out.println("Editable 1 = " + stm.isEditable(0,1));
+
 }
 
 }

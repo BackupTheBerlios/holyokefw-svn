@@ -29,12 +29,13 @@ import java.awt.event.*;
 import citibob.sql.*;
 import citibob.swing.WidgetTree;
 import java.beans.*;
+import javax.swing.SwingUtilities;
 
 /**
- * @deprecated Use JTypedPopupDB instead, it works more reliably.
+ *
  * @author  citibob
  */
-public class JTypedDropdownDB
+public class JTypedPopupDB
 extends javax.swing.JPanel
 implements TextTypedWidget, PropertyChangeListener, ActionListener
 {
@@ -48,12 +49,13 @@ boolean enabled = true;		// True if the entire thing should be enabled
 public void setHorizontalAlignment(int align) { label.setHorizontalAlignment(align); }
 
 /** Creates new form JAdultLabel */
-public JTypedDropdownDB() {
+public JTypedPopupDB() {
 	initComponents();
 	ckNull.addActionListener(this);
 
+	popup.setUndecorated(true);
 	popup.add(popupPanel);
-
+	popup.setModal(true);
 }
 
     /** This method is called from within the constructor to
@@ -64,19 +66,19 @@ public JTypedDropdownDB() {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        popup = new javax.swing.JPopupMenu();
         popupPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         ckNull = new javax.swing.JCheckBox();
         bClose = new javax.swing.JButton();
         btnChange = new javax.swing.JButton();
+        popup = new javax.swing.JDialog();
         label = new citibob.swing.typed.JTypedLabelDB();
 
         popupPanel.setLayout(new java.awt.BorderLayout());
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        ckNull.setText(null);
+        ckNull.setText("nothing");
         ckNull.setMargin(new java.awt.Insets(0, 0, 0, 0));
         jPanel1.add(ckNull, java.awt.BorderLayout.WEST);
 
@@ -136,9 +138,13 @@ public JTypedDropdownDB() {
 
 protected void showPopup()
 {
-	popup.setPopupSize(getWidth(), 300);
+	popupPanel.setPreferredSize(new Dimension(getWidth(),300));
 	popup.pack();
-	popup.show(this, 0, this.getHeight());	
+
+	Point here = this.getLocationOnScreen();
+	popup.setLocation(here.x, here.y + this.getHeight());
+
+	popup.setVisible(true);
 }
 protected void closePopup()
 {
@@ -243,7 +249,7 @@ public void setColName(String col) { colName = col; }
     protected javax.swing.JCheckBox ckNull;
     private javax.swing.JPanel jPanel1;
     protected citibob.swing.typed.JTypedLabelDB label;
-    private javax.swing.JPopupMenu popup;
+    private javax.swing.JDialog popup;
     private javax.swing.JPanel popupPanel;
     // End of variables declaration//GEN-END:variables
 
@@ -255,7 +261,7 @@ public Object propertyChangeNoFire(PropertyChangeEvent evt)
 	Object newval = popupWidget.getValue();
 	if (newval == null) return null;		// Ignore nulls from popup widget!!!
 	
-//	closePopup();
+	closePopup();
 	Object oldval = getValue();
 	ckNull.setSelected(false);
 	setValue(newval);

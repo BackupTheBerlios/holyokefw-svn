@@ -26,34 +26,30 @@ package citibob.swing.typed;
 import citibob.types.JType;
 import java.awt.*;
 import java.awt.event.*;
-import citibob.sql.*;
-import citibob.swing.WidgetTree;
-import java.beans.*;
 
 /**
- * @deprecated Use JTypedPopupDB instead, it works more reliably.
+ *
  * @author  citibob
  */
-public class JTypedDropdownDB
+public class JTypedPopup
 extends javax.swing.JPanel
-implements TextTypedWidget, PropertyChangeListener, ActionListener
+implements TextTypedWidget, ActionListener
+//PropertyChangeListener, ActionListener
 {
 
-protected TypedWidget popupWidget;		// The widget we display in the popup to change the value.
+TypedWidget popupWidget;		// The widget we display in the popup to change the value.
 String colName;
-
-boolean nullEnabled = true;	// True if the null checkbox should be enabled
-boolean enabled = true;		// True if the entire thing should be enabled
 
 public void setHorizontalAlignment(int align) { label.setHorizontalAlignment(align); }
 
 /** Creates new form JAdultLabel */
-public JTypedDropdownDB() {
+public JTypedPopup() {
 	initComponents();
 	ckNull.addActionListener(this);
 
+	popup.setUndecorated(true);
 	popup.add(popupPanel);
-
+	popup.setModal(true);
 }
 
     /** This method is called from within the constructor to
@@ -64,19 +60,19 @@ public JTypedDropdownDB() {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        popup = new javax.swing.JPopupMenu();
         popupPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         ckNull = new javax.swing.JCheckBox();
         bClose = new javax.swing.JButton();
         btnChange = new javax.swing.JButton();
-        label = new citibob.swing.typed.JTypedLabelDB();
+        popup = new javax.swing.JDialog();
+        label = new citibob.swing.typed.JTypedLabel();
 
         popupPanel.setLayout(new java.awt.BorderLayout());
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        ckNull.setText(null);
+        ckNull.setText("nothing");
         ckNull.setMargin(new java.awt.Insets(0, 0, 0, 0));
         jPanel1.add(ckNull, java.awt.BorderLayout.WEST);
 
@@ -104,7 +100,7 @@ public JTypedDropdownDB() {
         setPreferredSize(new java.awt.Dimension(122, 19));
         setLayout(new java.awt.BorderLayout());
 
-        label.setText("jTypedLabelDB1");
+        label.setText("jTypedLabel1");
         label.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 labelMouseDragged(evt);
@@ -126,7 +122,7 @@ public JTypedDropdownDB() {
 	private void labelMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_labelMouseClicked
 	{//GEN-HEADEREND:event_labelMouseClicked
 	showPopup();
-// TODO add your handling code here:
+	//togglePopup();
 	}//GEN-LAST:event_labelMouseClicked
 
 	private void bCloseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_bCloseActionPerformed
@@ -136,12 +132,22 @@ public JTypedDropdownDB() {
 
 protected void showPopup()
 {
-	popup.setPopupSize(getWidth(), 300);
+	popupPanel.setPreferredSize(new Dimension(getWidth(),300));
+//	popup.setSize(getWidth(), 400);
 	popup.pack();
-	popup.show(this, 0, this.getHeight());	
+	Point here = this.getLocationOnScreen();
+	popup.setLocation(here.x, here.y + this.getHeight());
+	popup.setVisible(true);
+//	popup.show(this, 0, this.getHeight());
 }
 protected void closePopup()
 {
+//	bClose.requestFocusInWindow();
+//	ckNull.requestFocusInWindow();
+//	popupWidget.stopEditing();
+	label.setValue(popupWidget.getValue());
+//System.out.println("JTypedPopup: closing popup!!!");
+//throw new java.util.NoSuchElementException("Closing");
 	popup.setVisible(false);
 }	
 protected void togglePopup()
@@ -165,41 +171,33 @@ protected Object selectValue()
 //{ setJType(jt, formatter); }
 
 // --------------------------------------------------------------
-/** Shouldn't be used... */
+//public void setJType(Swinger f)
+//{
+//	label.setJType(f);
+//	JType jt = f.getJType();
+//	ckNull.setEnabled(jt.isInstance(null));
+//}
+
 public void setJType(JType jt, citibob.text.SFormat sformat)
 {
 	label.setJType(jt, sformat);
-	nullEnabled = jt.isInstance(null);
-//	ckNull.setEnabled(jt.isInstance(null));
-	realizeEnabled();
-}
-// Must override stuff in TextTypedWidget
-public void setJType(JType jt, SqlRun str, citibob.text.DBFormat dbformat)
-{
-	label.setJType(str, dbformat);
-	nullEnabled = jt.isInstance(null);
-//	ckNull.setEnabled(jt.isInstance(null));
-	realizeEnabled();
+	ckNull.setEnabled(jt.isInstance(null));	
 }
 
-public void setEnabled(boolean enabled)
-{
-	this.enabled = enabled;
-	realizeEnabled();
-}
-void realizeEnabled()
-{
-	WidgetTree.setChildrenEnabled(this, enabled);
-	if (enabled) ckNull.setEnabled(nullEnabled);
-}
-// --------------------------------------------------------------
+public void setAllowNull(boolean b)
+	{ ckNull.setEnabled(b); }
 
+//public void setNullText(String s) {
+//	ckNull.setText(s);
+//	label.setNullText(s);
+//}
+//public String getNullText(String s) { return label.getNullText(); }
 
 public void setPopupWidget(TypedWidget w)
 {
 	popupPanel.add((Component)w, java.awt.BorderLayout.CENTER);
 	popupWidget = w;
-	w.addPropertyChangeListener("value", this);
+//	w.addPropertyChangeListener("value", this);
 }
 
 ///** Convenience function.
@@ -213,11 +211,17 @@ public void setPopupWidget(TypedWidget w)
 public boolean isInstance(Object o)
 	{ return label.isInstance(o); }
 public boolean stopEditing()
-	{  return true; }
+{
+	closePopup();
+	return true;
+}
 // --------------------------------------------------------------
 /** This can be overridden */
 public void setValue(Object o)
-	{ label.setValue(o); }
+{
+	label.setValue(o);
+	popupWidget.setValue(o);
+}
 
 /** Once a formatter has figured out what the underlying value and display
  should be, set it.  This is for DBFormatter, when we need to make a DB
@@ -240,34 +244,26 @@ public void setColName(String col) { colName = col; }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bClose;
     protected javax.swing.JButton btnChange;
-    protected javax.swing.JCheckBox ckNull;
+    private javax.swing.JCheckBox ckNull;
     private javax.swing.JPanel jPanel1;
-    protected citibob.swing.typed.JTypedLabelDB label;
-    private javax.swing.JPopupMenu popup;
+    private citibob.swing.typed.JTypedLabel label;
+    private javax.swing.JDialog popup;
     private javax.swing.JPanel popupPanel;
     // End of variables declaration//GEN-END:variables
 
 // ============================================================
-/** Called when popup widget's value changes.
- @return old value. */
-public Object propertyChangeNoFire(PropertyChangeEvent evt)
-{
-	Object newval = popupWidget.getValue();
-	if (newval == null) return null;		// Ignore nulls from popup widget!!!
-	
+///** Called when popup widget's value changes. */
+//public void propertyChange(PropertyChangeEvent evt)
+//{
+//	Object newval = popupWidget.getValue();
+//	if (newval == null) return;		// Ignore nulls from popup widget!!!
+//	
 //	closePopup();
-	Object oldval = getValue();
-	ckNull.setSelected(false);
-	setValue(newval);
-	return oldval;
-}
-public void propertyChange(PropertyChangeEvent evt)
-{
-	Object oldval = propertyChangeNoFire(evt);
-//	if (oldval == null) return;		// This line caused bugs when user tried to set a value for the first time.
-	Object newval = getValue();
-	firePropertyChange("value", oldval, newval);
-}
+//	Object oldval = getValue();
+//	ckNull.setSelected(false);
+//	setValue(newval);
+//	firePropertyChange("value", oldval, newval);
+//}
 
 /** Called when the null checkbox is clicked. */
 public void actionPerformed(ActionEvent evt)

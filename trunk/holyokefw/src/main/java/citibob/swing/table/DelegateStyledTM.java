@@ -30,7 +30,7 @@ DataGrid<ButtonListener> buttonListenerModel;
 
 //DataCols<Comparator> comparatorModel;
 
-protected DelegateStyledTM() {}
+public DelegateStyledTM() {}
 
 public DelegateStyledTM(JTypeTableModel modelU)
 	{ super(modelU); }

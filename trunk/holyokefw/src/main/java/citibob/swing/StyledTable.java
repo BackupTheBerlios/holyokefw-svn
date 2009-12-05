@@ -248,6 +248,10 @@ public Component prepareRenderer(TableCellRenderer renderer, int row, int col)
 	if (font != null) c.setFont(font);
 	
 	// Set up button depressed state for buttons we're rendering
+/* TODO: This doesn't work in the case that abstractButton.setSelected()
+ * is used by a TypedWidget's setValue() method.  We can only mess
+ * with setSelected() when we KNOW it doesn't conflict with the
+ * value being displayed.  As of yet, we don't really know.
 	if (c instanceof AbstractButton) {
 		AbstractButton ab = (AbstractButton)c;
 		boolean sel = pressedRow == row && pressedCol == col;
@@ -255,7 +259,7 @@ public Component prepareRenderer(TableCellRenderer renderer, int row, int col)
 //System.out.println("StyledTable pressed = (" + pressedRow + ", " + pressedCol + ")"
 //	+ " cur = (" + row + ", " + col + ")");
 	}
-	
+*/
 	return c;
 }
 // ==========================================================
