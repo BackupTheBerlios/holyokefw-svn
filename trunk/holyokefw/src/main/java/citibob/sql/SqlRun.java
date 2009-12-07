@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package citibob.sql;
 
+import java.io.Writer;
 import java.sql.*;
 import java.util.*;
 
@@ -61,6 +62,9 @@ public void execUpdate(UpdTasklet2 r);
 
 /** Executes all (potentially) buffered SQL up to now.  */
 public void flush(); // throws Exception;
+
+/** Clears all (potentiallY) buffered SQL; returns result of buffer (sort of) */
+public String clear();
 
 /** Increases the "recursion depth." */
 public void pushFlush();

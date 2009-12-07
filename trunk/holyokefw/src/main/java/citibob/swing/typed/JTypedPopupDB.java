@@ -53,7 +53,7 @@ public JTypedPopupDB() {
 	initComponents();
 	ckNull.addActionListener(this);
 
-	popup.setUndecorated(true);
+	// popup.setUndecorated(true);
 	popup.add(popupPanel);
 	popup.setModal(true);
 }

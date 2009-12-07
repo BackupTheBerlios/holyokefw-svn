@@ -60,6 +60,7 @@ public boolean isInSelect() { return inSelect; }
 public SingleSelectStyledTable()
 {
 	super();
+	super.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	setHighlightMouseover(true);
 }
 

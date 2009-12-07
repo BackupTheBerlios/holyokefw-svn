@@ -133,6 +133,14 @@ public ButtonListener getButtonListener(int row, int col) {
 	}
 
 // ==========================================================
+
+/** Only works if this StyledTM happens to have been set up with
+ * a RenderEditCols as the RenderEdit Model
+ * @return
+ */
+public RenderEditCols getRenderEditCols()
+	{ return (RenderEditCols)getRenderEditModel(); }
+	
 public RenderEditCols setRenderEditCols(SwingerMap smap)
 {
 	RenderEditCols re = new RenderEditCols(this, smap);
@@ -217,7 +225,7 @@ public void setEditable(boolean... xeditable)
  </nl>
  * 
  */
-public void setColumns(SwingerMap smap, Object... fmtSpecs)
+public RenderEditCols setColumns(SwingerMap smap, Object... fmtSpecs)
 {
 	int n = fmtSpecs.length / 4;
 	
@@ -251,6 +259,7 @@ public void setColumns(SwingerMap smap, Object... fmtSpecs)
 		if (spec != null) re.setFormat(i, spec);
 	}
 	this.setRenderEditModel(re);
+	return re;
 }
 
 /** @param fmtSpecs.  Array of blocks of two:

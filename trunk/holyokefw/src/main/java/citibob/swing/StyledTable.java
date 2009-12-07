@@ -309,28 +309,48 @@ public void mouseClicked(MouseEvent e) {
 	JTable aTable =  (JTable)e.getSource();
 	Point point = e.getPoint();
 	int row = aTable.rowAtPoint(point);
+	if (row < 0) return;
 	int col  = aTable.columnAtPoint(point);
+	if (col < 0) return;
 	
 	ButtonListener listener = styledModel.getButtonListener(row, col);
-	if (listener != null) listener.onClicked(row, col, e.getModifiers());
+	if (listener != null) listener.onClicked(
+		row, col, e);
 }
+
 public void mousePressed(MouseEvent e) {
+	// Repaint the cell, so we can update any button renderers in it
 	// Figure out the row and column we clicked on
 	JTable aTable =  (JTable)e.getSource();
 	Point point = e.getPoint();
+	
+	// Redraw the cell, pressed.
 	pressedRow = aTable.rowAtPoint(point);
 	pressedCol = aTable.columnAtPoint(point);
-
 	updateCell(aTable, pressedRow, pressedCol);
+
+	// Process user events
+	ButtonListener listener = styledModel.getButtonListener(pressedRow, pressedCol);
+	if (listener != null) listener.onPressed(
+		pressedRow, pressedCol, e);
+
 }
 public void mouseReleased(MouseEvent e) {
+	// Repaint the cell, so we can update any button renderers in it
+	JTable aTable =  (JTable)e.getSource();
 	int row = pressedRow;
 	int col = pressedCol;
+
+	// Process any user events
+	ButtonListener listener = styledModel.getButtonListener(pressedRow, pressedCol);
+	if (listener != null) listener.onReleased(
+		pressedRow, pressedCol, e);
+
+	// Redraw the cell, unpressed
 	pressedRow = -1;
-	pressedCol = -1;
-	
-	JTable aTable =  (JTable)e.getSource();
+	pressedCol = -1;	
 	updateCell(aTable, row, col);
+
 }
 public void mouseEntered(MouseEvent e) {}
 public void mouseExited(MouseEvent e) {

@@ -30,8 +30,8 @@ import citibob.swing.table.ConstDataGrid;
 import citibob.swing.table.DataCols;
 import citibob.swing.table.DelegateStyledTM;
 import citibob.swing.table.FixedColTableModel;
-import citibob.swing.table.JTypeTableModel;
 import citibob.swing.table.StyledTM;
+import citibob.swing.table.StyledTM.ButtonAdapter;
 import citibob.swing.table.StyledTM.ButtonListener;
 import citibob.swing.typed.Swinger.RenderEdit;
 import citibob.swing.typed.TypedWidget;
@@ -44,6 +44,9 @@ import citibob.types.JEnum;
 import citibob.types.JType;
 import citibob.types.JavaJType;
 import citibob.types.KeyedModel;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,6 +66,7 @@ public class JKeyedMultiPanel extends javax.swing.JPanel
 implements KeyedModel.Listener, TypedWidget
 {
 
+MyModel tableModel;			// The underlying data in our table
 KeyedModel kmodel;
 Object segment;
 JType valueType;			// Type of value portion of kmodel
@@ -78,10 +82,10 @@ List val;					// Value we return overall as a typed widget
 	public JKeyedMultiPanel()
 	{
 		initComponents();
-		final JTypeTableModel tmodel = new MyModel();
+		tableModel = new MyModel();
 
 		DelegateStyledTM stm = new DelegateStyledTM();
-		stm.setModels(tmodel, tmodel);
+		stm.setModels(tableModel, tableModel);
 
 		// Nothing is editable
 		stm.setEditableModel(new ConstDataGrid(Boolean.FALSE));
@@ -96,44 +100,39 @@ List val;					// Value we return overall as a typed widget
 
 		// Set up to receive "button" events
 		// Respond when the user clicks in either column
-		ButtonListener buttonListener = new ButtonListener() {
-			public void onClicked(int row, int col, int modifiers) {
-				Boolean newVal = selected[row] ? Boolean.FALSE : Boolean.TRUE;
-				tmodel.setValueAt(newVal, row, 0);
-//				System.out.println("******* EDIT " + row);
-//				selected[row] = !selected[row];
-//				System.out.println("selected[" + row + "] = " + selected[row]);
-//				tmodel.fireTableChanged(new TableModelEvent(
-//					tmodel, row, row, 0, TableModelEvent.UPDATE));
+		ButtonListener buttonListener = new ButtonAdapter() {
+			public void onClicked(int row, int col, MouseEvent me) {
+				if (me.getButton() != MouseEvent.BUTTON1) return;
+				tableModel.toggleRow(row);
 			}};
 		DataCols<ButtonListener> listenerCols = new DataCols(
-			ButtonListener.class, tmodel.getColumnCount());
+			ButtonListener.class, tableModel.getColumnCount());
 		listenerCols.setColumn(0, buttonListener);
 		listenerCols.setColumn(1, buttonListener);
 
 		stm.setButtonListenerModel(listenerCols);
 
 		table.setStyledTM(stm);
+//		table.setSelectionBackground(table.getBackground());
 
 		// Set table column widths
 		TableColumn ckCol = table.getColumnModel().getColumn(0);
 		int ckWidth = checkbox.getPreferredSize().width;
 		ckCol.setMaxWidth(ckWidth);
-/*
-		table.setModelU(tmodel, new String[] {"",""}, null, editable, null);
-			BoolSwinger bswing = new BoolSwinger();
-			Component checkbox = (Component)bswing.newWidget();
-			table.setRenderEdit(C_CHECK, bswing);
-			int width = checkbox.getPreferredSize().width;
-System.out.println("checkbox width = " + width);
-			table.getColumnModel().getColumn(C_CHECK).setMaxWidth(width);
-		table.setRowSelectionAllowed(false);
-		table.setCellSelectionEnabled(false);
-*/
 
+		// Set up keyboard shortcut
+		table.addKeyListener(new KeyAdapter() {
+		public void keyTyped(KeyEvent e) {
+			if (e.getKeyChar() != ' ') return;
+			int row = table.getSelectedRow();
+			tableModel.toggleRow(row);
+			System.out.println("Space on row " + row);
+		}});
+		
+		
+		// Set up the label
 		lSelectedCount.setJType(Integer.class, "#");
 		lSelectedCount.setValue(0);
-//		table.setSelectionBackground(table.getBackground());
 	}
 	
 	/** This method is called from within the constructor to
@@ -369,8 +368,15 @@ public class MyModel extends FixedColTableModel
 		}
 		super.fireTableRowsUpdated(row, row);
 	}
-public int getRowCount()
-	{ return (vals == null ? 0 : vals.size()); }
+	
+	void toggleRow(int row) {
+		Boolean newVal = selected[row] ? Boolean.FALSE : Boolean.TRUE;
+		tableModel.setValueAt(newVal, row, C_CHECK);
+	}
+
+
+	public int getRowCount()
+		{ return (vals == null ? 0 : vals.size()); }
 
 }
 

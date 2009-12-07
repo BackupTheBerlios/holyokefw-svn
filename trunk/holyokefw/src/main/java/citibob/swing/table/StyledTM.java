@@ -8,6 +8,7 @@ package citibob.swing.table;
 import citibob.swing.typed.Swinger.RenderEdit;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.MouseEvent;
 import java.util.Comparator;
 
 /**
@@ -22,9 +23,23 @@ public static interface ButtonListener {
 	 * Called when the table detects a button-cell was clicked.
 	 * @param row Row in table of clicked button
 	 * @param col Column in table of clicked button
+	 * @param button The mouse button that was clicked
 	 * @param modifiers Ctrl/Shift keys held down when button was pressed
 	 */
-	public void onClicked(int row, int col, int modifiers);
+	public void onClicked(int row, int col, MouseEvent e);
+	
+	public void onPressed(int row, int col, MouseEvent e);
+	
+	public void onReleased(int row, int col, MouseEvent e);
+}
+
+public static class ButtonAdapter implements ButtonListener {
+	public void onClicked(int row, int col, MouseEvent e) {}
+	
+	public void onPressed(int row, int col, MouseEvent e) {}
+	
+	public void onReleased(int row, int col, MouseEvent e) {}
+
 }
 
 	

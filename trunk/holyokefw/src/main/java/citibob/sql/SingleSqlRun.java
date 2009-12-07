@@ -127,6 +127,7 @@ public void execUpdate(UpdTasklet2 r)
 public void flush()
 {
 }
+public String clear() { return ""; }
 // TODO: Review all these methods below, see if they can be simplified.
 public void pushFlush() {}
 public void popFlush() {}

@@ -134,6 +134,8 @@ public void setFormatU(String colNameU, Object obj)
 {
 	if (obj instanceof RenderEdit)
 		setFormatU(colNameU, (RenderEdit)obj);
+	if (obj instanceof TableCellRenderer)
+		setFormatU(colNameU, (TableCellRenderer)obj);
 	else if (obj instanceof Swinger)
 		setFormatU(colNameU, (Swinger)obj);
 	else if (obj instanceof KeyedModel)
@@ -151,6 +153,10 @@ public void setFormatU(String colNameU, Object obj)
 // Allow setting of the RenderEdit by column name in the underlying table
 public void setFormatU(String underlyingName, Swinger.RenderEdit re)
 	{ setFormat(findColumnU(underlyingName), re); }
+
+public void setFormatU(String underlyingName, TableCellRenderer renderer)
+	{ setFormat(findColumnU(underlyingName), new DefaultRenderEdit(renderer, null)); }
+
 
 /** Sets a render/edit on a colum, by UNDERLYING column name. */
 public void setFormatU(String underlyingName, Swinger swinger)

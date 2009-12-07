@@ -106,10 +106,13 @@ public void execUpdate(UpdTasklet r)
 //{ return map.get(key); }
 
 // ---------------------------------------
+String getAllSql()
+{ return preSqlBuf.toString() + sqlBuf.toString() + postSqlBuf.toString(); }
+
 /** Execute the SQL batch; puts any new queries in "nextBatch" */
 void execOneBatch(Statement st, SqlRun str) throws Exception
 {
-	String sql = preSqlBuf.toString() + sqlBuf.toString() + postSqlBuf.toString();
+	String sql = getAllSql();
 System.out.println(
 "=================================================\n" +
 	"Executing batch with " + size() + " segments: \n" + sql +

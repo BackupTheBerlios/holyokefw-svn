@@ -80,6 +80,14 @@ public BatchSqlRun(ConnPool xpool, ExpHandler expHandler)
 	pushBatch();
 }
 
+public String clear() {
+	String sql = top().batch.getAllSql();
+	stack.clear();
+	pushBatch();
+	return sql;
+}
+
+
 public void pushBatch()
 {
 	stack.push(new Rec());
