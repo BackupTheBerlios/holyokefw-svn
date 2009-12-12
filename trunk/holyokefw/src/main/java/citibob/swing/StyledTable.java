@@ -30,18 +30,25 @@ import citibob.swing.typed.Swinger.RenderEdit;
 import citibob.swingers.*;
 import citibob.types.*;
 //import de.chka.swing.components.*;
+import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.TableModelEvent;
+import javax.swing.plaf.TableUI;
+
 
 public class StyledTable extends JTable
 implements MouseListener, MouseMotionListener
 {
-
+	
 protected StyledTM styledModel = dummyStyledModel;
 SortableTableModel sortModel;
 
 private boolean highlightMouseover = false;		// SHould we highlight rows when mousing over?
 //private MouseListener highlightMouseoverListener = null;
 //private MouseMotionListener highlightMouseoverMotionListener = null;
+
+// The MouseListeners created by default by the superclass and the UI.
+MouseListener[] superListeners;
+
 
 
 /** Should we fill the ScrollPane with our table, even if there aren't
@@ -73,16 +80,23 @@ public StyledTable()
 	// TODO: For now, I won't use it, but once JDateChooser is fixed, I'll turn
 	// it back on.
 	this.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-//	setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//	setStyledModel(dummyStyledModel);
+}
 
+@Override
+public void setUI(TableUI ui) {
+	
+	super.setUI(ui);
+	
+	// Replace the mouse listeners
+	superListeners = super.getMouseListeners();
+	for (MouseListener l : superListeners) super.removeMouseListener(l);
 
 	// Handle:
 	//   a) Highlight on mouseover
-	//   b) Buttons in the table
-	this.addMouseListener(this);
-	this.addMouseMotionListener(this);
-
+	//   b) "Buttons" in the table
+	//   c) Avoid selecting a cell on a dropdown-triggering mouse event
+	super.addMouseListener(this);
+	super.addMouseMotionListener(this);
 }
 
 // ===============================================================
@@ -306,6 +320,12 @@ private static void updateCell(JTable aTable, int row, int col)
 }
 // MouseListener
 public void mouseClicked(MouseEvent e) {
+	// Run super-listeners first.  Prevent table from getting events
+	// that would cause a popup menu
+	if (!e.isPopupTrigger())
+		for (MouseListener l : superListeners) l.mouseClicked(e);
+
+	// Figure out row and column of the mouse event
 	JTable aTable =  (JTable)e.getSource();
 	Point point = e.getPoint();
 	int row = aTable.rowAtPoint(point);
@@ -313,12 +333,17 @@ public void mouseClicked(MouseEvent e) {
 	int col  = aTable.columnAtPoint(point);
 	if (col < 0) return;
 	
+	// Forward event to a button (table cell) listener, if appropriate
 	ButtonListener listener = styledModel.getButtonListener(row, col);
-	if (listener != null) listener.onClicked(
-		row, col, e);
+	if (listener != null) listener.onClicked(row, col, e);
 }
 
 public void mousePressed(MouseEvent e) {
+	// Run super-listeners first.  Prevent table from getting events
+	// that would cause a popup menu
+	if (!e.isPopupTrigger())
+		for (MouseListener l : superListeners) l.mousePressed(e);
+		
 	// Repaint the cell, so we can update any button renderers in it
 	// Figure out the row and column we clicked on
 	JTable aTable =  (JTable)e.getSource();
@@ -336,6 +361,11 @@ public void mousePressed(MouseEvent e) {
 
 }
 public void mouseReleased(MouseEvent e) {
+	// Run super-listeners first.  Prevent table from getting events
+	// that would cause a popup menu
+	if (!e.isPopupTrigger())
+		for (MouseListener l : superListeners) l.mouseReleased(e);
+	
 	// Repaint the cell, so we can update any button renderers in it
 	JTable aTable =  (JTable)e.getSource();
 	int row = pressedRow;
@@ -352,13 +382,22 @@ public void mouseReleased(MouseEvent e) {
 	updateCell(aTable, row, col);
 
 }
-public void mouseEntered(MouseEvent e) {}
+public void mouseEntered(MouseEvent e) {
+	// Pass through to super-listeners first
+	for (MouseListener l : superListeners) l.mousePressed(e);
+	
+	// Nothing else to do
+}
 public void mouseExited(MouseEvent e) {
-	if (!highlightMouseover) return;
-
-	JTable aTable =  (JTable)e.getSource();
-	mouseRow = -1;
-	aTable.repaint();
+	// Pass through to super-listeners first
+	for (MouseListener l : superListeners) l.mousePressed(e);
+	
+	// Unpaint row if we're highlighting on mouseover
+	if (highlightMouseover) {
+		JTable aTable =  (JTable)e.getSource();
+		mouseRow = -1;
+		aTable.repaint();
+	}
 }
 // --------------------------------------
 // MouseMotionListener
