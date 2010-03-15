@@ -65,11 +65,19 @@ int mouseRow = -1;		// Row the mouse is currently hovering over.
 // Cell the mouse button is currently depressed on
 int pressedRow = -1;
 int pressedCol = -1;
-
+boolean mousePressed = false;	// True if the mouse button is currently pressed in,
+	// which would require a cell to be displayed in its pressed state.
 /** Dummy for GUI builder */
 static final JTypeTableModel nullTableModel = new DefaultJTypeTableModel();
 static final StyledTM dummyStyledModel = new StyledTM(nullTableModel);
 
+/** Set based on the last mousePresed event. */
+//private boolean pressedPopupTrigger;
+private ButtonListener pressedButtonListener;
+
+// True if we should run the superclass listeners
+// (which generally process list selection)
+private boolean pressedRunSuper;
 
 public StyledTable()
 {
@@ -318,77 +326,135 @@ private static void updateCell(JTable aTable, int row, int col)
 		col, TableModelEvent.UPDATE);
 	model.fireTableChanged(tce);
 }
+
 // MouseListener
-public void mouseClicked(MouseEvent e) {
-	// Run super-listeners first.  Prevent table from getting events
-	// that would cause a popup menu
-	if (!e.isPopupTrigger())
-		for (MouseListener l : superListeners) l.mouseClicked(e);
+protected void runSuperMousePressed(MouseEvent e)
+	{ for (MouseListener l : superListeners) l.mousePressed(e); }
 
-	// Figure out row and column of the mouse event
+public void mousePressed(MouseEvent e)
+{
+	// =========== Figure out the parameters of this event
+	// Initialize
+	pressedRunSuper = true;
+	pressedButtonListener = null;
+
+	// See where the user clicked
 	JTable aTable =  (JTable)e.getSource();
 	Point point = e.getPoint();
-	int row = aTable.rowAtPoint(point);
-	if (row < 0) return;
-	int col  = aTable.columnAtPoint(point);
-	if (col < 0) return;
-	
-	// Forward event to a button (table cell) listener, if appropriate
-	ButtonListener listener = styledModel.getButtonListener(row, col);
-	if (listener != null) listener.onClicked(row, col, e);
-}
-
-public void mousePressed(MouseEvent e) {
-	// Run super-listeners first.  Prevent table from getting events
-	// that would cause a popup menu
-	if (!e.isPopupTrigger())
-		for (MouseListener l : superListeners) l.mousePressed(e);
-		
-	// Repaint the cell, so we can update any button renderers in it
-	// Figure out the row and column we clicked on
-	JTable aTable =  (JTable)e.getSource();
-	Point point = e.getPoint();
-	
-	// Redraw the cell, pressed.
 	pressedRow = aTable.rowAtPoint(point);
 	pressedCol = aTable.columnAtPoint(point);
-	updateCell(aTable, pressedRow, pressedCol);
-
-	// Process user events
-	ButtonListener listener = styledModel.getButtonListener(pressedRow, pressedCol);
-	if (listener != null) listener.onPressed(
-		pressedRow, pressedCol, e);
-
-}
-public void mouseReleased(MouseEvent e) {
-	// Run super-listeners first.  Prevent table from getting events
-	// that would cause a popup menu
-	if (!e.isPopupTrigger())
-		for (MouseListener l : superListeners) l.mouseReleased(e);
+	mousePressed = true;
+	System.out.println("StyledTable.mousePressed: (" + pressedRow + ", " + pressedCol + ")");
 	
-	// Repaint the cell, so we can update any button renderers in it
-	JTable aTable =  (JTable)e.getSource();
-	int row = pressedRow;
-	int col = pressedCol;
+	// Find a registered listener for that event
+	pressedButtonListener = styledModel.getButtonListener(pressedRow, pressedCol);
+	if (pressedButtonListener == null ||
+		!pressedButtonListener.onPressed(pressedRow, pressedCol, e))
+		runSuperMousePressed(e);
+	
+//	// Process events ourself
+//
+//	if (e.isPopupTrigger()) {
+//		System.out.println("isPopupTrigger");
+//		pressedRunSuper = false;
+//	} else {
+//		System.out.println("notPopupTrigger");
+//		pressedButtonListener = styledModel.getButtonListener(pressedRow, pressedCol);
+//		if (pressedButtonListener != null) pressedRunSuper = false;
+//	}
+//System.out.println("pressedRunSuper = " + pressedRunSuper);
+//System.out.println("mousePressed: row/col=(" + pressedRow + ", " +
+//		pressedCol + "), listener=" + pressedButtonListener);
+//
+//	// ======================== Run stuff
+//	// Run super-listeners, if we should
+//	if (pressedRunSuper) runSuperMousePressed(e);
 
-	// Process any user events
-	ButtonListener listener = styledModel.getButtonListener(pressedRow, pressedCol);
-	if (listener != null) listener.onReleased(
-		pressedRow, pressedCol, e);
+	// Redraw the cell, pressed
+	if (pressedRow >= 0 && pressedCol >= 0) {
+		updateCell(aTable, pressedRow, pressedCol);
+	}
 
-	// Redraw the cell, unpressed
-	pressedRow = -1;
-	pressedCol = -1;	
-	updateCell(aTable, row, col);
+//	// Run the button listener, if we should
+//	if (pressedButtonListener != null) pressedButtonListener.onPressed(pressedRow, pressedCol, e);
+//
+//
+//	// Run super-listeners first.  Prevent table from getting events
+//	// that would cause a popup menu
+//System.out.println("StyledTable.mousePressed: popupTrigger = " + e.isPopupTrigger());
+//	pressedPopupTrigger = e.isPopupTrigger();
+//	if (!pressedPopupTrigger)
+//		for (MouseListener l : superListeners) l.mousePressed(e);
+//
+//	// Repaint the cell, so we can update any button renderers in it
+//	// Figure out the row and column we clicked on
+//
+//	// Redraw the cell, pressed.
+//System.out.println("    pressed row/col = (" + pressedRow + ", " + pressedCol + ")");
+//
+//	// Process user events
+//	ButtonListener listener = styledModel.getButtonListener(pressedRow, pressedCol);
+//System.out.println("    listener = " + listener);
+//	if (listener != null) listener.onPressed(
+//		pressedRow, pressedCol, e);
 
 }
+
+protected void runSuperMouseReleased(MouseEvent e)
+	{ for (MouseListener l : superListeners) l.mouseReleased(e); }
+
+public void mouseReleased(MouseEvent e) {
+//	// Run super-listeners first.  Prevent table from getting events
+//	// that would cause a popup menu
+//	if (pressedRunSuper && !e.isPopupTrigger())
+//		for (MouseListener l : superListeners) runSuperMouseReleased(e);
+	mousePressed = false;
+
+	System.out.println("StyledTable.mouseReleased: (" + pressedRow + ", " + pressedCol + ")");
+
+	JTable aTable =  (JTable)e.getSource();
+	if (pressedRow >= 0 && pressedRow < aTable.getRowCount() &&
+		pressedCol >= 0 && pressedCol < aTable.getColumnCount())
+	{
+		// Repaint the cell, so we can update any button renderers in it
+
+		if (pressedButtonListener == null ||
+			!pressedButtonListener.onReleased(pressedRow, pressedCol, e))
+			runSuperMouseReleased(e);
+
+		// Redraw the cell, unpressed
+		updateCell(aTable, pressedRow, pressedCol);
+	}
+}
+
+protected void runSuperMouseClicked(MouseEvent e)
+	{ for (MouseListener l : superListeners) l.mouseClicked(e); }
+
+public void mouseClicked(MouseEvent e)
+{
+	mousePressed = false;
+
+	System.out.println("StyledTable.mouseClicked: (" + pressedRow + ", " + pressedCol + ")");
+	// Figure out row and column of the mouse event
+	JTable aTable =  (JTable)e.getSource();
+	if (pressedRow >= 0 && pressedRow < aTable.getRowCount() &&
+		pressedCol >= 0 && pressedCol < aTable.getColumnCount())
+	{
+		if (pressedButtonListener == null ||
+			!pressedButtonListener.onClicked(pressedRow, pressedCol, e))
+			runSuperMouseClicked(e);
+	}
+}
+
 public void mouseEntered(MouseEvent e) {
+System.out.println("StyledTable.mouseEntered()");
 	// Pass through to super-listeners first
 	for (MouseListener l : superListeners) l.mousePressed(e);
 	
 	// Nothing else to do
 }
 public void mouseExited(MouseEvent e) {
+System.out.println("StyledTable.mouseExited()");
 	// Pass through to super-listeners first
 	for (MouseListener l : superListeners) l.mousePressed(e);
 	

@@ -101,9 +101,10 @@ List val;					// Value we return overall as a typed widget
 		// Set up to receive "button" events
 		// Respond when the user clicks in either column
 		ButtonListener buttonListener = new ButtonAdapter() {
-			public void onClicked(int row, int col, MouseEvent me) {
-				if (me.getButton() != MouseEvent.BUTTON1) return;
+			public boolean onClicked(int row, int col, MouseEvent me) {
+				if (me.getButton() != MouseEvent.BUTTON1) return false;
 				tableModel.toggleRow(row);
+				return true;
 			}};
 		DataCols<ButtonListener> listenerCols = new DataCols(
 			ButtonListener.class, tableModel.getColumnCount());

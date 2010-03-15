@@ -25,20 +25,22 @@ public static interface ButtonListener {
 	 * @param col Column in table of clicked button
 	 * @param button The mouse button that was clicked
 	 * @param modifiers Ctrl/Shift keys held down when button was pressed
+	 * @return true if event was consumed; false if it should be passed on to
+	 * another default listener.
 	 */
-	public void onClicked(int row, int col, MouseEvent e);
+	public boolean onClicked(int row, int col, MouseEvent e);
 	
-	public void onPressed(int row, int col, MouseEvent e);
+	public boolean onPressed(int row, int col, MouseEvent e);
 	
-	public void onReleased(int row, int col, MouseEvent e);
+	public boolean onReleased(int row, int col, MouseEvent e);
 }
 
 public static class ButtonAdapter implements ButtonListener {
-	public void onClicked(int row, int col, MouseEvent e) {}
+	public boolean onClicked(int row, int col, MouseEvent e) { return true; }
 	
-	public void onPressed(int row, int col, MouseEvent e) {}
+	public boolean onPressed(int row, int col, MouseEvent e) { return true; }
 	
-	public void onReleased(int row, int col, MouseEvent e) {}
+	public boolean onReleased(int row, int col, MouseEvent e) { return true; }
 
 }
 
