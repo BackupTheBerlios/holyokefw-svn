@@ -190,7 +190,8 @@ public void setTime(Date date)
 }
 public void setTimeInMillis(long ms)
 {
-	if (ms == cal.getTimeInMillis()) return;
+// THis caused a bug when going from null to non-null; caused it to not redisplay
+//	if (ms == cal.getTimeInMillis()) return;
 
 	cal.setTimeInMillis(ms);
 	setNullNoFire(false);
