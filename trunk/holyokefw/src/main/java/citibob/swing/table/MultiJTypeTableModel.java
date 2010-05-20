@@ -94,6 +94,11 @@ public JTypeTableModel getModel(int i) { return models[i]; }
  @param sub-models to glom together; all column names must be unique across sub-models. */
 public MultiJTypeTableModel(JTypeTableModel... models)
 {
+	if (models.length == 0) return;
+	init(models);
+}
+public void init(JTypeTableModel... models)
+{
 //	prefixes = makePrefixes(xprefixes, models.length);
 //	this.tabNames = tabNames;
 	this.models = models;
