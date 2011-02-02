@@ -30,7 +30,9 @@ the row being watched changes; the single-column widget doesn't care,
 its job is just to display and edit the value it's assigned to. */
 public static interface ColListener
 {
+	/** Called when a column is edited */
 	void valueChanged(int col);
+	/** Called when the record changes */
 	void curRowChanged(int col);		// Used by MultiRowModel
 }
 public static class ColAdapter implements ColListener

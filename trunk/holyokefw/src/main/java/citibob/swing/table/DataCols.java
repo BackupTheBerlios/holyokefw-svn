@@ -30,6 +30,7 @@ public DataCols(Class klass, int ncol)
 //	data = (TT[])new TT[ncol];
 //	data = new TT[ncol];
 }
+
 //public DataCols(Class klass, StyledTableModel model)
 //{
 //	this(klass, model.getModel().getColumnCount());
